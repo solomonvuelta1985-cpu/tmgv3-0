@@ -1,0 +1,262 @@
+/**
+ * Payment Management Page Styles - Clean & Professional Design
+ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f8fafc;
+    color: #212529;
+    font-size: 15px;
+    line-height: 1.5;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.content {
+    margin-left: 250px;
+    padding: 0;
+    padding-top: 64px;
+    min-height: 100vh;
+}
+
+.container-fluid {
+    padding: clamp(20px, 4vw, 30px);
+}
+
+/* Page Header */
+.border-bottom {
+    border-bottom: 1px solid #dee2e6 !important;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.border-bottom h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #212529;
+    margin: 0;
+}
+
+/* Statistics Cards */
+.stat-card {
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background: #ffffff;
+    margin-bottom: 1.5rem;
+    transition: none;
+}
+
+.stat-card:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.stat-card-today {
+    border-left: 4px solid #0d6efd;
+}
+
+.stat-card-week {
+    border-left: 4px solid #198754;
+}
+
+.stat-card-month {
+    border-left: 4px solid #ffc107;
+}
+
+.stat-icon {
+    font-size: 3rem;
+    color: rgba(0, 0, 0, 0.1);
+}
+
+/* Card Styles */
+.card {
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    background: #ffffff;
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    background: #ffffff;
+    border-bottom: 1px solid #dee2e6;
+    padding: 1rem 1.25rem;
+    border-radius: 4px 4px 0 0;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #495057;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+/* Table Styles */
+#paymentsTable {
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+#paymentsTable thead th {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    border-top: 1px solid #dee2e6;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.8125rem;
+    letter-spacing: 0.3px;
+    padding: 0.75rem;
+    color: #495057;
+}
+
+#paymentsTable tbody td {
+    font-size: 0.875rem;
+    padding: 0.875rem 0.75rem;
+    vertical-align: middle;
+    color: #212529;
+    border-bottom: 1px solid #e9ecef;
+}
+
+#paymentsTable tbody tr {
+    transition: background-color 0.15s;
+}
+
+#paymentsTable tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Buttons */
+.btn {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+}
+
+.btn-sm {
+    font-size: 0.8125rem;
+    padding: 0.375rem 0.75rem;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0b5ed7;
+}
+
+.btn-outline-secondary {
+    color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: #ffffff;
+}
+
+/* Form Elements */
+.form-label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: #495057;
+}
+
+.form-control, .form-select {
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Alerts */
+.alert {
+    font-size: 0.875rem;
+    padding: 0.875rem 1rem;
+    border-radius: 4px;
+}
+
+/* Pagination */
+.pagination {
+    margin: 0;
+}
+
+.page-link {
+    color: #495057;
+    border-color: #dee2e6;
+    font-size: 0.875rem;
+    border-radius: 4px;
+    margin: 0 2px;
+}
+
+.page-link:hover {
+    background-color: #f8f9fa;
+}
+
+.page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+/* Print Styles */
+@media print {
+    .btn-toolbar,
+    .card-header,
+    #filterForm,
+    .pagination,
+    .btn {
+        display: none !important;
+    }
+
+    .content {
+        margin-left: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    .stat-card {
+        page-break-inside: avoid;
+    }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .content {
+        margin-left: 0;
+        padding: 0;
+        padding-top: 70px;
+    }
+
+    .container-fluid {
+        padding: 1rem;
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+    }
+
+    #paymentsTable {
+        font-size: 0.8rem;
+    }
+}

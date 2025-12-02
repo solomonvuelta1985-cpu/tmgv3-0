@@ -1,0 +1,120 @@
+================================================================================
+QUICK FIX INSTRUCTIONS - Voided Payments Issue (ENHANCED VERSION)
+================================================================================
+
+PROBLEM:
+--------
+Ticket 06122 (and others) show as "voided" in payments.php but still show as
+"paid" or incorrect status in citations.php and don't appear in process_payment.php
+
+NEW ENHANCED FEATURES:
+---------------------
+✓ Now shows OR numbers (receipt numbers) for tracking
+✓ Now shows Transaction References (GCash/Bank/Check references)
+✓ Now shows Payment Methods (cash, gcash, bank_transfer, etc.)
+✓ Complete audit trail with payment dates and void reasons
+✓ Detailed accounting report for reconciliation
+
+
+SOLUTION - 3 SIMPLE STEPS:
+---------------------------
+
+STEP 1: CODE FIX (ALREADY DONE ✓)
+----------------------------------
+The code has been fixed in:
+  → services/payment/PaymentProcessor.php
+
+This ensures all FUTURE voided payments will correctly revert citation status.
+
+
+STEP 2: RUN SQL FIX (YOU NEED TO DO THIS)
+------------------------------------------
+1. Open your browser and go to: http://localhost/phpmyadmin/
+
+2. Click on "traffic_system" database on the left sidebar
+
+3. Click the "SQL" tab at the top
+
+4. Open the file: tmg/fix_voided_payments.sql
+   (Located in: C:\xampp\htdocs\tmg\fix_voided_payments.sql)
+
+5. Copy ALL the contents of that file
+
+6. Paste it into the SQL query box in phpMyAdmin
+
+7. Click the "Go" button at the bottom right
+
+8. You should see results showing:
+   - Citations BEFORE fix (showing wrong status)
+   - Number of citations updated
+   - Citations AFTER fix (all should be 'pending' now)
+
+
+STEP 3: VERIFY THE FIX
+----------------------
+1. Open: http://localhost/tmg/public/process_payment.php
+
+2. Login as admin or cashier
+
+3. Search for ticket number: 06122
+
+4. ✓ Ticket 06122 should now appear in the list!
+
+5. You can now process a new payment for this ticket
+
+
+WHAT HAPPENS AFTER THE FIX:
+----------------------------
+✓ Ticket 06122 status changes from whatever it was → 'pending'
+✓ Ticket 06122 appears in process_payment.php (can be paid again)
+✓ All other tickets with voided payments are also fixed
+✓ Future voided payments will automatically work correctly
+
+
+NEED HELP?
+----------
+If you see any errors or issues:
+
+1. Make sure MySQL/MariaDB is running (check XAMPP Control Panel)
+
+2. Make sure you're logged in to phpMyAdmin
+
+3. Check the SQL results for error messages
+
+4. Contact support with the error message
+
+
+FILES INVOLVED:
+---------------
+Modified:    services/payment/PaymentProcessor.php (Line 472-478 added)
+Enhanced:    fix_voided_payments.sql (NOW INCLUDES reference numbers & payment methods!)
+Created:     VOIDED_PAYMENTS_FIX_README.md (full documentation)
+Created:     QUICK_FIX_INSTRUCTIONS.txt (this file)
+Created:     ENHANCED_SQL_REPORT_GUIDE.md (visual guide of new report features)
+
+
+WHAT THE ENHANCED REPORT SHOWS:
+--------------------------------
+The SQL script now gives you 9 detailed reports including:
+
+1. Before/After comparison
+2. Ticket 06122 specific check
+3. Voided payments by payment method (cash, gcash, bank, etc.)
+4. Overall payment status breakdown
+5. Complete detailed report with:
+   - OR Numbers (receipt booklet tracking)
+   - Transaction References (GCash/Bank/Check IDs)
+   - Payment Methods
+   - Driver names
+   - Who voided it and when
+   - Why it was voided
+
+Perfect for accounting reconciliation and audit trails!
+
+See ENHANCED_SQL_REPORT_GUIDE.md for sample output screenshots.
+
+
+================================================================================
+THAT'S IT! The fix is complete after running the SQL script.
+Enhanced features make tracking voided payments much easier!
+================================================================================

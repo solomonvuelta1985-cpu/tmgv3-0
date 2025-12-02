@@ -1,0 +1,212 @@
+<?php
+// Define root path
+define('ROOT_PATH', dirname(__DIR__));
+
+// Include dependencies
+require_once ROOT_PATH . '/includes/config.php';
+require_once ROOT_PATH . '/includes/functions.php';
+require_once ROOT_PATH . '/includes/auth.php';
+require_once ROOT_PATH . '/services/ReportService.php';
+
+// Require login and check session timeout
+require_login();
+check_session_timeout();
+
+// Initialize ReportService
+$reportService = new ReportService(getPDO());
+
+// Get filter parameters
+// Default to a wide range to ensure data is shown
+$start_date = isset($_GET['start_date']) ? sanitize($_GET['start_date']) : date('Y-01-01'); // First day of current year
+$end_date = isset($_GET['end_date']) ? sanitize($_GET['end_date']) : date('Y-m-d'); // Today
+$report_type = isset($_GET['report_type']) ? sanitize($_GET['report_type']) : 'financial';
+$interval = isset($_GET['interval']) ? sanitize($_GET['interval']) : 'day';
+
+// Debug: Check if files exist
+if (isset($_GET['debug_files'])) {
+    echo '<div class="alert alert-info">';
+    echo '<strong>File Check:</strong><br>';
+    $template_path = ROOT_PATH . '/templates/reports/' . $report_type . '-report.php';
+    echo 'Looking for: ' . $template_path . '<br>';
+    echo 'File exists: ' . (file_exists($template_path) ? 'YES' : 'NO') . '<br>';
+    echo 'ROOT_PATH: ' . ROOT_PATH . '<br>';
+    echo '</div>';
+}
+
+// Fetch data based on report type
+$data = [];
+switch ($report_type) {
+    case 'financial':
+        $data['summary'] = $reportService->getFinancialSummary($start_date, $end_date);
+        $data['trends'] = $reportService->getRevenueTrends($start_date, $end_date, $interval);
+        $data['outstanding'] = $reportService->getOutstandingFines('pending');
+        break;
+
+    case 'violations':
+        $data['statistics'] = $reportService->getViolationStatistics($start_date, $end_date);
+        $data['trends'] = $reportService->getViolationTrends($start_date, $end_date);
+        $data['offense_distribution'] = $reportService->getOffenseCountDistribution($start_date, $end_date);
+        break;
+
+    case 'officers':
+        $data['performance'] = $reportService->getOfficerPerformance($start_date, $end_date);
+        break;
+
+    case 'drivers':
+        $data['repeat_offenders'] = $reportService->getRepeatOffenders(2, $start_date, $end_date);
+        break;
+
+    case 'time':
+        $data['hourly'] = $reportService->getTimeBasedAnalytics($start_date, $end_date);
+        $data['day_of_week'] = $reportService->getDayOfWeekAnalytics($start_date, $end_date);
+        $data['monthly'] = $reportService->getMonthlyAnalytics($start_date, $end_date);
+        break;
+
+    case 'status':
+        $data['distribution'] = $reportService->getStatusDistribution($start_date, $end_date);
+        $data['contested'] = $reportService->getContestedCitations($start_date, $end_date);
+        $data['resolution_time'] = $reportService->getCaseResolutionTime($start_date, $end_date);
+        break;
+
+    case 'vehicles':
+        $data['vehicle_stats'] = $reportService->getVehicleTypeStatistics($start_date, $end_date);
+        break;
+
+    case 'or_audit':
+        $data['or_summary'] = $reportService->getOrUsageSummary($start_date, $end_date);
+        $data['or_daily'] = $reportService->getOrDailyUsage($start_date, $end_date);
+        $data['or_cashier'] = $reportService->getOrUsageByCashier($start_date, $end_date);
+        $data['audit_trail'] = $reportService->getOrAuditTrail($start_date, $end_date, 100);
+        $data['cancelled_voided'] = $reportService->getCancelledVoidedPayments($start_date, $end_date);
+        break;
+
+    default:
+        $data['summary'] = $reportService->getFinancialSummary($start_date, $end_date);
+        break;
+}
+
+// Close connection
+$reportService->closeConnection();
+
+// Debug: Show data counts
+if (isset($_GET['debug_data'])) {
+    echo '<div class="alert alert-warning">';
+    echo '<strong>Data Debug:</strong><br>';
+    echo 'Report Type: ' . $report_type . '<br>';
+    echo 'Date Range: ' . $start_date . ' to ' . $end_date . '<br>';
+    echo 'Data keys: ' . implode(', ', array_keys($data)) . '<br>';
+    foreach ($data as $key => $value) {
+        if (is_array($value)) {
+            echo $key . ' count: ' . count($value) . '<br>';
+            if (!empty($value) && isset($value[0])) {
+                echo $key . ' sample: <pre>' . print_r(array_slice($value, 0, 1), true) . '</pre>';
+            }
+        } else {
+            echo $key . ': ' . print_r($value, true) . '<br>';
+        }
+    }
+    echo '</div>';
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports & Analytics - Traffic Citation System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/reports.css">
+</head>
+<body>
+    <?php include 'sidebar.php'; ?>
+
+    <div class="content">
+        <div class="container-fluid">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div>
+                    <h3><i class="fas fa-chart-bar me-2"></i>Reports & Analytics</h3>
+                    <p class="text-muted mb-0">Comprehensive reporting and data insights</p>
+                </div>
+            </div>
+
+            <?php echo show_flash(); ?>
+
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <form method="GET" id="reportFilterForm" class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Report Type</label>
+                        <select name="report_type" class="form-select" id="reportTypeSelect">
+                            <option value="financial" <?php echo $report_type === 'financial' ? 'selected' : ''; ?>>Financial Reports</option>
+                            <option value="or_audit" <?php echo $report_type === 'or_audit' ? 'selected' : ''; ?>>OR Usage & Audit Trail</option>
+                            <option value="violations" <?php echo $report_type === 'violations' ? 'selected' : ''; ?>>Violation Analytics</option>
+                            <option value="officers" <?php echo $report_type === 'officers' ? 'selected' : ''; ?>>Officer Performance</option>
+                            <option value="drivers" <?php echo $report_type === 'drivers' ? 'selected' : ''; ?>>Driver Reports</option>
+                            <option value="time" <?php echo $report_type === 'time' ? 'selected' : ''; ?>>Time-Based Analytics</option>
+                            <option value="status" <?php echo $report_type === 'status' ? 'selected' : ''; ?>>Status & Operations</option>
+                            <option value="vehicles" <?php echo $report_type === 'vehicles' ? 'selected' : ''; ?>>Vehicle Reports</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Start Date</label>
+                        <input type="date" name="start_date" class="form-control" value="<?php echo $start_date; ?>">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">End Date</label>
+                        <input type="date" name="end_date" class="form-control" value="<?php echo $end_date; ?>">
+                    </div>
+                    <?php if ($report_type === 'financial'): ?>
+                    <div class="col-md-2">
+                        <label class="form-label">Interval</label>
+                        <select name="interval" class="form-select">
+                            <option value="day" <?php echo $interval === 'day' ? 'selected' : ''; ?>>Daily</option>
+                            <option value="week" <?php echo $interval === 'week' ? 'selected' : ''; ?>>Weekly</option>
+                            <option value="month" <?php echo $interval === 'month' ? 'selected' : ''; ?>>Monthly</option>
+                            <option value="year" <?php echo $interval === 'year' ? 'selected' : ''; ?>>Yearly</option>
+                        </select>
+                    </div>
+                    <?php endif; ?>
+                    <div class="col-md-3 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-filter me-1"></i>Apply Filters
+                        </button>
+                        <button type="button" class="btn btn-success" id="exportBtn">
+                            <i class="fas fa-file-export me-1"></i>Export
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="window.print()">
+                            <i class="fas fa-print me-1"></i>Print
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Report Content -->
+            <div class="report-content">
+                <?php if ($report_type === 'financial'): ?>
+                    <?php include ROOT_PATH . '/templates/reports/financial-report.php'; ?>
+                <?php elseif ($report_type === 'or_audit'): ?>
+                    <?php include ROOT_PATH . '/templates/reports/or-audit-report.php'; ?>
+                <?php elseif ($report_type === 'violations'): ?>
+                    <?php include ROOT_PATH . '/templates/reports/violations-report.php'; ?>
+                <?php elseif ($report_type === 'officers'): ?>
+                    <?php include ROOT_PATH . '/templates/reports/officers-report.php'; ?>
+                <?php elseif ($report_type === 'drivers'): ?>
+                    <?php include ROOT_PATH . '/templates/reports/drivers-report.php'; ?>
+                <?php elseif ($report_type === 'time'): ?>
+                    <?php include ROOT_PATH . '/templates/reports/time-report.php'; ?>
+                <?php elseif ($report_type === 'status'): ?>
+                    <?php include ROOT_PATH . '/templates/reports/status-report.php'; ?>
+                <?php elseif ($report_type === 'vehicles'): ?>
+                    <?php include ROOT_PATH . '/templates/reports/vehicles-report.php'; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="../assets/js/reports.js"></script>
+</body>
+</html>

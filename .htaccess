@@ -1,0 +1,15 @@
+# PHP Error Logging
+php_flag log_errors on
+php_flag display_errors off
+php_value error_log "c:/xampp/htdocs/tmg/php_errors.log"
+php_value error_reporting -1
+
+# Security Headers
+Header set X-Frame-Options "SAMEORIGIN"
+Header set X-Content-Type-Options "nosniff"
+Header set X-XSS-Protection "1; mode=block"
+
+# Prevent access to sensitive files
+<FilesMatch "\.(log|sql|ini)$">
+    Require all denied
+</FilesMatch>

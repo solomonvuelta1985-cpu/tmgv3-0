@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir /s /b /ad c:xampphtdocstmg 2)",
+      "Bash(nul)",
+      "Bash(if not exist \"c:\\xampp\\htdocs\\tmg\\services\" mkdir \"c:\\xampp\\htdocs\\tmg\\services\")",
+      "Bash(mkdir:*)",
+      "Bash(php -v:*)",
+      "Bash(if not exist \"c:\\xampp\\htdocs\\tmg\\services\\payment\" mkdir \"c:\\xampp\\htdocs\\tmg\\services\\payment\")",
+      "Bash(if not exist \"c:\\xampp\\htdocs\\tmg\\api\\payments\" mkdir \"c:\\xampp\\htdocs\\tmg\\api\\payments\")",
+      "Bash(if not exist \"c:\\xampp\\htdocs\\tmg\\assets\\js\\payments\" mkdir \"c:\\xampp\\htdocs\\tmg\\assets\\js\\payments\")",
+      "Bash(php:*)",
+      "Bash(mysql:*)",
+      "Bash(xargs ls:*)",
+      "Bash(del \"c:\\xampp\\htdocs\\tmg\\public\\or_usage_report.php\")",
+      "Bash(del \"c:\\xampp\\htdocs\\tmg\\assets\\js\\or_usage_report.js\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

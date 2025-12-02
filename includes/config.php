@@ -1,0 +1,118 @@
+<?php
+// Timezone Configuration
+date_default_timezone_set('Asia/Manila');
+
+// Error Logging Configuration
+error_reporting(E_ALL);
+ini_set('display_errors', 0); // Don't show errors to users
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/../php_errors.log');
+
+// ============================================================
+// ENVIRONMENT-BASED CONFIGURATION
+// Automatically detects localhost vs production
+// ============================================================
+
+// Detect if running on localhost (XAMPP) or production server
+$httpHost = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$isLocalhost = (
+    $httpHost === 'localhost' ||
+    $httpHost === '127.0.0.1' ||
+    strpos($httpHost, 'localhost:') === 0 ||
+    strpos($httpHost, '127.0.0.1:') === 0
+);
+
+if ($isLocalhost) {
+    // ========================================
+    // LOCALHOST (XAMPP) CONFIGURATION
+    // ========================================
+    define('DB_HOST', 'localhost');
+    define('DB_NAME', 'traffic_system');
+    define('DB_USER', 'root');
+    define('DB_PASS', '');
+    define('BASE_PATH', '/tmg');
+
+} else {
+    // ========================================
+    // PRODUCTION SERVER CONFIGURATION (vawc-audit.online)
+    // ⚠️ UPDATE DATABASE CREDENTIALS BELOW!
+    // ========================================
+
+    // DATABASE CREDENTIALS - Get these from your hosting cPanel
+    // Go to: https://vawc-audit.online:2083 → MySQL® Databases
+    define('DB_HOST', 'localhost');  // Usually 'localhost'
+    define('DB_NAME', 'YOUR_DATABASE_NAME_HERE');  // ⚠️ REPLACE with actual database name from cPanel
+    define('DB_USER', 'YOUR_DATABASE_USER_HERE');  // ⚠️ REPLACE with actual database username from cPanel
+    define('DB_PASS', 'YOUR_DATABASE_PASSWORD_HERE');  // ⚠️ REPLACE with actual database password
+
+    // BASE PATH - Already configured for /tmg/
+    define('BASE_PATH', '/tmg');  // ✅ Correct for vawc-audit.online/tmg/
+}
+
+// Common configuration for both environments
+define('DB_CHARSET', 'utf8mb4');
+
+// Auto-detect base path (optional - for automatic configuration)
+function getBasePath() {
+    // If BASE_PATH is explicitly defined and not empty, use it
+    if (defined('BASE_PATH') && BASE_PATH !== 'auto') {
+        return BASE_PATH;
+    }
+
+    // Auto-detect from server variables
+    $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+    $requestUri = $_SERVER['REQUEST_URI'] ?? '';
+
+    // Extract base path from script name
+    $basePath = dirname($scriptName);
+
+    // Remove public folder from path if present
+    $basePath = str_replace('/public', '', $basePath);
+    $basePath = str_replace('/admin', '', $basePath);
+    $basePath = str_replace('/api', '', $basePath);
+
+    // Clean up the path
+    $basePath = rtrim($basePath, '/');
+
+    return $basePath;
+}
+
+// Session configuration should be set BEFORE session_start()
+// These are now commented out since session is already started
+/*
+ini_set('session.cookie_httponly', 1);
+ini_set('session.cookie_secure', 0); // Set to 1 if using HTTPS
+ini_set('session.use_strict_mode', 1);
+*/
+
+// Security Headers - only set if headers not already sent
+if (!headers_sent()) {
+    header("X-Frame-Options: SAMEORIGIN");
+    header("X-Content-Type-Options: nosniff");
+    header("X-XSS-Protection: 1; mode=block");
+    header("Referrer-Policy: strict-origin-when-cross-origin");
+}
+
+// PDO Database Connection
+function getPDO() {
+    static $pdo = null;
+    
+    if ($pdo === null) {
+        try {
+            $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET;
+            $pdo = new PDO($dsn, DB_USER, DB_PASS, [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES => false,
+                PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
+                PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci"
+            ]);
+        } catch (PDOException $e) {
+            error_log("Database connection failed: " . $e->getMessage());
+            // Don't throw exception to prevent breaking the form
+            return null;
+        }
+    }
+    return $pdo;
+}
+?>

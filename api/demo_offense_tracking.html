@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offense Tracking Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        body { padding: 20px; background: #f5f5f5; }
+        .step-box { background: white; padding: 20px; margin: 15px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .offense-badge { padding: 8px 15px; border-radius: 20px; font-weight: bold; }
+        .offense-1 { background: #d4edda; color: #155724; }
+        .offense-2 { background: #fff3cd; color: #856404; }
+        .offense-3 { background: #f8d7da; color: #721c24; }
+        .timeline { border-left: 3px solid #007bff; padding-left: 20px; margin-left: 10px; }
+        .timeline-item { margin-bottom: 20px; position: relative; }
+        .timeline-item:before { content: '●'; position: absolute; left: -27px; color: #007bff; font-size: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-flag"></i> Offense Tracking & Tagging System</h1>
+        <p class="lead">See how the system automatically detects 2nd and 3rd offenses</p>
+
+        <div class="alert alert-success">
+            <h5><i class="fas fa-check-circle"></i> This Feature is ALREADY IMPLEMENTED!</h5>
+            <p class="mb-0">The system automatically tags violators for 2nd and 3rd offenses when you:</p>
+            <ul class="mb-0">
+                <li>Select a duplicate driver in the citation form</li>
+                <li>Check violation checkboxes</li>
+            </ul>
+        </div>
+
+        <div class="step-box">
+            <h3><i class="fas fa-play"></i> Example Scenario</h3>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <strong>November 17, 2025</strong><br>
+                    Driver: RICHMOND ROSETE<br>
+                    Violation: <span class="badge bg-danger">NO HELMET</span><br>
+                    Offense: <span class="offense-badge offense-1">1st Offense</span><br>
+                    Fine: ₱1,500.00
+                </div>
+
+                <div class="timeline-item">
+                    <strong>November 18, 2025 (TODAY)</strong><br>
+                    <em>You're creating a new citation...</em><br>
+                    Driver: RICHMOND ROSETE (same person)<br>
+                    Violation: <span class="badge bg-danger">NO HELMET</span> ← You check this box<br>
+                    <br>
+                    <div class="alert alert-warning">
+                        <strong>🔍 System Automatically:</strong>
+                        <ol class="mb-0">
+                            <li>Detects this is the same driver (by license/name/DOB)</li>
+                            <li>Searches violation history for "NO HELMET"</li>
+                            <li>Finds 1 previous "NO HELMET" citation</li>
+                            <li><strong>Auto-selects: <span class="offense-badge offense-2">2nd Offense</span></strong></li>
+                            <li>Shows notification: "⚠ 2nd Offense detected for NO HELMET"</li>
+                            <li>Applies 2nd offense fine (₱3,000.00)</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <strong>Future Date</strong><br>
+                    <em>If caught again...</em><br>
+                    Driver: RICHMOND ROSETE<br>
+                    Violation: <span class="badge bg-danger">NO HELMET</span><br>
+                    System auto-selects: <span class="offense-badge offense-3">3rd Offense</span><br>
+                    Fine: ₱5,000.00 + License Suspension
+                </div>
+            </div>
+        </div>
+
+        <div class="step-box">
+            <h3><i class="fas fa-code"></i> How It Works Technically</h3>
+
+            <h5>1. When Duplicate Driver Selected:</h5>
+            <pre class="bg-light p-3"><code>// JavaScript in duplicate-detection.js
+function prefillDriverData(driver) {
+    // Store driver ID
+    document.getElementById('selected_driver_id').value = driver.driver_id;
+
+    // Update offense counts for selected violations
+    updateOffenseCountsForViolations();
+}</code></pre>
+
+            <h5>2. When Violation Checkbox Checked:</h5>
+            <pre class="bg-light p-3"><code>// Calls API to get offense count
+GET /tmg/api/get_offense_count.php?violation_type_id=5&driver_id=123
+
+// Auto-selects the correct radio button
+document.getElementById('offense_5_2').checked = true; // 2nd offense
+
+// Shows toast notification
+showToast('2nd Offense detected for NO HELMET', 'warning');</code></pre>
+
+            <h5>3. API Determines Offense Count:</h5>
+            <pre class="bg-light p-3"><code>// In get_offense_count.php
+1. Get driver's history for this violation type
+2. Find maximum offense count in history
+3. Add 1 to get current offense count
+4. Cap at 3rd offense (maximum)
+
+Example:
+- No history → 1st offense
+- Found offense_count=1 → This is 2nd offense
+- Found offense_count=2 → This is 3rd offense
+- Found offense_count=3 → Still 3rd offense (max)</code></pre>
+        </div>
+
+        <div class="step-box">
+            <h3><i class="fas fa-brain"></i> Smart Tracking Methods</h3>
+            <table class="table table-bordered">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Method</th>
+                        <th>When Used</th>
+                        <th>Accuracy</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Driver ID</strong></td>
+                        <td>When duplicate driver is selected</td>
+                        <td><span class="badge bg-success">100% Accurate</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>License Number</strong></td>
+                        <td>When license is entered but no duplicate selected</td>
+                        <td><span class="badge bg-success">Very High</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Plate Number</strong></td>
+                        <td>For unlicensed drivers (vehicle-based tracking)</td>
+                        <td><span class="badge bg-warning">Good</span> (same vehicle may have different drivers)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="step-box">
+            <h3><i class="fas fa-flask"></i> Test It Yourself</h3>
+            <ol>
+                <li>Go to: <a href="/tmg/public/index2.php" target="_blank">http://localhost/tmg/public/index2.php</a></li>
+                <li>Type: First Name = <code>RICHMOND</code>, Last Name = <code>ROSETE</code></li>
+                <li>Click outside the field (duplicate modal should appear)</li>
+                <li>Click "Select This Driver" button</li>
+                <li>Click "Use existing driver record"</li>
+                <li>Click "Continue"</li>
+                <li><strong>Now check ANY violation checkbox</strong></li>
+                <li>Watch: The offense radio button auto-selects!</li>
+                <li>If 2nd or 3rd offense: You'll see a toast notification!</li>
+            </ol>
+        </div>
+
+        <div class="alert alert-info">
+            <h5><i class="fas fa-database"></i> Database Structure</h5>
+            <p>The offense tracking is stored in the <code>violations</code> table:</p>
+            <pre class="bg-light p-3 mb-0"><code>violations table:
+- violation_id
+- citation_id
+- violation_type_id
+- <strong>offense_count</strong>  ← 1, 2, or 3
+- fine_amount
+- created_at</code></pre>
+        </div>
+
+        <div class="alert alert-success">
+            <h4><i class="fas fa-check-double"></i> Summary</h4>
+            <ul class="mb-0">
+                <li>✅ <strong>YES, offense tagging is fully implemented</strong></li>
+                <li>✅ Works automatically when you select duplicate drivers</li>
+                <li>✅ Tracks 1st, 2nd, and 3rd offenses per violation type</li>
+                <li>✅ Shows warnings for repeat offenders</li>
+                <li>✅ Auto-applies correct fine amounts</li>
+                <li>✅ Works even for unlicensed drivers (via plate number)</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

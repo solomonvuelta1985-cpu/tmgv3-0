@@ -1,0 +1,107 @@
+================================================================================
+QUICK SETUP GUIDE - API Path Fixes
+================================================================================
+
+✅ FIXES APPLIED - The following has been done:
+
+1. Created dynamic path configuration system
+2. Updated all main JavaScript files to use dynamic paths
+3. Added config to main pages (process_payment.php, index2.php)
+4. Created deployment documentation
+
+================================================================================
+🚀 TO DEPLOY TO PRODUCTION:
+================================================================================
+
+1. Open: includes/config.php
+
+2. Find this line:
+   define('BASE_PATH', '/tmg');
+
+3. Change it based on your hosting:
+
+   ✅ Root domain (yourdomain.com):
+      define('BASE_PATH', '');
+
+   ✅ Subdirectory (yourdomain.com/traffic):
+      define('BASE_PATH', '/traffic');
+
+   ✅ Different subdirectory:
+      define('BASE_PATH', '/your-folder-name');
+
+4. Upload files to your server
+
+5. Test by opening browser console (F12) and type:
+   console.log(window.APP_CONFIG.BASE_PATH)
+
+   Should show your configured path!
+
+================================================================================
+📋 TO ADD CONFIG TO OTHER PAGES (Optional):
+================================================================================
+
+If you have other PHP pages that make JavaScript API calls, add this line
+in the <head> section, BEFORE closing </head>:
+
+   <?php include __DIR__ . '/../includes/js_config.php'; ?>
+
+Example:
+   <head>
+       <title>My Page</title>
+       <link rel="stylesheet" href="...">
+
+       <?php include __DIR__ . '/../includes/js_config.php'; ?>
+   </head>
+
+Pages that might need it:
+- admin/users.php
+- admin/violations.php
+- public/citations.php
+- public/payments.php
+- public/reports.php
+
+================================================================================
+✅ VERIFICATION:
+================================================================================
+
+After deployment:
+
+1. Open any page in browser
+2. Press F12 to open developer console
+3. Go to "Network" tab
+4. Perform an action (e.g., create citation, process payment)
+5. Check that API calls show correct URL (no 404 errors)
+
+Correct URLs should look like:
+- https://yourdomain.com/api/insert_citation.php (if BASE_PATH is '')
+- https://yourdomain.com/tmg/api/insert_citation.php (if BASE_PATH is '/tmg')
+
+❌ WRONG:
+- https://yourdomain.com/tmg/tmg/api/... (double path)
+- https://yourdomain.com//api/... (missing path)
+
+================================================================================
+📚 MORE INFO:
+================================================================================
+
+Read these files for detailed information:
+- DEPLOYMENT_GUIDE.md - Complete deployment instructions
+- PATH_FIX_SUMMARY.md - Summary of all changes made
+
+================================================================================
+💡 NEED HELP?
+================================================================================
+
+Common issues:
+
+1. "Failed to fetch" errors
+   → Check BASE_PATH in includes/config.php matches your hosting
+
+2. Console shows "window.APP_CONFIG is undefined"
+   → Add the config include to your page's <head> section
+
+3. API calls go to wrong URL
+   → Clear browser cache (Ctrl+Shift+R)
+   → Verify BASE_PATH is correct
+
+================================================================================

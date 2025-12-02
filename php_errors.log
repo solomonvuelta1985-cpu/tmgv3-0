@@ -1,0 +1,74 @@
+[02-Dec-2025 05:09:29 Europe/Berlin] No valid pending payments found
+[02-Dec-2025 06:20:18 Europe/Berlin] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 06:20:18 Europe/Berlin] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 06:33:06 Europe/Berlin] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 06:33:06 Europe/Berlin] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 06:33:24 Europe/Berlin] No valid pending payments found
+[02-Dec-2025 06:33:34 Europe/Berlin] No valid pending payments found
+[02-Dec-2025 06:35:59 Europe/Berlin] No valid pending payments found
+[02-Dec-2025 06:36:55 Europe/Berlin] No valid pending payments found
+[02-Dec-2025 06:40:47 Europe/Berlin] No valid pending payments found
+[02-Dec-2025 06:41:25 Europe/Berlin] No valid pending payments found
+[02-Dec-2025 06:41:27 Europe/Berlin] No valid pending payments found
+[02-Dec-2025 06:44:03 Europe/Berlin] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 06:44:03 Europe/Berlin] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 06:44:16 Europe/Berlin] No valid pending payments found
+[02-Dec-2025 07:38:55 Europe/Berlin] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 07:38:55 Europe/Berlin] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 07:39:03 Europe/Berlin] No valid pending payments found
+[02-Dec-2025 07:39:44 Europe/Berlin] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 07:39:44 Europe/Berlin] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 07:39:48 Europe/Berlin] No valid pending payments found
+[02-Dec-2025 07:40:41 Europe/Berlin] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 07:40:41 Europe/Berlin] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 07:40:43 Europe/Berlin] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 07:40:43 Europe/Berlin] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 07:40:48 Europe/Berlin] No valid pending payments found
+[02-Dec-2025 14:48:28 Asia/Manila] PHP Warning:  Undefined array key "HTTP_HOST" in C:\xampp\htdocs\tmg\includes\config.php on line 18
+[02-Dec-2025 14:48:28 Asia/Manila] PHP Warning:  Undefined array key "HTTP_HOST" in C:\xampp\htdocs\tmg\includes\config.php on line 19
+[02-Dec-2025 14:48:28 Asia/Manila] PHP Warning:  Undefined array key "HTTP_HOST" in C:\xampp\htdocs\tmg\includes\config.php on line 20
+[02-Dec-2025 14:48:28 Asia/Manila] PHP Deprecated:  strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in C:\xampp\htdocs\tmg\includes\config.php on line 20
+[02-Dec-2025 14:48:28 Asia/Manila] PHP Warning:  Undefined array key "HTTP_HOST" in C:\xampp\htdoc
+s\tmg\includes\config.php on line 21
+[02-Dec-2025 14:48:28 Asia/Manila] PHP Deprecated:  strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in C:\xampp\htdocs\tmg\includes\config.php on line 21[02-Dec-2025 15:05:59 Asia/Manila] No valid pending payments found
+[02-Dec-2025 15:13:19 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:13:19 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:13:22 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:13:22 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:13:25 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:13:25 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:13:27 Asia/Manila] No valid pending payments found
+[02-Dec-2025 15:13:31 Asia/Manila] No valid pending payments found
+[02-Dec-2025 15:13:33 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:13:33 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:14:03 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:14:03 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:14:06 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:14:06 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:14:40 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:14:40 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:14:42 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:14:42 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:14:42 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:14:42 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:14:45 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:14:45 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:14:48 Asia/Manila] No valid pending payments found
+[02-Dec-2025 15:17:46 Asia/Manila] No valid pending payments found
+[02-Dec-2025 15:18:40 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:18:40 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:18:45 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:18:45 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:18:48 Asia/Manila] No valid pending payments found
+[02-Dec-2025 15:24:57 Asia/Manila] No valid pending payments found
+[02-Dec-2025 15:28:09 Asia/Manila] No valid pending payments found
+[02-Dec-2025 15:28:13 Asia/Manila] No valid pending payments found
+[02-Dec-2025 15:28:16 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:28:16 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 15:33:04 Asia/Manila] No valid pending payments found
+[02-Dec-2025 15:40:15 Asia/Manila] No valid pending payments found
+[02-Dec-2025 16:18:18 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 16:18:18 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 16:28:53 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 16:28:53 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[02-Dec-2025 16:28:56 Asia/Manila] No valid pending payments found

@@ -1,0 +1,891 @@
+/**
+ * Citation Form Styles
+ * Styling for the traffic citation ticket form
+ */
+
+:root {
+    --primary: #0d6efd;
+    --primary-dark: #0b5ed7;
+    --success: #198754;
+    --info: #0dcaf0;
+    --warning: #ffc107;
+    --danger: #dc3545;
+    --secondary: #6c757d;
+    --purple: #6f42c1;
+    --white: #ffffff;
+    --off-white: #f5f5f5;
+    --light-gray: #f8f9fa;
+    --medium-gray: #e9ecef;
+    --border-gray: #dee2e6;
+    --text-dark: #212529;
+    --text-muted: #6c757d;
+    --text-label: #495057;
+}
+
+/* Note: body and .content styles are defined by the page itself or sidebar.php */
+
+body {
+    background-color: var(--off-white);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-dark);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-size: 16px;
+}
+
+.ticket-container {
+    background-color: var(--white);
+    padding: clamp(15px, 3vw, 25px);
+    border-radius: 6px;
+    border: 1px solid var(--border-gray);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto 24px auto;
+}
+
+.header {
+    background: var(--white);
+    color: var(--text-dark);
+    padding: clamp(18px, 2.5vw, 24px);
+    border-radius: 8px;
+    text-align: left;
+    margin-bottom: 20px;
+    position: relative;
+    border: 1px solid var(--border-gray);
+    border-left: 4px solid var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.header h4 {
+    font-size: clamp(0.7rem, 1.5vw, 0.75rem);
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: #9ca3af;
+    margin-bottom: 0.15rem;
+    line-height: 1.3;
+}
+
+.header h1 {
+    font-size: clamp(1.15rem, 2.8vw, 1.4rem);
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    margin: 0;
+    color: var(--text-dark);
+    line-height: 1.2;
+}
+
+.header-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.header-text h4::after {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, #3b82f6 0%, transparent 100%);
+    margin-top: 6px;
+    margin-bottom: 6px;
+}
+
+/* Citation Number Display (Badge Style) */
+.citation-number-display {
+    position: static;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    padding: 10px 18px;
+    border-radius: 8px;
+    border: none;
+    font-size: clamp(0.85rem, 2vw, 0.95rem);
+    box-shadow: 0 2px 6px rgba(59, 130, 246, 0.25);
+}
+
+.citation-label {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    font-size: 0.9em;
+    letter-spacing: 0.3px;
+}
+
+.citation-value {
+    color: #ffffff;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    font-size: 1.05em;
+    letter-spacing: 0.5px;
+}
+
+.section {
+    background-color: var(--white);
+    padding: clamp(15px, 2.5vw, 20px);
+    border-radius: 6px;
+    margin-bottom: 16px;
+    border: 1px solid var(--border-gray);
+}
+
+.section h5 {
+    font-weight: 600;
+    margin-bottom: 15px;
+    color: var(--text-label);
+    font-size: clamp(1.1rem, 2.5vw, 1.25rem);
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border-gray);
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--text-label);
+    margin-bottom: 6px;
+    font-size: clamp(0.875rem, 2vw, 0.95rem);
+}
+
+.form-control, .form-select {
+    border-radius: 4px;
+    border: 1px solid var(--border-gray);
+    padding: 8px 12px;
+    font-size: clamp(0.875rem, 2vw, 0.95rem);
+    transition: all 0.2s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+    outline: none;
+}
+
+.form-control.is-invalid {
+    border-color: var(--danger);
+    background-color: #f8d7da;
+}
+
+.accordion-button {
+    font-weight: 600;
+    color: var(--text-label);
+    background-color: var(--light-gray);
+    border: none;
+    border-radius: 4px !important;
+    padding: 14px 18px;
+    font-size: clamp(1rem, 2.5vw, 1.1rem);
+    transition: all 0.2s ease;
+}
+
+.accordion-button:not(.collapsed) {
+    color: var(--text-dark);
+    background-color: var(--medium-gray);
+    box-shadow: none;
+}
+
+.accordion-button:focus {
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+.violation-list .form-check {
+    margin-bottom: 10px;
+    padding-left: 28px;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.form-check-input {
+    width: 1.2em;
+    height: 1.2em;
+    margin-top: 0.15em;
+}
+
+.remarks textarea {
+    resize: vertical;
+    min-height: 100px;
+    font-size: clamp(0.95rem, 2.5vw, 1.05rem);
+}
+
+.footer {
+    font-size: clamp(0.9rem, 2.5vw, 1rem);
+    color: var(--text-muted);
+    padding: 15px 0;
+    border-top: 1px solid var(--border-gray);
+    text-align: justify;
+    line-height: 1.6;
+}
+
+.btn-custom {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: var(--white);
+    padding: 11px 22px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: clamp(0.9rem, 2.2vw, 1rem);
+    border: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+}
+
+.btn-custom:hover {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, #0a58ca 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+}
+
+.btn-outline-secondary, .btn-outline-danger {
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: clamp(0.9rem, 2.2vw, 1rem);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.btn-outline-secondary:hover, .btn-outline-danger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
+}
+
+#otherViolationInput, #otherVehicleInput, #otherBarangayInput {
+    display: none;
+    margin-top: 8px;
+    border-radius: 4px;
+}
+
+.form-check {
+    margin-bottom: 10px;
+}
+
+.form-check-label {
+    font-size: clamp(0.95rem, 2.5vw, 1.05rem);
+    color: var(--text-dark);
+}
+
+.input-group .btn {
+    border-radius: 4px;
+    font-size: clamp(0.8rem, 2vw, 0.85rem);
+}
+
+/* ==========================================
+   VIOLATION SEARCH BOX - MODERN DESIGN
+   ========================================== */
+.violation-search-box {
+    margin-bottom: 24px;
+}
+
+.search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 4px;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.search-wrapper:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+.search-icon {
+    position: absolute;
+    left: 16px;
+    width: 20px;
+    height: 20px;
+    color: #9ca3af;
+    pointer-events: none;
+    transition: color 0.3s ease;
+}
+
+.search-wrapper:focus-within .search-icon {
+    color: #3b82f6;
+}
+
+.search-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 12px 16px 12px 48px;
+    font-size: 0.95rem;
+    background: transparent;
+    color: #1f2937;
+}
+
+.search-input::placeholder {
+    color: #9ca3af;
+}
+
+.search-clear {
+    border: none;
+    background: transparent;
+    padding: 8px 12px;
+    cursor: pointer;
+    color: #9ca3af;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-clear:hover {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.search-clear i {
+    width: 18px;
+    height: 18px;
+}
+
+.search-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #6b7280;
+    font-size: 0.85rem;
+    margin-top: 8px;
+    padding-left: 4px;
+}
+
+/* ==========================================
+   VIOLATION TABS - MODERN BROWSER-STYLE DESIGN
+   ========================================== */
+.violation-tabs-wrapper {
+    margin-bottom: 0;
+    overflow: visible;
+    border-radius: 12px 12px 0 0;
+}
+
+.violation-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 12px 12px 0 12px;
+    background: #f8fafc;
+    border-radius: 12px 12px 0 0;
+    border: none;
+    position: relative;
+}
+
+.violation-tabs::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #e5e7eb;
+    z-index: 0;
+}
+
+.tab-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    background: transparent;
+    color: #64748b;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
+}
+
+.tab-pill::before {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: transparent;
+    border-radius: 2px 2px 0 0;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab-pill:hover:not(.active) {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.tab-pill:hover:not(.active)::before {
+    background: #cbd5e1;
+}
+
+.tab-pill.active {
+    background: white;
+    color: #0f172a;
+    border-color: #e5e7eb;
+    z-index: 2;
+}
+
+.tab-pill.active::before {
+    background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+}
+
+.tab-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0.7;
+}
+
+.tab-pill:hover .tab-icon {
+    opacity: 1;
+}
+
+.tab-pill.active .tab-icon {
+    opacity: 1;
+    color: #3b82f6;
+}
+
+.tab-label {
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    transition: all 0.3s ease;
+}
+
+.tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 8px;
+    background: #e2e8f0;
+    color: #64748b;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 12px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab-pill:hover .tab-badge {
+    background: #cbd5e1;
+    color: #475569;
+}
+
+.tab-pill.active .tab-badge {
+    background: #dbeafe;
+    color: #3b82f6;
+}
+
+.tab-badge.has-selections {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    animation: badge-pop 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+}
+
+.tab-pill.active .tab-badge.has-selections {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+}
+
+@keyframes badge-pop {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+/* ==========================================
+   TAB CONTENT
+   ========================================== */
+.violation-tab-content {
+    border: 1px solid #e5e7eb;
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    background: white;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.tab-pane {
+    display: none;
+    animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.violations-list {
+    max-height: 350px;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.violations-list::-webkit-scrollbar {
+    width: 10px;
+}
+
+.violations-list::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+.violations-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+    border: 2px solid #f1f5f9;
+}
+
+.violations-list::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* ==========================================
+   VIOLATION ITEMS & CUSTOM CHECKBOX
+   ========================================== */
+.violation-item {
+    margin-bottom: 8px;
+    transition: all 0.2s ease;
+}
+
+.violation-item.hidden {
+    display: none;
+}
+
+.custom-checkbox {
+    display: flex;
+    align-items: flex-start;
+}
+
+.checkbox-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    cursor: pointer;
+    padding: 12px 16px;
+    border-radius: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+}
+
+.checkbox-label:hover {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    transform: translateX(2px);
+}
+
+.checkbox-box {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    margin-right: 12px;
+    margin-top: 2px;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: white;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.checkbox-label:hover .checkbox-box {
+    border-color: #94a3b8;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.checkbox-input:checked + .checkbox-label .checkbox-box {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    border-color: #2563eb;
+    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+}
+
+.checkbox-input:checked + .checkbox-label .checkbox-box::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox-input:checked + .checkbox-label {
+    background: #eff6ff;
+}
+
+.checkbox-text {
+    flex: 1;
+    color: #374151;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* ==========================================
+   EMPTY STATE & NO RESULTS
+   ========================================== */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    text-align: center;
+    color: #94a3b8;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.no-results {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    background: #eff6ff;
+    border: 2px solid #bfdbfe;
+    border-radius: 12px;
+    margin-top: 16px;
+}
+
+.no-results-icon {
+    width: 24px;
+    height: 24px;
+    color: #3b82f6;
+    flex-shrink: 0;
+}
+
+.no-results-text {
+    flex: 1;
+    color: #1e40af;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.no-results-text strong {
+    font-weight: 700;
+}
+
+.no-results-text small {
+    color: #60a5fa;
+    font-size: 0.85rem;
+}
+
+/* Uncategorized Section */
+.uncategorized-section {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 2px dashed #e5e7eb;
+}
+
+.uncategorized-title {
+    color: #6b7280;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+    padding-left: 16px;
+}
+
+/* ==========================================
+   RESPONSIVE STYLES
+   ========================================== */
+@media (max-width: 768px) {
+    .ticket-container {
+        padding: 15px;
+    }
+
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 16px;
+    }
+
+    .header-text {
+        width: 100%;
+    }
+
+    .header h1 {
+        font-size: 1.15rem;
+    }
+
+    .section {
+        padding: 15px;
+    }
+
+    .citation-number-display {
+        width: 100%;
+        justify-content: center;
+        margin-top: 12px;
+    }
+
+    /* Violation Tabs Mobile */
+    .violation-tabs {
+        gap: 3px;
+        padding: 10px 10px 0 10px;
+        background: #f8fafc;
+    }
+
+    .tab-pill {
+        padding: 10px 14px;
+        font-size: 0.8rem;
+    }
+
+    .tab-icon {
+        width: 16px;
+        height: 16px;
+    }
+
+    .tab-badge {
+        min-width: 22px;
+        height: 22px;
+        font-size: 0.7rem;
+        padding: 0 6px;
+    }
+
+    .violations-list {
+        max-height: 280px;
+        padding: 16px;
+    }
+
+    .checkbox-label {
+        padding: 10px 12px;
+    }
+
+    .checkbox-text {
+        font-size: 0.9rem;
+    }
+
+    /* Search box mobile */
+    .search-input {
+        font-size: 0.9rem;
+        padding: 10px 12px 10px 44px;
+    }
+
+    .search-icon {
+        left: 14px;
+    }
+}
+
+@media (max-width: 576px) {
+    .form-label {
+        font-size: 0.85rem;
+    }
+
+    .form-control, .form-select {
+        font-size: 0.85rem;
+        padding: 8px 10px;
+    }
+
+    .btn-custom {
+        padding: 9px 16px;
+        font-size: 0.85rem;
+        width: 100%;
+    }
+
+    .btn-outline-secondary, .btn-outline-danger {
+        padding: 9px 16px;
+        font-size: 0.85rem;
+        width: 100%;
+    }
+
+    .header {
+        padding: 14px;
+    }
+
+    .header h4 {
+        font-size: 0.65rem;
+    }
+
+    .header h1 {
+        font-size: 1.05rem;
+    }
+
+    .ticket-container {
+        padding: 12px;
+    }
+
+    .section {
+        padding: 12px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .sidebar, .btn-custom, .btn-outline-secondary, .btn-outline-danger, .form-actions {
+        display: none;
+    }
+
+    .citation-number-display {
+        background: white !important;
+        border: 2px solid #1f2937 !important;
+        color: #1f2937 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        box-shadow: none !important;
+    }
+
+    .citation-label, .citation-value {
+        color: #1f2937 !important;
+    }
+
+    .header-text h4::after {
+        display: none;
+    }
+
+    .content {
+        margin-left: 0;
+    }
+
+    .ticket-container {
+        box-shadow: none;
+        border: none;
+        margin: 0;
+        padding: 10px;
+        width: 100%;
+        height: auto;
+    }
+
+    .section {
+        border: none;
+        padding: 10px;
+    }
+
+    .accordion-button::after {
+        display: none;
+    }
+
+    .accordion-collapse {
+        display: block !important;
+    }
+}
