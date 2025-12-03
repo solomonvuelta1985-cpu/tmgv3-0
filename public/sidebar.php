@@ -99,7 +99,7 @@
         <li class="sidebar-heading">Payment Processing</li>
         <li>
             <a href="/tmg/public/process_payment.php" class="<?php echo (basename($_SERVER['PHP_SELF']) === 'process_payment.php') ? 'active' : ''; ?>" title="Process Payment">
-                <i data-lucide="banknote"></i> <span>Process Payment</span>
+                <i data-lucide="hand-coins"></i> <span>Process Payment</span>
             </a>
         </li>
         <li>

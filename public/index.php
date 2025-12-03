@@ -21,6 +21,10 @@ $stats = [
 ];
 
 $recent_citations = [];
+$user_first_name = 'Officer';
+$this_month = 0;
+$last_month = 0;
+$monthly_trend = 0;
 
 $pdo = getPDO();
 if ($pdo) {
@@ -90,11 +94,12 @@ if ($pdo) {
         // Top 5 violations (last 30 days)
         $top_violations = [];
         $stmt = db_query("
-            SELECT v.name, COUNT(*) as count
+            SELECT vt.violation_type as name, COUNT(*) as count
             FROM citations c
-            JOIN violations v ON c.violation_id = v.violation_id
+            JOIN violations v ON c.citation_id = v.citation_id
+            JOIN violation_types vt ON v.violation_type_id = vt.violation_type_id
             WHERE c.created_at >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)
-            GROUP BY v.name
+            GROUP BY vt.violation_type
             ORDER BY count DESC
             LIMIT 5
         ");
@@ -115,22 +120,27 @@ if ($pdo) {
         // Extract first name for personalization
         $user_first_name = explode(' ', $_SESSION['full_name'] ?? 'Officer')[0];
 
-        // Get recent citations - simplified to avoid column errors
+        // Get recent citations with violation names
         $stmt = db_query("
-            SELECT citation_id, ticket_number, license_number, status, created_at, violation_id
-            FROM citations
-            ORDER BY created_at DESC
+            SELECT
+                c.citation_id,
+                c.ticket_number,
+                c.license_number,
+                c.status,
+                c.created_at,
+                GROUP_CONCAT(DISTINCT vt.violation_type SEPARATOR ', ') as violation_name
+            FROM citations c
+            LEFT JOIN violations v ON c.citation_id = v.citation_id
+            LEFT JOIN violation_types vt ON v.violation_type_id = vt.violation_type_id
+            GROUP BY c.citation_id
+            ORDER BY c.created_at DESC
             LIMIT 5
         ");
         if ($stmt) {
             $recent_citations = $stmt->fetchAll();
-            // Get violation names separately
+            // Set default violation name if none found
             foreach ($recent_citations as $key => $citation) {
-                if (isset($citation['violation_id']) && $citation['violation_id']) {
-                    $vstmt = db_query("SELECT name FROM violations WHERE violation_id = ?", [$citation['violation_id']]);
-                    $vresult = $vstmt ? $vstmt->fetch() : null;
-                    $recent_citations[$key]['violation_name'] = $vresult['name'] ?? 'Unknown';
-                } else {
+                if (empty($citation['violation_name'])) {
                     $recent_citations[$key]['violation_name'] = 'Unknown';
                 }
             }
@@ -229,7 +239,13 @@ if ($pdo) {
             box-sizing: border-box;
             max-width: calc(100vw - 280px);
             overflow-x: hidden;
+            overflow-y: auto;
             transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1), width 0.3s cubic-bezier(0.4, 0, 0.2, 1), max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .main-container > * {
+            max-width: 100%;
+            box-sizing: border-box;
         }
 
         /* Sidebar Collapsed State */
@@ -250,6 +266,7 @@ if ($pdo) {
             position: relative;
             overflow: hidden;
             width: 100%;
+            max-width: 100%;
             box-sizing: border-box;
         }
 
@@ -271,6 +288,14 @@ if ($pdo) {
             margin-bottom: var(--spacing-2);
             position: relative;
             z-index: 1;
+            min-width: 0;
+            gap: var(--spacing-2);
+        }
+
+        .hero-text {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
         }
 
         .hero-badge {
@@ -403,7 +428,8 @@ if ($pdo) {
         .search-input {
             position: relative;
             flex: 1;
-            min-width: 280px;
+            min-width: 0;
+            max-width: 100%;
             box-sizing: border-box;
         }
 
@@ -486,7 +512,13 @@ if ($pdo) {
             gap: var(--spacing-2);
             margin-bottom: var(--spacing-2);
             width: 100%;
+            max-width: 100%;
             box-sizing: border-box;
+        }
+
+        .compact-metrics-grid > * {
+            min-width: 0;
+            max-width: 100%;
         }
 
         .compact-metric-card {
@@ -500,6 +532,8 @@ if ($pdo) {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid transparent;
             box-sizing: border-box;
+            min-width: 0;
+            overflow: hidden;
         }
 
         .compact-metric-card:hover {
@@ -531,10 +565,19 @@ if ($pdo) {
             line-height: 1.2;
         }
 
+        .metric-data {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+        }
+
         .metric-label {
             font-size: clamp(0.75rem, 1.5vw, 0.8125rem);
             color: var(--text-secondary);
             font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .metric-trend {
@@ -556,7 +599,13 @@ if ($pdo) {
             gap: var(--spacing-2);
             margin-bottom: var(--spacing-2);
             width: 100%;
+            max-width: 100%;
             box-sizing: border-box;
+        }
+
+        .charts-grid > * {
+            min-width: 0;
+            max-width: 100%;
         }
 
         .chart-card {
@@ -566,6 +615,8 @@ if ($pdo) {
             box-shadow: var(--shadow-1);
             transition: all 0.3s ease;
             box-sizing: border-box;
+            min-width: 0;
+            overflow: hidden;
         }
 
         .chart-card:hover {
@@ -614,7 +665,14 @@ if ($pdo) {
         .chart-container {
             position: relative;
             width: 100%;
+            max-width: 100%;
             box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .chart-container canvas {
+            max-width: 100%;
+            height: auto !important;
         }
 
         /* Violations List */
@@ -662,7 +720,12 @@ if ($pdo) {
         .violation-name {
             font-size: clamp(0.875rem, 1.8vw, 0.9375rem);
             font-weight: 600;
-            color: var(--text-primary);
+            color: #185593;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            flex: 1;
+            min-width: 0;
         }
 
         .violation-stats {
@@ -724,6 +787,8 @@ if ($pdo) {
 
         .timeline-content-compact {
             flex: 1;
+            min-width: 0;
+            overflow: hidden;
         }
 
         .timeline-header {
@@ -754,6 +819,9 @@ if ($pdo) {
             font-size: 0.875rem;
             color: var(--text-secondary);
             margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .timeline-time {
@@ -805,7 +873,13 @@ if ($pdo) {
             grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
             gap: var(--spacing-2);
             width: 100%;
+            max-width: 100%;
             box-sizing: border-box;
+        }
+
+        .quick-actions-grid > * {
+            min-width: 0;
+            max-width: 100%;
         }
 
         .action-card-compact {
@@ -821,6 +895,8 @@ if ($pdo) {
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             border: 1px solid transparent;
             box-sizing: border-box;
+            min-width: 0;
+            overflow: hidden;
         }
 
         .action-card-compact:hover {
@@ -847,6 +923,8 @@ if ($pdo) {
 
         .action-text {
             flex: 1;
+            min-width: 0;
+            overflow: hidden;
         }
 
         .action-text h4 {
@@ -854,12 +932,18 @@ if ($pdo) {
             font-weight: 600;
             color:#185593;
             margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .action-text p {
             font-size: 0.8125rem;
             color: var(--text-secondary);
             margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .action-arrow {
@@ -913,7 +997,7 @@ if ($pdo) {
         .monthly-stat-value {
             font-size: clamp(1.5rem, 3.5vw, 2rem);
             font-weight: 700;
-            color: var(--text-primary);
+            color: #185593;
         }
 
         .monthly-stat-label {

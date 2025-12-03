@@ -896,18 +896,12 @@ if (empty($_SESSION['csrf_token'])) {
 
     <!-- Remove loading class when page is fully loaded -->
     <script>
-        console.log('📄 Page script loaded');
-
         // IMMEDIATELY remove loading class
         document.body.classList.remove('loading');
-        console.log('✅ Loading class removed immediately');
 
         // Initialize Lucide icons
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
-            console.log('✅ Lucide icons initialized');
-        } else {
-            console.warn('⚠️ Lucide library not loaded');
         }
 
         // Also remove on window load as backup
@@ -917,7 +911,6 @@ if (empty($_SESSION['csrf_token'])) {
                 if (typeof lucide !== 'undefined') {
                     lucide.createIcons();
                 }
-                console.log('✅ Page fully loaded, icons reinitialized');
             }, 100);
         });
     </script>
@@ -998,7 +991,6 @@ if (empty($_SESSION['csrf_token'])) {
 
                     localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
                     localStorage.setItem(DRAFT_TIMESTAMP_KEY, new Date().toISOString());
-                    console.log('✅ Form auto-saved');
                 } catch (error) {
                     // Silently fail - tracking prevention is blocking localStorage
                 }
@@ -1173,11 +1165,7 @@ if (empty($_SESSION['csrf_token'])) {
 
                 // Clear draft on successful submission
                 formModified = false;
-
-                // Clear auto-save interval
                 clearInterval(autoSaveInterval);
-
-                // Note: The actual form submission will clear the draft in the next script
             });
 
             // ==========================================
@@ -1238,11 +1226,8 @@ if (empty($_SESSION['csrf_token'])) {
                 const tabPanes = document.querySelectorAll('.tab-pane');
 
                 if (!searchInput || !tabContent) {
-                    console.error('⚠️ Violation tabs elements not found');
                     return;
                 }
-
-                console.log('✅ Violation tabs initialized');
 
             // ==========================================
             // TAB SWITCHING - VANILLA JS
@@ -1342,8 +1327,6 @@ if (empty($_SESSION['csrf_token'])) {
                         }
                     }
                 }
-
-                console.log(`🔍 Search: "${query}" - ${totalVisible} results found`);
             }
 
             // ==========================================

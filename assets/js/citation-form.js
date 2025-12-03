@@ -18,8 +18,6 @@ function toggleOtherVehicle(value) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('=== CITATION FORM LOADED ===');
-    console.log('SweetAlert2 available:', typeof Swal !== 'undefined');
 
     const csrfTokenInput = document.getElementById('csrfToken');
     const otherViolationCheckbox = document.getElementById('other_violation');
@@ -36,10 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const dateOfBirthInput = document.getElementById('dateOfBirth');
     const ageField = document.getElementById('ageField');
 
-    console.log('Vehicle type radios found:', vehicleTypeRadios.length);
-    console.log('Has License checkbox found:', hasLicenseCheckbox !== null);
-    console.log('Has License initially checked:', hasLicenseCheckbox ? hasLicenseCheckbox.checked : 'N/A');
-
     // === AUTOMATIC AGE CALCULATION ===
     function calculateAge(birthDate) {
         const today = new Date();
@@ -55,21 +49,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Helper function to find violation checkbox by label text
     function findViolationCheckboxByText(searchText) {
-        console.log('Searching for violation:', searchText);
-        const labels = document.querySelectorAll('.form-check-label');
-        console.log('Total labels found:', labels.length);
+        // Search in both .form-check-label (driver/license fields) and .checkbox-label (violations)
+        const labels = document.querySelectorAll('.form-check-label, .checkbox-label');
 
         for (let label of labels) {
             const labelText = label.textContent.trim();
             if (labelText.toUpperCase().includes(searchText.toUpperCase())) {
-                console.log('✓ Found matching label:', labelText);
                 const forAttr = label.getAttribute('for');
-                const checkbox = document.getElementById(forAttr);
-                console.log('✓ Checkbox found:', checkbox !== null, 'ID:', forAttr);
-                return checkbox;
+                if (forAttr) {
+                    const checkbox = document.getElementById(forAttr);
+                    return checkbox;
+                }
             }
         }
-        console.log('✗ No matching label found for:', searchText);
         return null;
     }
 
@@ -157,18 +149,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // === AUTO-CHECK NO LICENSE VIOLATION ===
-    console.log('=== INITIALIZING NO LICENSE VIOLATION DETECTION ===');
     // Try multiple search terms since violations might be separated
     let noLicenseViolationCheckbox = findViolationCheckboxByText("NO DRIVER'S LICENSE");
     if (!noLicenseViolationCheckbox) {
-        console.log('Trying alternate search: "NO LICENSE"');
         noLicenseViolationCheckbox = findViolationCheckboxByText("NO LICENSE");
     }
     if (!noLicenseViolationCheckbox) {
-        console.log('Trying alternate search: "WITHOUT LICENSE"');
         noLicenseViolationCheckbox = findViolationCheckboxByText("WITHOUT LICENSE");
     }
-    console.log('No License Violation checkbox:', noLicenseViolationCheckbox);
     let licenseValidationPrompted = false;
 
     hasLicenseCheckbox.addEventListener('change', () => {
@@ -192,15 +180,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Prompt when user selects a Vehicle Type
     vehicleTypeRadios.forEach(radio => {
         radio.addEventListener('change', function() {
-            console.log('Vehicle type changed:', this.value);
-            console.log('Has License checked:', hasLicenseCheckbox.checked);
-            console.log('License validation prompted:', licenseValidationPrompted);
-            console.log('No License Violation checkbox found:', noLicenseViolationCheckbox !== null);
-            console.log('No License Violation already checked:', noLicenseViolationCheckbox ? noLicenseViolationCheckbox.checked : 'N/A');
 
             // Check for no license violation after selecting vehicle type (with 3 second delay)
             if (!hasLicenseCheckbox.checked && !licenseValidationPrompted && noLicenseViolationCheckbox && !noLicenseViolationCheckbox.checked) {
-                console.log('✓ Conditions met! Showing prompt in 3 seconds...');
                 licenseValidationPrompted = true;
 
                 setTimeout(() => {
@@ -241,12 +223,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                     });
                 }, 3000); // 3 second delay
-            } else {
-                console.log('✗ Conditions NOT met. Prompt will not show.');
             }
         });
     });
-    console.log('✓ Event listeners attached to', vehicleTypeRadios.length, 'vehicle type radios');
 
     // Auto-populate Municipality and Province
     barangaySelect.addEventListener('change', () => {
@@ -318,33 +297,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 otherViolationInput.value = '';
             }
         });
-    } else {
-        console.error('Other Violation elements not found');
     }
 
     // Show/hide Other Vehicle input (for radio buttons)
-    console.log('Found vehicle type radios:', vehicleTypeRadios.length);
-    console.log('Other vehicle input element:', otherVehicleInput);
-
     if (vehicleTypeRadios.length > 0 && otherVehicleInput) {
         vehicleTypeRadios.forEach(radio => {
             radio.addEventListener('change', function() {
-                console.log('Vehicle type changed:', this.value);
                 if (this.value === 'Other') {
-                    console.log('Other selected - showing input');
                     otherVehicleInput.style.cssText = 'display: block !important; margin-top: 8px;';
                     otherVehicleInput.required = true;
                     otherVehicleInput.focus();
                 } else {
-                    console.log('Other NOT selected - hiding input');
                     otherVehicleInput.style.cssText = 'display: none !important; margin-top: 8px;';
                     otherVehicleInput.required = false;
                     otherVehicleInput.value = '';
                 }
             });
         });
-    } else {
-        console.error('Vehicle type radio buttons not found. Count:', vehicleTypeRadios.length, 'Input:', otherVehicleInput);
     }
 
     // Ensure only one license type

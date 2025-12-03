@@ -6,22 +6,15 @@
 (function() {
     let duplicateCheckTimeout = null;
     let selectedDuplicateDriver = null;
-    let duplicateMatches = [];
 
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('🔍 Duplicate Detection: Script loaded and initialized');
-
         // Add modal HTML to page if not exists
         if (!document.getElementById('duplicateWarningModal')) {
             addDuplicateModal();
-            console.log('✓ Duplicate Detection: Modal added to page');
-        } else {
-            console.log('ℹ Duplicate Detection: Modal already exists');
         }
 
         // Setup duplicate detection listeners
         setupDuplicateDetection();
-        console.log('✓ Duplicate Detection: Event listeners attached');
     });
 
     /**
@@ -93,25 +86,24 @@
         ];
 
         let fieldsFound = 0;
-        fieldsToMonitor.forEach(fieldId => {
-            const field = document.getElementById(fieldId);
+        fieldsToMonitor.forEach(fieldName => {
+            // Try to find by ID first, then by name attribute
+            let field = document.getElementById(fieldName);
+            if (!field) {
+                field = document.querySelector(`[name="${fieldName}"]`);
+            }
+
             if (field) {
                 fieldsFound++;
                 field.addEventListener('blur', () => {
-                    console.log(`🔍 Field "${fieldId}" blurred - will check for duplicates in 500ms`);
                     clearTimeout(duplicateCheckTimeout);
                     duplicateCheckTimeout = setTimeout(checkForDuplicates, 500);
                 });
-            } else {
-                console.warn(`⚠ Field "${fieldId}" not found on page`);
             }
         });
 
-        console.log(`✓ Attached blur listeners to ${fieldsFound}/${fieldsToMonitor.length} fields`);
-
         // Also check when violations are selected
         const violationCheckboxes = document.querySelectorAll('.violation-checkbox');
-        console.log(`✓ Found ${violationCheckboxes.length} violation checkboxes`);
         violationCheckboxes.forEach(checkbox => {
             checkbox.addEventListener('change', updateOffenseCountsForViolations);
         });
@@ -130,16 +122,11 @@
             barangay: getValue('barangay')
         };
 
-        console.log('🔍 Checking for duplicates with data:', driverInfo);
-
         // Need at least some information to check
         if (!driverInfo.license_number && !driverInfo.plate_number &&
             (!driverInfo.first_name || !driverInfo.last_name)) {
-            console.log('⚠ Not enough information to check for duplicates (need license OR plate OR both first+last name)');
             return;
         }
-
-        console.log('✓ Sufficient data - sending AJAX request to api/check_duplicates.php');
 
         // Show loading indicator (optional)
         showLoadingIndicator();
@@ -151,24 +138,16 @@
             },
             body: JSON.stringify(driverInfo)
         })
-        .then(response => {
-            console.log('📡 Response received, status:', response.status);
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
-            console.log('📊 API Response:', data);
             hideLoadingIndicator();
 
             if (data.success && data.match_count > 0) {
-                console.log(`🎯 Found ${data.match_count} potential duplicate(s) - showing modal`);
-                duplicateMatches = data.matches;
                 showDuplicateWarning(data.matches);
-            } else {
-                console.log('✓ No duplicates found');
             }
         })
         .catch(error => {
-            console.error('❌ Duplicate check error:', error);
+            console.error('Duplicate check error:', error);
             hideLoadingIndicator();
         });
     }
@@ -373,13 +352,21 @@
     /**
      * Helper functions
      */
-    function getValue(id) {
-        const element = document.getElementById(id);
+    function getValue(name) {
+        // Try ID first, then name attribute
+        let element = document.getElementById(name);
+        if (!element) {
+            element = document.querySelector(`[name="${name}"]`);
+        }
         return element ? element.value.trim() : '';
     }
 
-    function setValue(id, value) {
-        const element = document.getElementById(id);
+    function setValue(name, value) {
+        // Try ID first, then name attribute
+        let element = document.getElementById(name);
+        if (!element) {
+            element = document.querySelector(`[name="${name}"]`);
+        }
         if (element) {
             element.value = value || '';
         }
