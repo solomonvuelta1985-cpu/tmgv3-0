@@ -3,7 +3,7 @@
 
 ---
 
-The **Traffic Management System (TMG)** is a comprehensive web-based application designed for the Municipality of Baggao, Cagayan, Philippines, to modernize traffic citation and payment processing. Built with PHP, MySQL, Bootstrap 5, and Chart.js, this enterprise-grade system manages the complete lifecycle of traffic violations—from citation issuance in the field to payment processing and official receipt generation. With **50+ API endpoints**, **11 database tables**, and **4 role-based user levels** (Admin, Enforcer, Cashier, User), the system provides a robust, scalable solution for municipal traffic law enforcement operations. The platform features a modern, responsive interface with real-time dashboards, comprehensive analytics, and seamless integration of citation management, payment processing, and reporting capabilities.
+The **Traffic Management System (TMG)** is a comprehensive web-based application designed for the Municipality of Baggao, Cagayan, Philippines, to modernize traffic citation and payment processing. Serving two primary beneficiaries—the **TMG Section** for violation recording and enforcement, and the **Municipal Treasury Office** for payment processing and revenue collection—this enterprise-grade system manages the complete lifecycle of traffic violations from citation issuance in the field to payment processing and official receipt generation. Built with PHP, MySQL, Bootstrap 5, and Chart.js, the platform features **50+ API endpoints**, **11 database tables**, and **4 role-based user levels** (Admin, Enforcer, Cashier, User) that provide proper separation of duties between enforcement and treasury operations. The system offers a modern, responsive interface with real-time dashboards, comprehensive analytics, and seamless integration of citation management, payment processing, and reporting capabilities tailored to municipal government workflows.
 
 At its core, TMG offers **intelligent citation management** with auto-generated ticket numbers, real-time duplicate driver detection using fuzzy matching algorithms, and automatic offense tracking that escalates fines for repeat offenders (1st, 2nd, 3rd+ offenses). The system includes **27 pre-configured violation types** with configurable fine amounts and supports multiple violations per citation. The integrated **payment processing system** accepts multiple payment methods (Cash, Check, GCash, PayMaya, Bank Transfer) and automatically generates professional PDF official receipts with sequential OR numbers (OR-YYYY-NNNNNN format), QR codes for verification, and print tracking. A sophisticated **soft delete and recovery system** ensures data preservation with trash bin functionality, allowing restoration of accidentally deleted citations within a configurable period. The platform also features **enterprise-grade data integrity** with multi-layer validation across database triggers, application logic, and frontend validation, plus an automated consistency checker that runs scheduled health checks and self-healing operations to maintain data accuracy.
 
@@ -17,6 +17,38 @@ The system's **analytics and reporting capabilities** set it apart with a real-t
 **Development Approach:** Consolidated, full-stack development from concept to production-ready system
 
 This enterprise-grade traffic management system was developed over 6 months, encompassing complete system architecture, database design, backend API development, frontend UI/UX implementation, security hardening, comprehensive testing, and extensive documentation. The project demonstrates rapid yet thorough development practices, delivering a production-ready solution with 50+ API endpoints, 11 database tables, 15+ major feature modules, and 20+ documentation files.
+
+---
+
+## 🏛️ Primary Beneficiaries & Organizational Structure
+
+The TMG system serves two key municipal departments with distinct yet complementary roles:
+
+**TMG Section (Traffic Management Group)**
+- **Primary Role:** Violation recording and traffic law enforcement
+- **Key Users:** Traffic enforcers and field officers
+- **System Functions:**
+  - Issue traffic citations in the field
+  - Record driver and vehicle information
+  - Track repeat offenders with automatic offense counting
+  - Monitor enforcement activities and performance
+  - Generate enforcement reports and statistics
+  - Manage citation lifecycle (pending, contested, dismissed, void)
+
+**Municipal Treasury Office**
+- **Primary Role:** Payment processing and revenue collection
+- **Key Users:** Cashiers and treasury staff
+- **System Functions:**
+  - Process payments for issued citations
+  - Generate official receipts (OR) with sequential numbering
+  - Handle multiple payment methods (Cash, Check, GCash, PayMaya, Bank Transfer)
+  - Process refunds and cancellations with proper audit trail
+  - Track revenue collection and payment trends
+  - Generate financial reports for accounting and compliance
+  - Monitor outstanding fines and collection rates
+
+**Integrated Workflow:**
+The system bridges both departments with seamless data flow—TMG Section records violations which automatically flow to the Treasury Office for payment collection, ensuring real-time synchronization, complete audit trails, and proper separation of duties between enforcement and financial operations. This integrated approach eliminates manual handoffs, reduces errors, and provides end-to-end visibility of the citation-to-payment lifecycle.
 
 ---
 
