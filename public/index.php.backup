@@ -1,0 +1,906 @@
+<?php
+require_once '../includes/config.php';
+require_once '../includes/functions.php';
+require_once '../includes/auth.php';
+
+// Require authentication and check session timeout
+require_login();
+check_session_timeout();
+
+// Get dashboard statistics
+$stats = [
+    'today_citations' => 0,
+    'today_trend' => 0,
+    'pending_citations' => 0,
+    'pending_trend' => 0,
+    'resolved_week' => 0,
+    'resolved_trend' => 0,
+    'overdue_citations' => 0,
+    'overdue_trend' => 0,
+    'active_officers' => 0
+];
+
+$recent_citations = [];
+
+$pdo = getPDO();
+if ($pdo) {
+    try {
+        // Today's citations
+        $stmt = db_query("SELECT COUNT(*) as count FROM citations WHERE DATE(created_at) = CURDATE()");
+        $result = $stmt->fetch();
+        $stats['today_citations'] = $result['count'] ?? 0;
+
+        // Yesterday's citations for trend
+        $stmt = db_query("SELECT COUNT(*) as count FROM citations WHERE DATE(created_at) = CURDATE() - INTERVAL 1 DAY");
+        $result = $stmt->fetch();
+        $yesterday = $result['count'] ?? 0;
+        if ($yesterday > 0) {
+            $stats['today_trend'] = round((($stats['today_citations'] - $yesterday) / $yesterday) * 100);
+        }
+
+        // Pending citations
+        $stmt = db_query("SELECT COUNT(*) as count FROM citations WHERE status = 'pending'");
+        $result = $stmt->fetch();
+        $stats['pending_citations'] = $result['count'] ?? 0;
+
+        // Resolved this week
+        $stmt = db_query("SELECT COUNT(*) as count FROM citations WHERE status = 'paid' AND WEEK(created_at) = WEEK(CURDATE())");
+        $result = $stmt->fetch();
+        $stats['resolved_week'] = $result['count'] ?? 0;
+
+        // Resolved last week for trend
+        $stmt = db_query("SELECT COUNT(*) as count FROM citations WHERE status = 'paid' AND WEEK(created_at) = WEEK(CURDATE()) - 1");
+        $result = $stmt->fetch();
+        $last_week = $result['count'] ?? 0;
+        if ($last_week > 0) {
+            $stats['resolved_trend'] = round((($stats['resolved_week'] - $last_week) / $last_week) * 100);
+        }
+
+        // Overdue citations
+        $stmt = db_query("SELECT COUNT(*) as count FROM citations WHERE status = 'pending' AND DATEDIFF(CURDATE(), created_at) > 30");
+        $result = $stmt->fetch();
+        $stats['overdue_citations'] = $result['count'] ?? 0;
+
+        // Active officers
+        $stats['active_officers'] = 7;
+
+        // Get recent citations - simplified to avoid column errors
+        $stmt = db_query("
+            SELECT citation_id, ticket_number, license_number, status, created_at, violation_id
+            FROM citations
+            ORDER BY created_at DESC
+            LIMIT 5
+        ");
+        if ($stmt) {
+            $recent_citations = $stmt->fetchAll();
+            // Get violation names separately
+            foreach ($recent_citations as $key => $citation) {
+                if (isset($citation['violation_id']) && $citation['violation_id']) {
+                    $vstmt = db_query("SELECT name FROM violations WHERE violation_id = ?", [$citation['violation_id']]);
+                    $vresult = $vstmt ? $vstmt->fetch() : null;
+                    $recent_citations[$key]['violation_name'] = $vresult['name'] ?? 'Unknown';
+                } else {
+                    $recent_citations[$key]['violation_name'] = 'Unknown';
+                }
+            }
+        }
+    } catch (Exception $e) {
+        error_log("Dashboard error: " . $e->getMessage());
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Traffic Citation System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: #9155fd;
+            --color-primary-light: #b389ff;
+            --color-success: #56ca00;
+            --color-warning: #ffb400;
+            --color-danger: #ff4c51;
+            --color-info: #16b1ff;
+            --color-purple: #9155fd;
+            --color-blue: #16b1ff;
+            --color-orange: #ff9f43;
+            --color-teal: #28c76f;
+            --bg-primary: #f5f5f9;
+            --bg-card: #ffffff;
+            --text-primary: #4c4e64;
+            --text-secondary: #a8aaae;
+            --border-color: #dbdade;
+            --shadow-sm: 0 2px 6px 0 rgba(67, 89, 113, 0.12);
+            --shadow-md: 0 4px 8px -4px rgba(67, 89, 113, 0.3);
+            --shadow-lg: 0 6px 14px -6px rgba(67, 89, 113, 0.38);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-size: 15px;
+        }
+
+        .dashboard-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .main-container {
+            flex: 1;
+            margin-left: 280px;
+            padding: 3rem 2.5rem;
+            padding-top: 6rem;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            margin-bottom: 3rem;
+        }
+
+        .top-bar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .page-title {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.025em;
+        }
+
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .search-input {
+            position: relative;
+        }
+
+        .search-input input {
+            width: 320px;
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.9375rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .search-input input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(145, 85, 253, 0.1);
+        }
+
+        .search-input i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .notification-btn {
+            position: relative;
+            width: 48px;
+            height: 48px;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .notification-btn:hover {
+            border-color: var(--color-primary);
+            background: rgba(145, 85, 253, 0.04);
+        }
+
+        .notification-btn .count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--color-danger);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 20px;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .date-display {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+            font-weight: 500;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-box {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-box.primary { }
+        .stat-box.danger { }
+        .stat-box.success { }
+        .stat-box.warning { }
+        .stat-box.purple { }
+
+        .stat-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+        }
+
+        .stat-icon-box {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .stat-box.primary .stat-icon-box { background: var(--color-primary); }
+        .stat-box.danger .stat-icon-box { background: var(--color-danger); }
+        .stat-box.success .stat-icon-box { background: var(--color-success); }
+        .stat-box.warning .stat-icon-box { background: var(--color-warning); }
+        .stat-box.purple .stat-icon-box { background: var(--color-info); }
+
+        .stat-trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8125rem;
+            font-weight: 700;
+        }
+
+        .stat-trend.up {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--color-success);
+        }
+
+        .stat-trend.down {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--color-danger);
+        }
+
+        .stat-number {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.2;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            font-weight: 400;
+            color: var(--text-secondary);
+            letter-spacing: 0.15px;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Action Cards */
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .action-box {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s;
+            display: block;
+            box-shadow: var(--shadow-sm);
+            border: none;
+        }
+
+        .action-box:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .action-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .action-icon.primary { background: var(--color-primary); }
+        .action-icon.cyan { background: var(--color-info); }
+        .action-icon.success { background: var(--color-success); }
+        .action-icon.warning { background: var(--color-warning); }
+
+        .action-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .action-desc {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.25rem;
+            line-height: 1.6;
+        }
+
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--color-primary);
+            color: white;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .action-button:hover {
+            background: var(--color-primary-light);
+            box-shadow: 0 4px 8px rgba(145, 85, 253, 0.3);
+        }
+
+        .action-button.outline {
+            background: transparent;
+            color: var(--color-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .action-button.outline:hover {
+            background: rgba(145, 85, 253, 0.04);
+            border-color: var(--color-primary);
+        }
+
+        /* Activity Panel */
+        .activity-panel {
+            background: var(--bg-card);
+            border-radius: 10px;
+            padding: 1.5rem;
+            position: sticky;
+            top: 2rem;
+            max-height: calc(100vh - 4rem);
+            overflow-y: auto;
+            box-shadow: var(--shadow-sm);
+            border: none;
+        }
+
+        .activity-timeline {
+            margin-top: 1.5rem;
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 2.5rem;
+            padding-bottom: 1.75rem;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-item:not(:last-child)::before {
+            content: '';
+            position: absolute;
+            left: 0.875rem;
+            top: 2.5rem;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-color);
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 0;
+            top: 0.25rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .timeline-dot.primary { background: var(--color-primary); color: white; }
+        .timeline-dot.success { background: var(--color-success); color: white; }
+        .timeline-dot.warning { background: var(--color-warning); color: white; }
+
+        .timeline-content h4 {
+            font-size: 0.9375rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.375rem;
+        }
+
+        .timeline-content p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.375rem;
+            line-height: 1.5;
+        }
+
+        .timeline-time {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .timeline-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+
+        .timeline-badge.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--color-warning);
+        }
+
+        .timeline-badge.paid {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--color-success);
+        }
+
+        .view-all-btn {
+            display: block;
+            text-align: center;
+            padding: 0.875rem;
+            color: var(--color-primary);
+            font-weight: 600;
+            font-size: 0.9375rem;
+            text-decoration: none;
+            border-top: 1px solid var(--border-color);
+            margin: 1.5rem -1.5rem -1.5rem;
+            transition: all 0.2s;
+        }
+
+        .view-all-btn:hover {
+            background: rgba(145, 85, 253, 0.04);
+        }
+
+        /* System Info */
+        .info-panel {
+            background: var(--bg-card);
+            border: none;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .info-list {
+            list-style: none;
+        }
+
+        .info-list li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 0;
+            font-size: 0.9375rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .info-list li i {
+            color: var(--color-success);
+        }
+
+        .info-list li.database i {
+            color: var(--color-info);
+        }
+
+        @media (max-width: 1280px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .activity-panel {
+                position: static;
+                max-height: none;
+            }
+
+            .actions-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                margin-left: 0;
+                padding: 2rem 1.25rem;
+                padding-top: 5rem;
+            }
+
+            .page-title {
+                font-size: 1.75rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-input input {
+                width: 100%;
+            }
+
+            .top-bar-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .top-actions {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <?php include 'sidebar.php'; ?>
+
+    <div class="dashboard-wrapper">
+        <div class="main-container">
+            <?php echo show_flash(); ?>
+
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="top-bar-header">
+                    <h1 class="page-title">Dashboard</h1>
+                    <div class="top-actions">
+                        <form action="search.php" method="GET" class="search-input">
+                            <i data-lucide="search" width="20" height="20"></i>
+                            <input type="text" name="q" placeholder="Search citations, tickets..." />
+                        </form>
+                        <div class="notification-btn">
+                            <i data-lucide="bell" width="20" height="20"></i>
+                            <?php if ($stats['pending_citations'] > 0): ?>
+                                <span class="count"><?php echo $stats['pending_citations']; ?></span>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="date-display">
+                    <i data-lucide="calendar" width="18" height="18"></i>
+                    <span id="current-date"></span>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-box primary">
+                    <div class="stat-top">
+                        <div class="stat-icon-box">
+                            <i data-lucide="file-text" width="28" height="28"></i>
+                        </div>
+                        <?php if ($stats['today_trend'] != 0): ?>
+                            <span class="stat-trend <?php echo $stats['today_trend'] > 0 ? 'up' : 'down'; ?>">
+                                <i data-lucide="<?php echo $stats['today_trend'] > 0 ? 'trending-up' : 'trending-down'; ?>" width="14" height="14"></i>
+                                <?php echo abs($stats['today_trend']); ?>%
+                            </span>
+                        <?php endif; ?>
+                    </div>
+                    <div class="stat-number"><?php echo $stats['today_citations']; ?></div>
+                    <div class="stat-label">Today's Citations</div>
+                </div>
+
+                <div class="stat-box danger">
+                    <div class="stat-top">
+                        <div class="stat-icon-box">
+                            <i data-lucide="clock" width="28" height="28"></i>
+                        </div>
+                    </div>
+                    <div class="stat-number"><?php echo $stats['pending_citations']; ?></div>
+                    <div class="stat-label">Pending Citations</div>
+                </div>
+
+                <div class="stat-box success">
+                    <div class="stat-top">
+                        <div class="stat-icon-box">
+                            <i data-lucide="check-circle" width="28" height="28"></i>
+                        </div>
+                        <?php if ($stats['resolved_trend'] != 0): ?>
+                            <span class="stat-trend <?php echo $stats['resolved_trend'] > 0 ? 'up' : 'down'; ?>">
+                                <i data-lucide="<?php echo $stats['resolved_trend'] > 0 ? 'trending-up' : 'trending-down'; ?>" width="14" height="14"></i>
+                                <?php echo abs($stats['resolved_trend']); ?>%
+                            </span>
+                        <?php endif; ?>
+                    </div>
+                    <div class="stat-number"><?php echo $stats['resolved_week']; ?></div>
+                    <div class="stat-label">Resolved This Week</div>
+                </div>
+
+                <div class="stat-box warning">
+                    <div class="stat-top">
+                        <div class="stat-icon-box">
+                            <i data-lucide="alert-triangle" width="28" height="28"></i>
+                        </div>
+                    </div>
+                    <div class="stat-number"><?php echo $stats['overdue_citations']; ?></div>
+                    <div class="stat-label">Overdue Citations</div>
+                </div>
+
+                <div class="stat-box purple">
+                    <div class="stat-top">
+                        <div class="stat-icon-box">
+                            <i data-lucide="users" width="28" height="28"></i>
+                        </div>
+                    </div>
+                    <div class="stat-number"><?php echo $stats['active_officers']; ?></div>
+                    <div class="stat-label">Active Officers</div>
+                </div>
+            </div>
+
+            <!-- Content Grid -->
+            <div class="content-grid">
+                <div>
+                    <!-- Quick Actions -->
+                    <h2 class="section-title">
+                        <i data-lucide="zap" width="24" height="24"></i>
+                        Quick Actions
+                    </h2>
+
+                    <div class="actions-grid">
+                        <a href="index2.php" class="action-box">
+                            <div class="action-icon primary">
+                                <i data-lucide="plus-circle" width="28" height="28"></i>
+                            </div>
+                            <h3 class="action-title">New Citation</h3>
+                            <p class="action-desc">Create and issue a new traffic citation</p>
+                            <button class="action-button">
+                                <i data-lucide="arrow-right" width="16" height="16"></i>
+                                Create Now
+                            </button>
+                        </a>
+
+                        <a href="search.php" class="action-box">
+                            <div class="action-icon cyan">
+                                <i data-lucide="search" width="28" height="28"></i>
+                            </div>
+                            <h3 class="action-title">Search Records</h3>
+                            <p class="action-desc">Find citations by ticket or license</p>
+                            <button class="action-button outline">
+                                <i data-lucide="arrow-right" width="16" height="16"></i>
+                                Search
+                            </button>
+                        </a>
+
+                        <a href="citations.php" class="action-box">
+                            <div class="action-icon success">
+                                <i data-lucide="list" width="28" height="28"></i>
+                            </div>
+                            <h3 class="action-title">View All Citations</h3>
+                            <p class="action-desc">Browse and manage all citations</p>
+                            <button class="action-button outline">
+                                <i data-lucide="arrow-right" width="16" height="16"></i>
+                                View All
+                            </button>
+                        </a>
+
+                        <a href="reports.php" class="action-box">
+                            <div class="action-icon warning">
+                                <i data-lucide="bar-chart-3" width="28" height="28"></i>
+                            </div>
+                            <h3 class="action-title">Generate Reports</h3>
+                            <p class="action-desc">View statistics and analytics</p>
+                            <button class="action-button outline">
+                                <i data-lucide="arrow-right" width="16" height="16"></i>
+                                Reports
+                            </button>
+                        </a>
+                    </div>
+
+                    <!-- System Info -->
+                    <h2 class="section-title">
+                        <i data-lucide="shield-check" width="24" height="24"></i>
+                        System Status
+                    </h2>
+
+                    <div class="info-panel">
+                        <div class="info-grid">
+                            <ul class="info-list">
+                                <li>
+                                    <i data-lucide="check-circle" width="18" height="18"></i>
+                                    CSRF Protection
+                                </li>
+                                <li>
+                                    <i data-lucide="check-circle" width="18" height="18"></i>
+                                    Rate Limiting
+                                </li>
+                                <li>
+                                    <i data-lucide="check-circle" width="18" height="18"></i>
+                                    Input Sanitization
+                                </li>
+                            </ul>
+                            <ul class="info-list">
+                                <li>
+                                    <i data-lucide="check-circle" width="18" height="18"></i>
+                                    Prepared Statements
+                                </li>
+                                <li>
+                                    <i data-lucide="check-circle" width="18" height="18"></i>
+                                    Security Headers
+                                </li>
+                                <li class="database">
+                                    <i data-lucide="database" width="18" height="18"></i>
+                                    DB: traffic_system
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activity Panel -->
+                <div class="activity-panel">
+                    <h2 class="section-title">
+                        <i data-lucide="activity" width="24" height="24"></i>
+                        Recent Activity
+                    </h2>
+
+                    <div class="activity-timeline">
+                        <?php if (!empty($recent_citations)): ?>
+                            <?php foreach ($recent_citations as $citation): ?>
+                                <div class="timeline-item">
+                                    <div class="timeline-dot <?php echo $citation['status'] == 'paid' ? 'success' : ($citation['status'] == 'pending' ? 'warning' : 'primary'); ?>">
+                                        <i data-lucide="<?php echo $citation['status'] == 'paid' ? 'check' : 'file-text'; ?>" width="16" height="16"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h4>Citation #<?php echo htmlspecialchars($citation['ticket_number'] ?? 'N/A'); ?></h4>
+                                        <p>
+                                            <?php echo htmlspecialchars($citation['violation_name'] ?? 'Unknown Violation'); ?>
+                                            <?php if (isset($citation['license_number']) && $citation['license_number']): ?>
+                                                • <?php echo htmlspecialchars($citation['license_number']); ?>
+                                            <?php endif; ?>
+                                        </p>
+                                        <div class="timeline-time">
+                                            <?php
+                                            $time = strtotime($citation['created_at']);
+                                            $diff = time() - $time;
+                                            if ($diff < 3600) {
+                                                echo floor($diff / 60) . ' min ago';
+                                            } elseif ($diff < 86400) {
+                                                echo floor($diff / 3600) . ' hours ago';
+                                            } else {
+                                                echo date('M j, Y', $time);
+                                            }
+                                            ?>
+                                        </div>
+                                        <span class="timeline-badge <?php echo $citation['status']; ?>">
+                                            <?php echo strtoupper($citation['status']); ?>
+                                        </span>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <div class="timeline-item">
+                                <div class="timeline-dot primary">
+                                    <i data-lucide="info" width="16" height="16"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <h4>No Recent Activity</h4>
+                                    <p>Start by creating your first citation</p>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <a href="citations.php" class="view-all-btn">
+                        View All Citations
+                        <i data-lucide="arrow-right" width="16" height="16" style="display: inline; vertical-align: middle;"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update date
+        function updateDateTime() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', options);
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 60000);
+
+        // Initialize icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>
