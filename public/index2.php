@@ -29,7 +29,21 @@ if (isset($_GET['driver_id'])) {
     }
 }
 
+// Fetch active violation categories
+$violation_categories = [];
+try {
+    $stmt = db_query(
+        "SELECT * FROM violation_categories WHERE is_active = 1 ORDER BY display_order ASC, category_name ASC"
+    );
+    $violation_categories = $stmt->fetchAll();
+} catch (Exception $e) {
+    error_log("Error fetching categories: " . $e->getMessage());
+}
+
 // Cache violation types (only active ones)
+// Clear cache to fetch category_id (TEMPORARY - remove after first page load)
+unset($_SESSION['violation_types']);
+
 if (!isset($_SESSION['violation_types'])) {
     $_SESSION['violation_types'] = $citationService->getActiveViolationTypes();
 }

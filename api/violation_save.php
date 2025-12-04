@@ -29,7 +29,7 @@ if (!check_rate_limit('violation_save', 20, 300)) {
 
 try {
     // Validate required fields
-    $required = ['violation_type', 'fine_amount_1', 'fine_amount_2', 'fine_amount_3'];
+    $required = ['violation_type', 'category_id', 'fine_amount_1', 'fine_amount_2', 'fine_amount_3'];
     $errors = [];
 
     foreach ($required as $field) {
@@ -46,6 +46,7 @@ try {
 
     // Sanitize inputs
     $violation_type = sanitize($_POST['violation_type']);
+    $category_id = (int)$_POST['category_id'];
     $fine_1 = floatval($_POST['fine_amount_1']);
     $fine_2 = floatval($_POST['fine_amount_2']);
     $fine_3 = floatval($_POST['fine_amount_3']);
@@ -72,9 +73,9 @@ try {
 
     // Insert new violation type
     db_query(
-        "INSERT INTO violation_types (violation_type, description, fine_amount_1, fine_amount_2, fine_amount_3, is_active, created_at)
-         VALUES (?, ?, ?, ?, ?, 1, NOW())",
-        [$violation_type, $description, $fine_1, $fine_2, $fine_3]
+        "INSERT INTO violation_types (violation_type, category_id, description, fine_amount_1, fine_amount_2, fine_amount_3, is_active, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, 1, NOW())",
+        [$violation_type, $category_id, $description, $fine_1, $fine_2, $fine_3]
     );
 
     // Clear cached violation types

@@ -196,26 +196,16 @@
             <div class="violation-tabs-wrapper">
                 <div class="violation-tabs" id="violationTabs">
                     <?php
-                    $categories = [
-                        'Helmet' => ['icon' => 'shield', 'keywords' => ['HELMET']],
-                        'License' => ['icon' => 'credit-card', 'keywords' => ['LICENSE', 'REGISTRATION', 'OPLAN VISA', 'E-OV MATCH']],
-                        'Vehicle' => ['icon' => 'wrench', 'keywords' => ['DEFECTIVE', 'MUFFLER', 'MODIFICATION', 'PARTS']],
-                        'Driving' => ['icon' => 'alert-circle', 'keywords' => ['RECKLESS', 'DRAG RACING', 'DRUNK', 'DRIVING IN SHORT', 'ARROGANT']],
-                        'Traffic' => ['icon' => 'traffic-cone', 'keywords' => ['TRAFFIC SIGN', 'PARKING', 'OBSTRUCTION', 'PEDESTRIAN', 'LOADING', 'PASSENGER ON TOP']],
-                        'Misc' => ['icon' => 'list', 'keywords' => ['COLORUM', 'TRASHBIN', 'OVERLOADED', 'CHARGING', 'REFUSAL']],
-                        'Other' => ['icon' => 'more-horizontal', 'keywords' => []]
-                    ];
-
+                    // Use dynamic categories from database
                     $tab_index = 0;
-                    foreach ($categories as $category => $config) {
-                        $category_id = strtolower($category);
-                        $icon = $config['icon'];
+                    foreach ($violation_categories as $cat) {
+                        $category_slug = strtolower(str_replace(' ', '-', $cat['category_name']));
                         $active_class = $tab_index === 0 ? ' active' : '';
 
-                        echo "<button class='tab-pill$active_class' data-tab='$category_id' type='button'>";
-                        echo "<i data-lucide='$icon' class='tab-icon'></i>";
-                        echo "<span class='tab-label'>$category</span>";
-                        echo "<span class='tab-badge' data-tab='$category_id'>0</span>";
+                        echo "<button class='tab-pill$active_class' data-tab='$category_slug' data-category-id='" . $cat['category_id'] . "' type='button'>";
+                        echo "<i data-lucide='" . htmlspecialchars($cat['category_icon']) . "' class='tab-icon'></i>";
+                        echo "<span class='tab-label'>" . htmlspecialchars($cat['category_name']) . "</span>";
+                        echo "<span class='tab-badge' data-tab='$category_slug'>0</span>";
                         echo "</button>";
                         $tab_index++;
                     }
@@ -226,18 +216,19 @@
             <!-- Tab Content -->
             <div class="violation-tab-content" id="violationTabsContent">
                 <?php
-                $displayed_violations = [];
                 $tab_index = 0;
 
-                foreach ($categories as $category => $config) {
-                    $category_id = strtolower($category);
-                    $keywords = $config['keywords'];
+                foreach ($violation_categories as $cat) {
+                    $category_slug = strtolower(str_replace(' ', '-', $cat['category_name']));
                     $active_class = $tab_index === 0 ? ' active' : '';
 
-                    echo "<div class='tab-pane$active_class' data-pane='$category_id'>";
+                    echo "<div class='tab-pane$active_class' data-pane='$category_slug'>";
                     echo "<div class='violations-list'>";
 
-                    if ($category === 'Other') {
+                    // Check if this is "Other" category for custom violation input
+                    $isOtherCategory = ($cat['category_name'] === 'Other');
+
+                    if ($isOtherCategory) {
                         // Custom violation
                         echo "<div class='violation-item'>";
                         echo "<div class='custom-checkbox'>";
@@ -248,71 +239,36 @@
                         echo "</label>";
                         echo "</div></div>";
                         echo "<input type='text' name='other_violation_input' class='form-control mt-2' id='otherViolationInput' placeholder='Specify other violation' style='display: none;'>";
+                    }
 
-                        // Show uncategorized violations
-                        $uncategorized = [];
-                        foreach ($violation_types as $v) {
-                            if (!in_array($v['violation_type_id'], $displayed_violations)) {
-                                $uncategorized[] = $v;
-                            }
-                        }
+                    // Find violations matching this category
+                    $violations_found = false;
+                    foreach ($violation_types as $v) {
+                        // Match violations by category_id
+                        if (isset($v['category_id']) && $v['category_id'] == $cat['category_id']) {
+                            $violations_found = true;
+                            $offense_count = isset($offense_counts[$v['violation_type_id']]) ? min((int)$offense_counts[$v['violation_type_id']] + 1, 3) : 1;
+                            $fine_key = "fine_amount_$offense_count";
+                            $offense_suffix = $offense_count == 1 ? 'st' : ($offense_count == 2 ? 'nd' : 'rd');
+                            $label = $v['violation_type'] . " - {$offense_count}{$offense_suffix} Offense (₱" . number_format($v[$fine_key], 2) . ")";
+                            $input_id = 'violation_' . $v['violation_type_id'];
 
-                        if (!empty($uncategorized)) {
-                            echo "<div class='uncategorized-section'>";
-                            echo "<h6 class='uncategorized-title'>Uncategorized Violations</h6>";
-                            foreach ($uncategorized as $v) {
-                                $offense_count = isset($offense_counts[$v['violation_type_id']]) ? min((int)$offense_counts[$v['violation_type_id']] + 1, 3) : 1;
-                                $fine_key = "fine_amount_$offense_count";
-                                $offense_suffix = $offense_count == 1 ? 'st' : ($offense_count == 2 ? 'nd' : 'rd');
-                                $label = $v['violation_type'] . " - {$offense_count}{$offense_suffix} Offense (₱" . number_format($v[$fine_key], 2) . ")";
-                                $input_id = 'violation_' . $v['violation_type_id'];
-                                echo "<div class='violation-item' data-violation-text='" . htmlspecialchars(strtolower($v['violation_type'])) . "'>";
-                                echo "<div class='custom-checkbox'>";
-                                echo "<input type='checkbox' class='checkbox-input violation-checkbox' name='violations[]' value='" . (int)$v['violation_type_id'] . "' id='$input_id' data-offense='$offense_count' data-tab='other'>";
-                                echo "<label class='checkbox-label' for='$input_id'>";
-                                echo "<span class='checkbox-box'></span>";
-                                echo "<span class='checkbox-text'>" . htmlspecialchars($label) . "</span>";
-                                echo "</label>";
-                                echo "</div></div>";
-                            }
-                            echo "</div>";
+                            echo "<div class='violation-item' data-violation-text='" . htmlspecialchars(strtolower($v['violation_type'])) . "'>";
+                            echo "<div class='custom-checkbox'>";
+                            echo "<input type='checkbox' class='checkbox-input violation-checkbox' name='violations[]' value='" . (int)$v['violation_type_id'] . "' id='$input_id' data-offense='$offense_count' data-tab='$category_slug'>";
+                            echo "<label class='checkbox-label' for='$input_id'>";
+                            echo "<span class='checkbox-box'></span>";
+                            echo "<span class='checkbox-text'>" . htmlspecialchars($label) . "</span>";
+                            echo "</label>";
+                            echo "</div></div>";
                         }
-                    } else {
-                        // Regular category
-                        $violations_found = false;
-                        foreach ($violation_types as $v) {
-                            $matches_category = false;
-                            foreach ($keywords as $keyword) {
-                                if (stripos($v['violation_type'], $keyword) !== false) {
-                                    $matches_category = true;
-                                    break;
-                                }
-                            }
-                            if ($matches_category && !in_array($v['violation_type_id'], $displayed_violations)) {
-                                $violations_found = true;
-                                $displayed_violations[] = $v['violation_type_id'];
-                                $offense_count = isset($offense_counts[$v['violation_type_id']]) ? min((int)$offense_counts[$v['violation_type_id']] + 1, 3) : 1;
-                                $fine_key = "fine_amount_$offense_count";
-                                $offense_suffix = $offense_count == 1 ? 'st' : ($offense_count == 2 ? 'nd' : 'rd');
-                                $label = $v['violation_type'] . " - {$offense_count}{$offense_suffix} Offense (₱" . number_format($v[$fine_key], 2) . ")";
-                                $input_id = 'violation_' . $v['violation_type_id'];
-                                echo "<div class='violation-item' data-violation-text='" . htmlspecialchars(strtolower($v['violation_type'])) . "'>";
-                                echo "<div class='custom-checkbox'>";
-                                echo "<input type='checkbox' class='checkbox-input violation-checkbox' name='violations[]' value='" . (int)$v['violation_type_id'] . "' id='$input_id' data-offense='$offense_count' data-tab='$category_id'>";
-                                echo "<label class='checkbox-label' for='$input_id'>";
-                                echo "<span class='checkbox-box'></span>";
-                                echo "<span class='checkbox-text'>" . htmlspecialchars($label) . "</span>";
-                                echo "</label>";
-                                echo "</div></div>";
-                            }
-                        }
+                    }
 
-                        if (!$violations_found) {
-                            echo "<div class='empty-state'>";
-                            echo "<i data-lucide='inbox' style='width: 48px; height: 48px; color: #cbd5e1; margin-bottom: 8px;'></i>";
-                            echo "<p>No violations available in this category.</p>";
-                            echo "</div>";
-                        }
+                    if (!$violations_found && !$isOtherCategory) {
+                        echo "<div class='empty-state'>";
+                        echo "<i data-lucide='inbox' style='width: 48px; height: 48px; color: #cbd5e1; margin-bottom: 8px;'></i>";
+                        echo "<p>No violations available in this category.</p>";
+                        echo "</div>";
                     }
 
                     echo "</div></div>";

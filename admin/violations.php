@@ -8,11 +8,25 @@ require_once '../includes/auth.php';
 require_admin();
 check_session_timeout();
 
+// Fetch all categories
+$categories = [];
+try {
+    $stmt = db_query(
+        "SELECT * FROM violation_categories WHERE is_active = 1 ORDER BY display_order ASC, category_name ASC"
+    );
+    $categories = $stmt->fetchAll();
+} catch (Exception $e) {
+    error_log("Error fetching categories: " . $e->getMessage());
+}
+
 // Fetch all violation types
 $violation_types = [];
 try {
     $stmt = db_query(
-        "SELECT * FROM violation_types ORDER BY violation_type ASC"
+        "SELECT vt.*, vc.category_name
+         FROM violation_types vt
+         LEFT JOIN violation_categories vc ON vt.category_id = vc.category_id
+         ORDER BY vt.violation_type ASC"
     );
     $violation_types = $stmt->fetchAll();
 } catch (Exception $e) {
@@ -385,6 +399,7 @@ try {
                                     <tr>
                                         <th>#</th>
                                         <th>Violation Type</th>
+                                        <th class="text-center">Category</th>
                                         <th class="text-center">1st Offense</th>
                                         <th class="text-center">2nd Offense</th>
                                         <th class="text-center">3rd+ Offense</th>
@@ -397,6 +412,23 @@ try {
                                         <tr>
                                             <td><?php echo $index + 1; ?></td>
                                             <td class="violation-name"><?php echo htmlspecialchars($violation['violation_type']); ?></td>
+                                            <td class="text-center">
+                                                <span class="badge" style="background-color: <?php
+                                                    $category = $violation['category'] ?? 'Other';
+                                                    $colors = [
+                                                        'Helmet' => '#3b82f6',
+                                                        'License' => '#10b981',
+                                                        'Vehicle' => '#f59e0b',
+                                                        'Driving' => '#ef4444',
+                                                        'Traffic' => '#8b5cf6',
+                                                        'Misc' => '#6366f1',
+                                                        'Other' => '#6b7280'
+                                                    ];
+                                                    echo $colors[$category] ?? '#6b7280';
+                                                ?>">
+                                                    <?php echo htmlspecialchars($category); ?>
+                                                </span>
+                                            </td>
                                             <td class="text-center fine-amount">₱<?php echo number_format($violation['fine_amount_1'], 2); ?></td>
                                             <td class="text-center fine-amount">₱<?php echo number_format($violation['fine_amount_2'], 2); ?></td>
                                             <td class="text-center fine-amount">₱<?php echo number_format($violation['fine_amount_3'], 2); ?></td>
@@ -441,6 +473,22 @@ try {
                         <div class="mb-3">
                             <label class="form-label">Violation Type *</label>
                             <input type="text" class="form-control" name="violation_type" required placeholder="e.g., NO HELMET (DRIVER)">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Category *</label>
+                            <select class="form-select" name="category_id" required>
+                                <option value="" disabled selected>Select Category</option>
+                                <?php foreach ($categories as $cat): ?>
+                                    <option value="<?php echo $cat['category_id']; ?>">
+                                        <?php echo htmlspecialchars($cat['category_name']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle"></i> Manage categories in the
+                                <a href="categories.php">Category Management</a> page
+                            </small>
                         </div>
 
                         <div class="row">
@@ -490,6 +538,18 @@ try {
                         <div class="mb-3">
                             <label class="form-label">Violation Type *</label>
                             <input type="text" class="form-control" name="violation_type" id="edit_violation_type" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Category *</label>
+                            <select class="form-select" name="category_id" id="edit_category_id" required>
+                                <option value="" disabled>Select Category</option>
+                                <?php foreach ($categories as $cat): ?>
+                                    <option value="<?php echo $cat['category_id']; ?>">
+                                        <?php echo htmlspecialchars($cat['category_name']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
 
                         <div class="row">
@@ -569,6 +629,7 @@ try {
         function editViolation(violation) {
             document.getElementById('edit_violation_type_id').value = violation.violation_type_id;
             document.getElementById('edit_violation_type').value = violation.violation_type;
+            document.getElementById('edit_category_id').value = violation.category_id || '';
             document.getElementById('edit_fine_1').value = violation.fine_amount_1;
             document.getElementById('edit_fine_2').value = violation.fine_amount_2;
             document.getElementById('edit_fine_3').value = violation.fine_amount_3;

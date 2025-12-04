@@ -106,7 +106,7 @@ class CitationService {
     public function getActiveViolationTypes() {
         try {
             $stmt = $this->conn->query(
-                "SELECT violation_type_id, violation_type, fine_amount_1, fine_amount_2, fine_amount_3
+                "SELECT violation_type_id, violation_type, category_id, fine_amount_1, fine_amount_2, fine_amount_3
                  FROM violation_types
                  WHERE is_active = 1
                  ORDER BY violation_type"

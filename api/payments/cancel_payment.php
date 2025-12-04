@@ -160,11 +160,17 @@ try {
         $_SERVER['HTTP_USER_AGENT'] ?? null
     ]);
 
-    // Delete receipt record first (due to foreign key constraint)
+    // Delete related records first (due to foreign key constraints)
+
+    // 1. Delete receipt record
     $stmt = $pdo->prepare("DELETE FROM receipts WHERE payment_id = ?");
     $stmt->execute([$paymentId]);
 
-    // DELETE the payment record (frees up OR number)
+    // 2. Delete payment audit records
+    $stmt = $pdo->prepare("DELETE FROM payment_audit WHERE payment_id = ?");
+    $stmt->execute([$paymentId]);
+
+    // 3. DELETE the payment record (frees up OR number)
     $stmt = $pdo->prepare("DELETE FROM payments WHERE payment_id = ?");
     $stmt->execute([$paymentId]);
 

@@ -21,7 +21,7 @@ if (!isset($_POST['csrf_token']) || !verify_token($_POST['csrf_token'])) {
 }
 
 // Rate limiting
-if (!check_rate_limit('violation_update', 20, 300)) {
+if (!check_rate_limit('category_save', 20, 300)) {
     http_response_code(429);
     echo json_encode(['status' => 'error', 'message' => 'Too many requests. Please wait.']);
     exit;
@@ -29,7 +29,7 @@ if (!check_rate_limit('violation_update', 20, 300)) {
 
 try {
     // Validate required fields
-    $required = ['violation_type_id', 'violation_type', 'category_id', 'fine_amount_1', 'fine_amount_2', 'fine_amount_3'];
+    $required = ['category_name', 'category_icon', 'category_color'];
     $errors = [];
 
     foreach ($required as $field) {
@@ -45,51 +45,45 @@ try {
     }
 
     // Sanitize inputs
-    $violation_type_id = (int)$_POST['violation_type_id'];
-    $violation_type = sanitize($_POST['violation_type']);
-    $category_id = (int)$_POST['category_id'];
-    $fine_1 = floatval($_POST['fine_amount_1']);
-    $fine_2 = floatval($_POST['fine_amount_2']);
-    $fine_3 = floatval($_POST['fine_amount_3']);
+    $category_name = sanitize($_POST['category_name']);
+    $category_icon = sanitize($_POST['category_icon']);
+    $category_color = sanitize($_POST['category_color']);
     $description = sanitize($_POST['description'] ?? '');
+    $display_order = isset($_POST['display_order']) ? (int)$_POST['display_order'] : 0;
 
-    // Validate amounts
-    if ($fine_1 < 0 || $fine_2 < 0 || $fine_3 < 0) {
+    // Validate color format
+    if (!preg_match('/^#[0-9A-F]{6}$/i', $category_color)) {
         http_response_code(400);
-        echo json_encode(['status' => 'error', 'message' => 'Fine amounts cannot be negative']);
+        echo json_encode(['status' => 'error', 'message' => 'Invalid color format']);
         exit;
     }
 
-    // Check for duplicate (excluding current record)
+    // Check for duplicate
     $stmt = db_query(
-        "SELECT violation_type_id FROM violation_types WHERE violation_type = ? AND violation_type_id != ?",
-        [$violation_type, $violation_type_id]
+        "SELECT category_id FROM violation_categories WHERE category_name = ?",
+        [$category_name]
     );
 
     if ($stmt->fetch()) {
         http_response_code(400);
-        echo json_encode(['status' => 'error', 'message' => 'This violation type already exists']);
+        echo json_encode(['status' => 'error', 'message' => 'This category already exists']);
         exit;
     }
 
-    // Update violation type
+    // Insert new category
     db_query(
-        "UPDATE violation_types
-         SET violation_type = ?, category_id = ?, description = ?, fine_amount_1 = ?, fine_amount_2 = ?, fine_amount_3 = ?
-         WHERE violation_type_id = ?",
-        [$violation_type, $category_id, $description, $fine_1, $fine_2, $fine_3, $violation_type_id]
+        "INSERT INTO violation_categories (category_name, category_icon, category_color, description, display_order, is_active, created_at)
+         VALUES (?, ?, ?, ?, ?, 1, NOW())",
+        [$category_name, $category_icon, $category_color, $description, $display_order]
     );
-
-    // Clear cached violation types
-    unset($_SESSION['violation_types']);
 
     echo json_encode([
         'status' => 'success',
-        'message' => 'Violation type updated successfully!'
+        'message' => 'Category added successfully!'
     ]);
 
 } catch (Exception $e) {
-    error_log("Violation update error: " . $e->getMessage());
+    error_log("Category save error: " . $e->getMessage());
     http_response_code(500);
     echo json_encode(['status' => 'error', 'message' => 'Database error occurred']);
 }
