@@ -419,6 +419,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border: 1px solid #cfc;
         }
 
+        .alert-info {
+            background: #e8f4fd;
+            color: #0c5460;
+            border: 1px solid #b8daff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .alert-info i {
+            font-size: 1.2rem;
+            color: #17a2b8;
+        }
+
         .default-creds {
             text-align: center;
             margin-top: 20px;
@@ -548,6 +562,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <?php echo show_flash(); ?>
+
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <div>
+                    <strong>Security Notice:</strong> For your protection, you will be automatically logged out after <strong>15 minutes</strong> of inactivity.
+                </div>
+            </div>
 
             <form method="POST" action="" id="loginForm">
                 <input type="hidden" name="csrf_token" value="<?php echo generate_token(); ?>">

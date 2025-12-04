@@ -269,10 +269,10 @@ function destroy_session() {
 }
 
 /**
- * Check session timeout (30 minutes of inactivity)
- * @param int $timeout Timeout in seconds (default 1800 = 30 minutes)
+ * Check session timeout (15 minutes of inactivity)
+ * @param int $timeout Timeout in seconds (default 900 = 15 minutes)
  */
-function check_session_timeout($timeout = 1800) {
+function check_session_timeout($timeout = 900) {
     if (is_logged_in()) {
         if (isset($_SESSION['last_activity']) && (time() - $_SESSION['last_activity'] > $timeout)) {
             destroy_session();

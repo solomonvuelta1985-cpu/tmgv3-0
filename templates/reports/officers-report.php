@@ -48,8 +48,8 @@ $performance = $data['performance'] ?? [];
                                             <?php endif; ?>
                                         </td>
                                         <td><strong><?php echo htmlspecialchars($officer['officer_name']); ?></strong></td>
-                                        <td><?php echo htmlspecialchars($officer['badge_number']); ?></td>
-                                        <td><?php echo htmlspecialchars($officer['position']); ?></td>
+                                        <td><?php echo htmlspecialchars($officer['badge_number'] ?? ''); ?></td>
+                                        <td><?php echo htmlspecialchars($officer['position'] ?? ''); ?></td>
                                         <td><?php echo number_format($officer['citation_count']); ?></td>
                                         <td>₱<?php echo number_format($officer['total_fines'], 2); ?></td>
                                         <td>₱<?php echo number_format($officer['average_fine'], 2); ?></td>

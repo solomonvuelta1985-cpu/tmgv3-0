@@ -98,17 +98,9 @@ function displayPayments(payments) {
                 <td>${escapeHtml(payment.collector_name || 'N/A')}</td>
                 <td>${statusBadge}</td>
                 <td>
-                    <div class="btn-group btn-group-sm" role="group">
-                        <button class="btn btn-outline-primary" onclick="viewReceipt(${payment.payment_id})" title="View Receipt">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="btn btn-outline-success" onclick="printReceipt(${payment.receipt_id})" title="Print Receipt">
-                            <i class="fas fa-print"></i>
-                        </button>
-                        <button class="btn btn-outline-info" onclick="downloadReceipt(${payment.payment_id})" title="Download PDF">
-                            <i class="fas fa-download"></i>
-                        </button>
-                    </div>
+                    <button class="btn btn-sm btn-primary" onclick="viewReceipt(${payment.payment_id})" title="View Receipt">
+                        <i class="fas fa-receipt"></i> View
+                    </button>
                 </td>
             </tr>
         `;
@@ -166,26 +158,10 @@ function changePage(page) {
 
 /**
  * View receipt (opens in new window)
+ * User can print or download from the receipt page using browser controls
  */
 function viewReceipt(paymentId) {
     window.open(`../api/receipt_generate.php?payment_id=${paymentId}&mode=inline`, '_blank');
-}
-
-/**
- * Print receipt
- */
-function printReceipt(receiptId) {
-    const printWindow = window.open(`../api/receipt_print.php?receipt_id=${receiptId}&mode=inline`, '_blank');
-    printWindow.addEventListener('load', function() {
-        printWindow.print();
-    });
-}
-
-/**
- * Download receipt PDF
- */
-function downloadReceipt(paymentId) {
-    window.location.href = `../api/receipt_generate.php?payment_id=${paymentId}&mode=download`;
 }
 
 /**
