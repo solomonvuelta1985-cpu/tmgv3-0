@@ -52,6 +52,15 @@ if ($isLocalhost) {
 // Common configuration for both environments
 define('DB_CHARSET', 'utf8mb4');
 
+// ============================================================
+// SECURITY: DEBUG MODE CONFIGURATION
+// ============================================================
+// LOCALHOST: Debug mode enabled - shows detailed error messages
+// PRODUCTION: Debug mode disabled - shows generic error messages only
+// IMPORTANT: Set to false in production to prevent information disclosure
+define('DEBUG_MODE', $isLocalhost); // Auto-detect: true for localhost, false for production
+// UNCOMMENT FOR PRODUCTION: define('DEBUG_MODE', false);
+
 // Auto-detect base path (optional - for automatic configuration)
 function getBasePath() {
     // If BASE_PATH is explicitly defined and not empty, use it
@@ -85,12 +94,43 @@ ini_set('session.cookie_secure', 0); // Set to 1 if using HTTPS
 ini_set('session.use_strict_mode', 1);
 */
 
-// Security Headers - only set if headers not already sent
+// ============================================================
+// SECURITY HEADERS
+// ============================================================
 if (!headers_sent()) {
+    // Basic Security Headers
     header("X-Frame-Options: SAMEORIGIN");
     header("X-Content-Type-Options: nosniff");
     header("X-XSS-Protection: 1; mode=block");
     header("Referrer-Policy: strict-origin-when-cross-origin");
+
+    // SECURITY: Content Security Policy (CSP)
+    // Helps prevent XSS attacks by controlling resource loading
+    $csp = "default-src 'self'; " .
+           "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://code.jquery.com https://unpkg.com; " .
+           "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://fonts.googleapis.com; " .
+           "font-src 'self' https://fonts.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; " .
+           "img-src 'self' data: https:; " .
+           "connect-src 'self' https://cdn.jsdelivr.net https://unpkg.com; " .
+           "frame-ancestors 'self'; " .
+           "base-uri 'self'; " .
+           "form-action 'self';";
+    header("Content-Security-Policy: " . $csp);
+
+    // PRODUCTION ONLY: HTTPS Enforcement Headers
+    // LOCALHOST: Commented out (no HTTPS)
+    if (!$isLocalhost) {
+        // HSTS: Force HTTPS for 1 year (only enable when HTTPS is active)
+        // header("Strict-Transport-Security: max-age=31536000; includeSubDomains; preload");
+
+        // Upgrade insecure requests to HTTPS
+        // header("Content-Security-Policy: upgrade-insecure-requests");
+    }
+    // UNCOMMENT FOR PRODUCTION WITH HTTPS:
+    // header("Strict-Transport-Security: max-age=31536000; includeSubDomains; preload");
+
+    // Permissions Policy (formerly Feature Policy)
+    header("Permissions-Policy: geolocation=(), microphone=(), camera=()");
 }
 
 // PDO Database Connection

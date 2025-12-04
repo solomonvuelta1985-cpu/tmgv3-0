@@ -7,10 +7,10 @@ require_once '../includes/auth.php';
 header('Content-Type: application/json');
 header('X-Content-Type-Options: nosniff');
 
-// Require login
-if (!is_logged_in()) {
+// SECURITY FIX: Require enforcer or admin privileges
+if (!is_enforcer() && !is_admin()) {
     http_response_code(403);
-    echo json_encode(['status' => 'error', 'message' => 'Authentication required']);
+    echo json_encode(['status' => 'error', 'message' => 'Enforcer or admin privileges required']);
     exit;
 }
 

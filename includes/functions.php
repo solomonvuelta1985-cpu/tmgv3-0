@@ -32,6 +32,23 @@ function db_query($sql, $params = []) {
     }
 }
 
+/**
+ * Format error message based on DEBUG_MODE
+ * SECURITY: Prevents information disclosure in production
+ *
+ * @param Exception $e Exception object
+ * @param string $generic_message Generic message to show in production
+ * @return string Formatted error message
+ */
+function format_error_message($e, $generic_message = 'An error occurred. Please try again.') {
+    if (defined('DEBUG_MODE') && DEBUG_MODE) {
+        // LOCALHOST: Show detailed error information for debugging
+        return $e->getMessage() . ' (File: ' . $e->getFile() . ', Line: ' . $e->getLine() . ')';
+    }
+    // PRODUCTION: Show only generic message to prevent information disclosure
+    return $generic_message;
+}
+
 // CSRF Token Management
 function generate_token() {
     if (empty($_SESSION['csrf_token'])) {

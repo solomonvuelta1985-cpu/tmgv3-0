@@ -7,3 +7,6 @@
 [04-Dec-2025 10:32:38 Asia/Manila] No valid pending payments found
 [04-Dec-2025 10:34:02 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
 [04-Dec-2025 10:34:02 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[04-Dec-2025 10:53:37 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[04-Dec-2025 10:53:37 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[04-Dec-2025 10:54:14 Asia/Manila] Audit log error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'action' in 'field list'

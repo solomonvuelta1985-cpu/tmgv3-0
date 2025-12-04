@@ -145,7 +145,8 @@ function exportToPDF($data, $filename, $report_type) {
     echo '<h1>' . ucfirst($report_type) . ' Report</h1>';
     echo '<div class="header-info">';
     echo '<strong>Generated:</strong> ' . date('F d, Y h:i A') . '<br>';
-    echo '<strong>Period:</strong> ' . $_GET['start_date'] . ' to ' . $_GET['end_date'];
+    // SECURITY FIX: Prevent XSS by escaping user input
+    echo '<strong>Period:</strong> ' . htmlspecialchars($_GET['start_date'], ENT_QUOTES, 'UTF-8') . ' to ' . htmlspecialchars($_GET['end_date'], ENT_QUOTES, 'UTF-8');
     echo '</div>';
 
     echo '<table>';

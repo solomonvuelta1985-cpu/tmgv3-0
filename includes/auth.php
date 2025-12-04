@@ -6,9 +6,21 @@
 
 // Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
+    // SECURITY: Enhanced session configuration
     ini_set('session.cookie_httponly', 1);
-    ini_set('session.cookie_secure', 0); // Set to 1 for HTTPS
+
+    // PRODUCTION: Auto-detect HTTPS and set secure cookie flag
+    // LOCALHOST: Commented for development (no HTTPS)
+    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+               || ($_SERVER['SERVER_PORT'] ?? 80) == 443;
+    ini_set('session.cookie_secure', $isHttps ? 1 : 0);
+    // UNCOMMENT FOR PRODUCTION: ini_set('session.cookie_secure', 1);
+
+    ini_set('session.cookie_samesite', 'Strict');
     ini_set('session.use_strict_mode', 1);
+    ini_set('session.use_only_cookies', 1);
+    ini_set('session.gc_maxlifetime', 1800); // 30 minutes
+
     session_start();
 }
 
@@ -205,29 +217,63 @@ function can_view_all_citations() {
 
 /**
  * Authenticate user with username and password
+ * SECURITY: Enhanced with account lockout mechanism
+ *
  * @param string $username
  * @param string $password
  * @return bool|array Returns user data on success, false on failure
  */
 function authenticate($username, $password) {
+    // Load security functions if not already loaded
+    if (!function_exists('check_account_lockout')) {
+        require_once __DIR__ . '/security.php';
+    }
+
     try {
         $stmt = db_query(
-            "SELECT user_id, username, password_hash, full_name, email, role, status
+            "SELECT user_id, username, password_hash, full_name, email, role, status, failed_login_attempts, locked_until
              FROM users WHERE username = ? AND status = 'active' LIMIT 1",
             [$username]
         );
         $user = $stmt->fetch();
 
-        if ($user && password_verify($password, $user['password_hash'])) {
+        if (!$user) {
+            // Log failed attempt for non-existent user
+            log_audit(null, 'login_failed', "Username: {$username} (user not found)", 'failure');
+            return false;
+        }
+
+        // SECURITY: Check if account is locked
+        $lockout = check_account_lockout($user);
+        if ($lockout['locked']) {
+            log_audit($user['user_id'], 'login_blocked', $lockout['message'], 'blocked');
+            throw new Exception($lockout['message']);
+        }
+
+        // Verify password
+        if (password_verify($password, $user['password_hash'])) {
+            // SECURITY: Reset failed login attempts on success
+            reset_failed_login_attempts($user['user_id']);
+
             // Update last login
             db_query(
                 "UPDATE users SET last_login = NOW() WHERE user_id = ?",
                 [$user['user_id']]
             );
+
             return $user;
         }
+
+        // SECURITY: Record failed login attempt
+        record_failed_login($user['user_id']);
+
+        return false;
     } catch (Exception $e) {
         error_log("Authentication error: " . $e->getMessage());
+        // Re-throw account lockout exceptions to show message to user
+        if (strpos($e->getMessage(), 'Account locked') !== false) {
+            throw $e;
+        }
     }
     return false;
 }
@@ -348,6 +394,12 @@ function create_user($username, $password, $full_name, $email, $role = 'user') {
 
         if ($existing) {
             return false;
+        }
+
+        // SECURITY: Validate password strength
+        $validation = validate_password_strength($password);
+        if (!$validation['valid']) {
+            throw new Exception($validation['message']);
         }
 
         // Hash password
@@ -524,6 +576,46 @@ function delete_user($user_id) {
 }
 
 /**
+ * Validate password strength
+ * SECURITY: Enhanced password complexity requirements
+ *
+ * @param string $password Password to validate
+ * @return array ['valid' => bool, 'message' => string]
+ */
+function validate_password_strength($password) {
+    $errors = [];
+
+    if (strlen($password) < 12) {
+        $errors[] = 'at least 12 characters';
+    }
+
+    if (!preg_match('/[A-Z]/', $password)) {
+        $errors[] = 'one uppercase letter';
+    }
+
+    if (!preg_match('/[a-z]/', $password)) {
+        $errors[] = 'one lowercase letter';
+    }
+
+    if (!preg_match('/[0-9]/', $password)) {
+        $errors[] = 'one number';
+    }
+
+    if (!preg_match('/[^A-Za-z0-9]/', $password)) {
+        $errors[] = 'one special character (!@#$%^&*)';
+    }
+
+    if (!empty($errors)) {
+        return [
+            'valid' => false,
+            'message' => 'Password must contain ' . implode(', ', $errors)
+        ];
+    }
+
+    return ['valid' => true, 'message' => ''];
+}
+
+/**
  * Reset user password
  *
  * @param int $user_id User ID
@@ -533,13 +625,10 @@ function delete_user($user_id) {
 function reset_user_password($user_id, $new_password) {
     $pdo = getPDO();
 
-    // Validate password strength
-    if (strlen($new_password) < 8) {
-        throw new Exception('Password must be at least 8 characters long');
-    }
-
-    if (!preg_match('/[A-Za-z]/', $new_password) || !preg_match('/[0-9]/', $new_password)) {
-        throw new Exception('Password must contain both letters and numbers');
+    // SECURITY: Validate password strength
+    $validation = validate_password_strength($new_password);
+    if (!$validation['valid']) {
+        throw new Exception($validation['message']);
     }
 
     $password_hash = password_hash($new_password, PASSWORD_DEFAULT);

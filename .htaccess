@@ -1,15 +1,111 @@
-# PHP Error Logging
+# ============================================================
+# SECURITY HARDENING - Apache Configuration
+# Traffic Management System
+# ============================================================
+
+# ============================================================
+# 1. PHP ERROR LOGGING
+# ============================================================
 php_flag log_errors on
 php_flag display_errors off
 php_value error_log "c:/xampp/htdocs/tmg/php_errors.log"
 php_value error_reporting -1
+php_flag expose_php off
 
-# Security Headers
-Header set X-Frame-Options "SAMEORIGIN"
-Header set X-Content-Type-Options "nosniff"
-Header set X-XSS-Protection "1; mode=block"
+# ============================================================
+# 2. DIRECTORY LISTING PROTECTION
+# ============================================================
+Options -Indexes
 
-# Prevent access to sensitive files
-<FilesMatch "\.(log|sql|ini)$">
+# ============================================================
+# 3. FILE ACCESS RESTRICTIONS
+# ============================================================
+# Protect sensitive files
+<FilesMatch "^(config\.php|auth\.php|security\.php|\.env|\.git.*|composer\.json|composer\.lock|package\.json)$">
     Require all denied
 </FilesMatch>
+
+# Protect log, backup, and sensitive files
+<FilesMatch "\.(log|sql|md5|bak|backup|swp|ini)$">
+    Require all denied
+</FilesMatch>
+
+# Block access to hidden files
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# ============================================================
+# 4. SECURITY HEADERS
+# ============================================================
+<IfModule mod_headers.c>
+    # Prevent clickjacking
+    Header always set X-Frame-Options "SAMEORIGIN"
+
+    # Prevent MIME sniffing
+    Header always set X-Content-Type-Options "nosniff"
+
+    # Enable XSS protection
+    Header always set X-XSS-Protection "1; mode=block"
+
+    # Referrer policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+    # Permissions Policy
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=()"
+
+    # PRODUCTION ONLY: HSTS (HTTP Strict Transport Security)
+    # LOCALHOST: Commented out (no HTTPS available)
+    # UNCOMMENT FOR PRODUCTION WITH HTTPS:
+    # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+</IfModule>
+
+# ============================================================
+# 5. HTTPS ENFORCEMENT (Production Only)
+# LOCALHOST: Commented out (no HTTPS available)
+# PRODUCTION: Uncomment to force HTTPS
+# ============================================================
+# <IfModule mod_rewrite.c>
+#     RewriteEngine On
+#     RewriteCond %{HTTPS} off
+#     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# </IfModule>
+
+# ============================================================
+# 6. REQUEST SIZE LIMITS (Prevent DoS)
+# ============================================================
+LimitRequestBody 10485760
+
+# ============================================================
+# 7. DISABLE SERVER SIGNATURE
+# ============================================================
+ServerSignature Off
+
+# ============================================================
+# 8. DISABLE TRACE/TRACK METHODS
+# ============================================================
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK)
+    RewriteRule .* - [F]
+</IfModule>
+
+# ============================================================
+# 9. COMPRESSION (Performance)
+# ============================================================
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
+</IfModule>
+
+# ============================================================
+# 10. BROWSER CACHING (Performance)
+# ============================================================
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+</IfModule>

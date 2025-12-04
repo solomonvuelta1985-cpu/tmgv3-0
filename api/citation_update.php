@@ -121,7 +121,8 @@ try {
     $dob = !empty($data['date_of_birth']) ? $data['date_of_birth'] : null;
     $age = !empty($data['age']) ? (int)$data['age'] : null;
 
-    // Update citation
+    // SECURITY FIX: Update citation (status field removed to prevent bypassing payment workflow)
+    // Status changes should ONLY go through api/update_citation_status.php (admin-only)
     db_query(
         "UPDATE citations SET
             ticket_number = ?,
@@ -143,7 +144,6 @@ try {
             place_of_apprehension = ?,
             apprehension_officer = ?,
             remarks = ?,
-            status = ?,
             updated_at = NOW()
         WHERE citation_id = ?",
         [
@@ -166,7 +166,6 @@ try {
             $data['place_of_apprehension'],
             $data['apprehension_officer'],
             $data['remarks'] ?? null,
-            $data['status'] ?? 'pending',
             $citation_id
         ]
     );

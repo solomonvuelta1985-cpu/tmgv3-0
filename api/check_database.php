@@ -2,6 +2,10 @@
 // Database check script
 define('ROOT_PATH', dirname(__DIR__));
 require_once ROOT_PATH . '/includes/config.php';
+require_once ROOT_PATH . '/includes/auth.php';
+
+// SECURITY: Require admin authentication
+require_admin();
 
 try {
     $pdo = getPDO();

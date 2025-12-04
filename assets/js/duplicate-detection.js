@@ -186,7 +186,26 @@
         });
 
         // Show modal
-        const modal = new bootstrap.Modal(document.getElementById('duplicateWarningModal'));
+        const modalElement = document.getElementById('duplicateWarningModal');
+        const modal = new bootstrap.Modal(modalElement);
+
+        // Add event listener to clean up backdrop when modal is hidden (safety mechanism)
+        modalElement.addEventListener('hidden.bs.modal', function cleanupBackdrop() {
+            // Remove any remaining modal backdrops
+            setTimeout(() => {
+                const backdrops = document.querySelectorAll('.modal-backdrop');
+                backdrops.forEach(backdrop => backdrop.remove());
+
+                // Ensure body is properly reset
+                document.body.classList.remove('modal-open');
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+            }, 100);
+
+            // Remove this listener after it runs once
+            modalElement.removeEventListener('hidden.bs.modal', cleanupBackdrop);
+        });
+
         modal.show();
     }
 
@@ -264,8 +283,24 @@
             return;
         }
 
-        // Close modal
-        bootstrap.Modal.getInstance(document.getElementById('duplicateWarningModal')).hide();
+        // Close modal properly and remove backdrop
+        const modalElement = document.getElementById('duplicateWarningModal');
+        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+        if (modalInstance) {
+            modalInstance.hide();
+        }
+
+        // Ensure backdrop is removed (fix for black screen issue)
+        setTimeout(() => {
+            // Remove any remaining modal backdrops
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            backdrops.forEach(backdrop => backdrop.remove());
+
+            // Remove modal-open class from body and restore scrolling
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+        }, 300); // Wait for modal hide animation to complete
     }
 
     /**
