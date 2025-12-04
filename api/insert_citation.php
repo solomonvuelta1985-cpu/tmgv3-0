@@ -3,6 +3,7 @@ session_start();
 require_once '../includes/config.php';
 require_once '../includes/functions.php';
 require_once '../includes/auth.php';
+require_once '../includes/security.php'; // SECURITY: Audit logging
 
 // Security Headers
 header('Content-Type: application/json');
@@ -287,10 +288,18 @@ try {
     
     // Commit transaction
     $pdo->commit();
-    
+
+    // SECURITY: Audit logging for citation creation
+    log_audit(
+        $_SESSION['user_id'] ?? null,
+        'citation_created',
+        "Ticket #: {$data['ticket_number']}, Driver: {$data['first_name']} {$data['last_name']}, Citation ID: {$citation_id}",
+        'success'
+    );
+
     // Generate new CSRF token
     $new_token = generate_token();
-    
+
     // Success response
     echo json_encode([
         'status' => 'success',
@@ -304,6 +313,14 @@ try {
     if (isset($pdo) && $pdo->inTransaction()) {
         $pdo->rollBack();
     }
+
+    // SECURITY: Audit logging for failed citation creation
+    log_audit(
+        $_SESSION['user_id'] ?? null,
+        'citation_create_failed',
+        "Error: " . $e->getMessage(),
+        'failure'
+    );
 
     error_log("Citation submission error: " . $e->getMessage() . " | File: " . $e->getFile() . " | Line: " . $e->getLine());
 

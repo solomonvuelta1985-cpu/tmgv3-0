@@ -13,6 +13,7 @@ session_start();
 require_once '../includes/config.php';
 require_once '../includes/functions.php';
 require_once '../includes/auth.php';
+require_once '../includes/security.php'; // SECURITY: Audit logging
 
 header('Content-Type: application/json');
 
@@ -193,8 +194,13 @@ try {
         // Commit transaction
         $pdo->commit();
 
-        // Log the soft deletion
-        error_log("Citation soft deleted: ID={$citation_id}, Ticket={$citation['ticket_number']}, Name={$citation['first_name']} {$citation['last_name']}, By User ID=" . $_SESSION['user_id'] . ", Reason: {$deletion_reason}");
+        // SECURITY: Audit logging for citation deletion
+        log_audit(
+            $_SESSION['user_id'] ?? null,
+            'citation_deleted',
+            "Ticket #: {$citation['ticket_number']}, Driver: {$citation['first_name']} {$citation['last_name']}, Citation ID: {$citation_id}, Reason: {$deletion_reason}",
+            'success'
+        );
 
         echo json_encode([
             'status' => 'success',
@@ -210,6 +216,14 @@ try {
     }
 
 } catch (Exception $e) {
+    // SECURITY: Audit logging for failed citation deletion
+    log_audit(
+        $_SESSION['user_id'] ?? null,
+        'citation_delete_failed',
+        "Citation ID: " . ($citation_id ?? 'unknown') . ", Error: " . $e->getMessage(),
+        'failure'
+    );
+
     error_log("Citation delete error: " . $e->getMessage());
     http_response_code(500);
     echo json_encode(['status' => 'error', 'message' => 'Database error occurred']);

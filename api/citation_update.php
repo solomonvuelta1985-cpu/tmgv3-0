@@ -3,6 +3,7 @@ session_start();
 require_once '../includes/config.php';
 require_once '../includes/functions.php';
 require_once '../includes/auth.php';
+require_once '../includes/security.php'; // SECURITY: Audit logging
 
 header('Content-Type: application/json');
 header('X-Content-Type-Options: nosniff');
@@ -278,6 +279,14 @@ try {
     // Commit transaction
     $pdo->commit();
 
+    // SECURITY: Audit logging for citation update
+    log_audit(
+        $_SESSION['user_id'] ?? null,
+        'citation_updated',
+        "Ticket #: {$data['ticket_number']}, Driver: {$data['first_name']} {$data['last_name']}, Citation ID: {$citation_id}",
+        'success'
+    );
+
     // Get updated citation info
     $stmt = db_query("SELECT total_fine FROM citations WHERE citation_id = ?", [$citation_id]);
     $updated = $stmt->fetch();
@@ -294,6 +303,14 @@ try {
     if (isset($pdo) && $pdo->inTransaction()) {
         $pdo->rollBack();
     }
+
+    // SECURITY: Audit logging for failed citation update
+    log_audit(
+        $_SESSION['user_id'] ?? null,
+        'citation_update_failed',
+        "Citation ID: " . ($citation_id ?? 'unknown') . ", Error: " . $e->getMessage(),
+        'failure'
+    );
 
     error_log("Citation update error: " . $e->getMessage() . " | File: " . $e->getFile() . " | Line: " . $e->getLine());
 
