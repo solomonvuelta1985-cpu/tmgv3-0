@@ -159,11 +159,150 @@ function changePage(page) {
 }
 
 /**
- * View receipt (opens in new window)
- * User can print or download from the receipt page using browser controls
+ * View payment details in modal
  */
+let currentPaymentId = null;
+
 function viewReceipt(paymentId) {
-    window.open(`../api/receipt_generate.php?payment_id=${paymentId}&mode=inline`, '_blank');
+    currentPaymentId = paymentId;
+
+    // Show loading in modal
+    const modalContent = document.getElementById('paymentDetailsContent');
+    modalContent.innerHTML = `
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3 text-muted">Loading payment details...</p>
+        </div>
+    `;
+
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('paymentDetailsModal'));
+    modal.show();
+
+    // Fetch payment details
+    fetch(`../api/payment_details.php?payment_id=${paymentId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                displayPaymentDetails(data.payment);
+            } else {
+                modalContent.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-circle"></i> ${data.message}
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            modalContent.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle"></i> Error loading payment details: ${error.message}
+                </div>
+            `;
+        });
+}
+
+/**
+ * Display payment details in modal
+ */
+function displayPaymentDetails(payment) {
+    const modalContent = document.getElementById('paymentDetailsContent');
+
+    // Get amount paid
+    const amountPaid = parseFloat(payment.amount_paid);
+
+    // Format status badge
+    const statusBadge = getStatusBadge(payment.status);
+
+    const html = `
+        <!-- Transaction Details Section -->
+        <div style="background: #ffffff; border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; border: 1px solid #e5e7eb;">
+            <h6 style="font-size: 0.875rem; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 2px solid #f3f4f6;">
+                <i class="fas fa-info-circle" style="color: #6b7280; margin-right: 0.5rem;"></i> Transaction Details
+            </h6>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                <div>
+                    <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">OR Number:</div>
+                    <div style="font-size: 1rem; font-weight: 600; color: #059669; font-family: 'Courier New', monospace; background: #d1fae5; padding: 0.375rem 0.75rem; border-radius: 4px; display: inline-block;">
+                        ${escapeHtml(payment.receipt_number)}
+                    </div>
+                </div>
+                <div>
+                    <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">Ticket Number:</div>
+                    <div style="font-size: 0.9375rem; font-weight: 500; color: #111827;">${escapeHtml(payment.ticket_number)}</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">Driver:</div>
+                    <div style="font-size: 0.9375rem; font-weight: 500; color: #111827;">${escapeHtml(payment.driver_name || 'N/A')}</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">Payment Method:</div>
+                    <div style="font-size: 0.9375rem; font-weight: 500; color: #111827; text-transform: capitalize;">${formatPaymentMethod(payment.payment_method)}</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">Processed By:</div>
+                    <div style="font-size: 0.9375rem; font-weight: 500; color: #111827;">${escapeHtml(payment.collector_name || 'N/A')}</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">Date Processed:</div>
+                    <div style="font-size: 0.9375rem; font-weight: 500; color: #111827;">${formatDateTime(payment.payment_date)}</div>
+                </div>
+                ${payment.reference_number ? `
+                <div>
+                    <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">Reference Number:</div>
+                    <div style="font-size: 0.9375rem; font-weight: 500; color: #111827;">${escapeHtml(payment.reference_number)}</div>
+                </div>
+                ` : ''}
+                <div>
+                    <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;">Status:</div>
+                    <div>${statusBadge}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Breakdown Section -->
+        <div style="background: #ffffff; border-radius: 8px; padding: 1.25rem; border: 1px solid #e5e7eb;">
+            <h6 style="font-size: 0.875rem; font-weight: 600; color: #374151; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 2px solid #f3f4f6;">
+                <i class="fas fa-money-bill-wave" style="color: #6b7280; margin-right: 0.5rem;"></i> Payment Breakdown
+            </h6>
+
+            <div style="background: #dbeafe; border: 1px solid #bfdbfe; border-left: 4px solid #3b82f6; border-radius: 6px; padding: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.875rem; color: #1e40af; font-weight: 600;">Amount Paid:</span>
+                    <span style="font-size: 1.5rem; font-weight: 700; color: #2563eb;">₱${formatMoney(amountPaid)}</span>
+                </div>
+            </div>
+        </div>
+
+        ${payment.notes ? `
+        <div style="background: #fffbeb; border: 1px solid #fde68a; border-left: 4px solid #f59e0b; border-radius: 6px; padding: 1rem; margin-top: 1rem;">
+            <div style="font-size: 0.75rem; color: #92400e; font-weight: 600; margin-bottom: 0.5rem;">
+                <i class="fas fa-sticky-note" style="margin-right: 0.5rem;"></i> NOTES
+            </div>
+            <div style="font-size: 0.875rem; color: #78350f; white-space: pre-wrap;">${escapeHtml(payment.notes)}</div>
+        </div>
+        ` : ''}
+
+        <div style="background: #eff6ff; border: 1px solid #dbeafe; border-radius: 6px; padding: 1rem; margin-top: 1rem;">
+            <div style="font-size: 0.875rem; color: #1e40af;">
+                <i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i>
+                <strong>Next Step:</strong> Click "Print Receipt" below to print the official receipt.
+            </div>
+        </div>
+    `;
+
+    modalContent.innerHTML = html;
+}
+
+/**
+ * Print payment receipt
+ */
+function printPaymentReceipt() {
+    if (currentPaymentId) {
+        window.open(`../api/receipt_generate.php?payment_id=${currentPaymentId}&mode=inline`, '_blank');
+    }
 }
 
 /**

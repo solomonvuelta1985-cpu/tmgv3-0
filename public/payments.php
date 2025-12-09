@@ -81,6 +81,8 @@ if ($pdo === null) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../assets/css/payments.css">
 
@@ -197,17 +199,17 @@ if ($pdo === null) {
                             </div>
                             <div class="col-md-4">
                                 <label for="receiptNumber" class="form-label">
-                                    <i class="fas fa-receipt"></i> OR Number (CGVM Format)
+                                    <i class="fas fa-receipt"></i> OR Number
                                 </label>
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="receiptNumber" name="receipt_number"
-                                           placeholder="CGVM12345678" maxlength="12"
+                                           placeholder="e.g., 12345678 or CGVM12345678" maxlength="12"
                                            style="text-transform: uppercase;">
                                     <button class="btn btn-outline-secondary" type="button" onclick="quickSearchOR()" title="Quick Search">
                                         <i class="fas fa-search"></i>
                                     </button>
                                 </div>
-                                <small class="text-muted">Format: CGVM + 8 digits</small>
+                                <small class="text-muted">Format: 8 digits or CGVM + 8 digits</small>
                             </div>
                             <div class="col-md-4">
                                 <label for="ticketNumber" class="form-label">Ticket Number</label>
@@ -283,8 +285,50 @@ if ($pdo === null) {
         </div>
     </div>
 
+    <!-- Payment Details Modal -->
+    <div class="modal fade" id="paymentDetailsModal" tabindex="-1" aria-labelledby="paymentDetailsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content" style="border-radius: 8px; overflow: hidden;">
+                <!-- Modal Header -->
+                <div class="modal-header" style="background: #ffffff; border-bottom: 1px solid #dee2e6; padding: 1.5rem;">
+                    <div class="header-content" style="display: flex; align-items: center; gap: 1rem; width: 100%;">
+                        <div class="header-icon" style="width: 56px; height: 56px; background: #d1fae5; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-check-circle" style="font-size: 2rem; color: #059669;"></i>
+                        </div>
+                        <div class="header-text" style="flex: 1;">
+                            <h5 class="modal-title mb-0" id="paymentDetailsModalLabel" style="font-size: 1.25rem; font-weight: 600; color: #111827;">
+                                Payment Record
+                            </h5>
+                            <small style="color: #6b7280; font-size: 0.875rem;">Transaction details</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body" style="padding: 1.5rem; background: #f9fafb;">
+                    <div id="paymentDetailsContent">
+                        <!-- Content will be populated via JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer" style="background: #ffffff; border-top: 1px solid #dee2e6; padding: 1rem 1.5rem; display: flex; justify-content: flex-end; gap: 0.75rem;">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="padding: 0.5rem 1.25rem;">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                    <button type="button" class="btn btn-success" onclick="printPaymentReceipt()" style="padding: 0.5rem 1.25rem;">
+                        <i class="fas fa-print"></i> Print Receipt
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Custom JS -->
     <script src="../assets/js/payments.js"></script>
 </body>

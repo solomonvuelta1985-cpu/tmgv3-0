@@ -1213,7 +1213,7 @@ if ($pdo === null) {
                                                 id="receipt_number"
                                                 name="receipt_number"
                                                 required
-                                                placeholder="e.g., CGVM15320501"
+                                                placeholder="e.g., 15320501 or CGVM15320501"
                                                 style="font-family: 'Courier New', monospace; font-weight: bold; font-size: 1rem;"
                                             >
                                         </div>

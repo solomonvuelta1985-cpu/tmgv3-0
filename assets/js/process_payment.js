@@ -7,8 +7,8 @@ let paymentModal;
 let currentCitation = null;
 let formIsDirty = false;
 
-// OR Number validation pattern - CGVM format (CGVM + exactly 8 digits)
-const OR_NUMBER_PATTERN = /^CGVM[0-9]{8}$/;
+// OR Number validation pattern - 8 digits with optional CGVM prefix
+const OR_NUMBER_PATTERN = /^(CGVM)?[0-9]{8}$/;
 
 document.addEventListener('DOMContentLoaded', function() {
     // Initialize modal
@@ -373,12 +373,12 @@ function handlePaymentSubmit(e) {
         return;
     }
 
-    // Validate OR number format (CGVM + 8 digits)
+    // Validate OR number format (8 digits with optional CGVM prefix)
     if (!OR_NUMBER_PATTERN.test(receiptNumber)) {
         Swal.fire({
             icon: 'error',
             title: 'Invalid OR Format',
-            text: 'Expected format: CGVM followed by exactly 8 digits (e.g., CGVM15320501)',
+            text: 'Expected format: 8 digits (e.g., 15320501) or CGVM15320501',
             confirmButtonColor: '#dc2626'
         });
         document.getElementById('receipt_number').focus();
@@ -801,12 +801,12 @@ function confirmNewOr() {
         return;
     }
 
-    // Validate OR number format (CGVM + 8 digits)
+    // Validate OR number format (8 digits with optional CGVM prefix)
     if (!OR_NUMBER_PATTERN.test(newOrNumber)) {
         Swal.fire({
             icon: 'error',
             title: 'Invalid Format',
-            text: 'Invalid OR number format! Expected: CGVM followed by exactly 8 digits (e.g., CGVM15320501)',
+            text: 'Invalid OR number format! Expected: 8 digits (e.g., 15320501) or CGVM15320501',
             confirmButtonColor: '#dc2626'
         });
         return;
@@ -848,6 +848,8 @@ function confirmNewOr() {
     })
     .then(response => response.json())
     .then(data => {
+        Swal.close(); // Close the loading dialog
+
         if (data.success) {
             // Close reprint modal
             bootstrap.Modal.getInstance(document.getElementById('reprintOptionsModal')).hide();
@@ -864,6 +866,8 @@ function confirmNewOr() {
         }
     })
     .catch(error => {
+        Swal.close(); // Close the loading dialog
+
         Swal.fire({
             icon: 'error',
             title: 'Error',
@@ -993,13 +997,13 @@ function validateOrNumberFormat() {
     if (OR_NUMBER_PATTERN.test(value)) {
         // Valid format
         feedbackDiv.className = 'text-success';
-        feedbackDiv.innerHTML = '<i class="fas fa-check-circle"></i> Valid OR format (CGVM + 8 digits)';
+        feedbackDiv.innerHTML = '<i class="fas fa-check-circle"></i> Valid OR format (8 digits)';
         input.style.borderColor = '#198754';
         input.style.backgroundColor = '#f0fdf4';
     } else {
         // Invalid format
         feedbackDiv.className = 'text-danger';
-        feedbackDiv.innerHTML = '<i class="fas fa-times-circle"></i> Invalid format. Expected: CGVM followed by exactly 8 digits (e.g., CGVM15320501)';
+        feedbackDiv.innerHTML = '<i class="fas fa-times-circle"></i> Invalid format. Expected: 8 digits (e.g., 15320501) or CGVM15320501';
         input.style.borderColor = '#dc3545';
         input.style.backgroundColor = '#fef2f2';
     }

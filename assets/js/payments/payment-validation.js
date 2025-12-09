@@ -23,7 +23,7 @@ const VALIDATION_CONFIG = {
 
     // OR number validation
     OR_NUMBER_PATTERNS: {
-        CGVM: /^CGVM[0-9]{8}$/,  // CGVM + 8 digits
+        CGVM: /^(CGVM)?[0-9]{8}$/,  // Optional CGVM + 8 digits
         Generic: /^[A-Z]{2,4}[0-9]{6,10}$/  // 2-4 letters + 6-10 digits
     },
 
@@ -165,7 +165,7 @@ function validateOrNumberFormat(orNumber) {
 
     return {
         valid: false,
-        message: 'Invalid OR number format. Expected format: CGVM########'
+        message: 'Invalid OR number format. Expected format: 8 digits (e.g., 15320501) or CGVM########'
     };
 }
 

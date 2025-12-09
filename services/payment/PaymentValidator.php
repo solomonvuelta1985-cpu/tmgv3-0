@@ -118,14 +118,17 @@ class PaymentValidator {
         // Trim and convert to uppercase
         $receiptNumber = strtoupper(trim($receiptNumber));
 
-        // OR Number format: 2-4 uppercase letters followed by 6-10 digits
-        // Examples: CGVM15320501, OR123456, ABC1234567890
-        $pattern = '/^[A-Z]{2,4}[0-9]{6,10}$/';
+        // OR Number format: Accept either 8 digits or CGVM + 8 digits
+        // Primary pattern: 8 digits (with optional CGVM prefix)
+        $primaryPattern = '/^(CGVM)?[0-9]{8}$/';
 
-        if (!preg_match($pattern, $receiptNumber)) {
+        // Fallback pattern: 2-4 uppercase letters followed by 6-10 digits (for other OR formats)
+        $fallbackPattern = '/^[A-Z]{2,4}[0-9]{6,10}$/';
+
+        if (!preg_match($primaryPattern, $receiptNumber) && !preg_match($fallbackPattern, $receiptNumber)) {
             return [
                 'valid' => false,
-                'message' => 'Invalid OR number format. Expected format: 2-4 letters followed by 6-10 digits (e.g., CGVM15320501)'
+                'message' => 'Invalid OR number format. Expected format: 8 digits (e.g., 15320501) or CGVM15320501'
             ];
         }
 
