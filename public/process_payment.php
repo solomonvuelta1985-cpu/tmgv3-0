@@ -882,6 +882,7 @@ if ($pdo === null) {
     </style>
 </head>
 <body>
+    <?php include __DIR__ . '/../includes/loader.php'; ?>
     <?php include __DIR__ . '/sidebar.php'; ?>
 
     <div class="main-content">

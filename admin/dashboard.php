@@ -71,6 +71,7 @@ try {
     <link rel="stylesheet" href="../assets/css/admin-dashboard.css">
 </head>
 <body>
+    <?php include '../includes/loader.php'; ?>
     <?php include '../public/sidebar.php'; ?>
 
     <div class="content">

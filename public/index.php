@@ -1120,6 +1120,7 @@ if ($pdo) {
     </style>
 </head>
 <body>
+    <?php include '../includes/loader.php'; ?>
     <?php include 'sidebar.php'; ?>
 
     <div class="dashboard-wrapper">

@@ -90,6 +90,7 @@ if ($pdo === null) {
     <?php include __DIR__ . '/../includes/js_config.php'; ?>
 </head>
 <body>
+    <?php include '../includes/loader.php'; ?>
     <?php include 'sidebar.php'; ?>
 
     <!-- Main Content -->

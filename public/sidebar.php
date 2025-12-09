@@ -179,6 +179,16 @@
                 <i data-lucide="clipboard-list"></i> <span>Audit Log</span>
             </a>
         </li>
+        <li>
+            <a href="/tmg/admin/backups.php" class="<?php echo (basename($_SERVER['PHP_SELF']) === 'backups.php' && strpos($_SERVER['PHP_SELF'], '/admin/') !== false) ? 'active' : ''; ?>" title="Database Backups">
+                <i data-lucide="database"></i> <span>Backups</span>
+            </a>
+        </li>
+        <li>
+            <a href="/tmg/admin/backup_settings.php" class="<?php echo (basename($_SERVER['PHP_SELF']) === 'backup_settings.php') ? 'active' : ''; ?>" title="Backup Settings">
+                <i data-lucide="settings"></i> <span>Backup Settings</span>
+            </a>
+        </li>
         <?php endif; ?>
     </ul>
 

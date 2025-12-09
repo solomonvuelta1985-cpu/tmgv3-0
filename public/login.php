@@ -633,11 +633,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         });
 
-        // Disable button on submit
+        // Disable button on submit and mark for page loader
         document.getElementById('loginForm').addEventListener('submit', function() {
             const btn = document.getElementById('loginBtn');
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing In...';
+
+            // Set flag for showing page loader after redirect
+            sessionStorage.setItem('showPageLoader', 'true');
         });
     </script>
 </body>
