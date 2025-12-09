@@ -28,7 +28,7 @@ function loadPayments() {
 
     // Show loading
     loadingSpinner.style.display = 'block';
-    tableBody.innerHTML = '<tr><td colspan="9" class="text-center">Loading...</td></tr>';
+    tableBody.innerHTML = '<tr><td colspan="10" class="text-center">Loading...</td></tr>';
 
     // Get filter values
     currentFilters = {
@@ -60,12 +60,12 @@ function loadPayments() {
                 displayPayments(data.data);
                 updatePagination(data.pagination);
             } else {
-                tableBody.innerHTML = `<tr><td colspan="9" class="text-center text-danger">Error: ${data.message}</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="10" class="text-center text-danger">Error: ${data.message}</td></tr>`;
             }
         })
         .catch(error => {
             loadingSpinner.style.display = 'none';
-            tableBody.innerHTML = `<tr><td colspan="9" class="text-center text-danger">Error loading payments: ${error.message}</td></tr>`;
+            tableBody.innerHTML = `<tr><td colspan="10" class="text-center text-danger">Error loading payments: ${error.message}</td></tr>`;
             console.error('Error:', error);
         });
 }
@@ -77,7 +77,7 @@ function displayPayments(payments) {
     const tableBody = document.getElementById('paymentsTableBody');
 
     if (!payments || payments.length === 0) {
-        tableBody.innerHTML = '<tr><td colspan="9" class="text-center">No payments found</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="10" class="text-center">No payments found</td></tr>';
         return;
     }
 
@@ -85,11 +85,13 @@ function displayPayments(payments) {
     payments.forEach(payment => {
         const statusBadge = getStatusBadge(payment.status);
         const paymentDate = formatDateTime(payment.payment_date);
+        const citationDate = formatDate(payment.citation_date);
         const paymentMethod = formatPaymentMethod(payment.payment_method);
 
         html += `
             <tr>
                 <td>${paymentDate}</td>
+                <td>${citationDate}</td>
                 <td><strong>${escapeHtml(payment.receipt_number)}</strong></td>
                 <td>${escapeHtml(payment.ticket_number)}</td>
                 <td>${escapeHtml(payment.driver_name || 'N/A')}</td>
@@ -228,6 +230,19 @@ function formatDateTime(dateString) {
         day: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
+    });
+}
+
+/**
+ * Format date only (without time)
+ */
+function formatDate(dateString) {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
     });
 }
 

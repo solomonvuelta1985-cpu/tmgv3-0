@@ -711,6 +711,59 @@ if (empty($_SESSION['csrf_token'])) {
                 top: 0;
             }
         }
+
+        /* ==========================================
+           REPEAT OFFENDER VISUAL INDICATORS
+           ========================================== */
+        .offense-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            animation: pulse-badge 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        /* Highlight repeat offense violations */
+        .violation-item.repeat-offense {
+            background: linear-gradient(to right, #fff5f5, #ffffff);
+            border-left: 3px solid #fd7e14;
+            padding-left: 10px;
+        }
+
+        .violation-item.repeat-offense-severe {
+            background: linear-gradient(to right, #fee, #ffffff);
+            border-left: 3px solid #dc3545;
+            padding-left: 10px;
+        }
+
+        /* Loading animation for violation updates */
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        .updating-violations {
+            animation: shimmer 2s infinite;
+            background: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
+            background-size: 1000px 100%;
+        }
     </style>
 </head>
 <body class="loading">

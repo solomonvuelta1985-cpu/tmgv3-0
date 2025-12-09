@@ -43,12 +43,4 @@ window.buildRelativeUrl = function(path) {
     // This maintains relative paths (../) for same-level navigation
     return path;
 };
-
-// Log configuration for debugging
-console.log('App Config Loaded:', {
-    basePath: window.APP_CONFIG.BASE_PATH,
-    currentUrl: window.location.href,
-    buildApiUrl: typeof window.buildApiUrl,
-    buildPublicUrl: typeof window.buildPublicUrl
-});
 </script>

@@ -1051,6 +1051,9 @@ if ($pdo === null) {
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Pending Citations <span id="citationCount">(0)</span></h5>
                     <div>
+                        <small class="text-muted me-3">
+                            <i class="fas fa-info-circle"></i> Showing citations awaiting payment
+                        </small>
                         <button class="btn btn-sm btn-success" onclick="exportToCSV()" id="exportBtn" style="display: none;">
                             <i class="fas fa-file-excel"></i> Export to CSV
                         </button>
@@ -1081,7 +1084,7 @@ if ($pdo === null) {
                                         <th>License</th>
                                         <th>Vehicle</th>
                                         <th>Violation</th>
-                                        <th>Date</th>
+                                        <th>Citation Date</th>
                                         <th>Amount Due</th>
                                         <th>Status</th>
                                         <th>Actions</th>

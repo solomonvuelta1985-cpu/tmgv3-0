@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Duplicate Detection</title>
+</head>
+<body>
+    <h1>Duplicate Detection Test</h1>
+
+    <form id="testForm">
+        <label>First Name:</label>
+        <input type="text" name="first_name" value="test"><br><br>
+
+        <label>Last Name:</label>
+        <input type="text" name="last_name" value="test123 G."><br><br>
+
+        <label>Plate:</label>
+        <input type="text" name="plate_mv_engine_chassis_no" value="5JK567"><br><br>
+
+        <label>Violation:</label>
+        <input type="checkbox" class="violation-checkbox" value="1" id="violation_1">
+        <label for="violation_1">NO HELMET (BACKRIDER)</label>
+    </form>
+
+    <div id="log" style="margin-top: 20px; padding: 10px; background: #f0f0f0; font-family: monospace; white-space: pre-wrap;"></div>
+
+    <script>
+        const log = document.getElementById('log');
+
+        function addLog(msg) {
+            log.textContent += new Date().toLocaleTimeString() + ': ' + msg + '\n';
+            console.log(msg);
+        }
+
+        // Check if elements exist
+        addLog('🔍 Checking form elements...');
+        addLog('First name field: ' + (document.querySelector('[name="first_name"]') ? 'FOUND ✅' : 'NOT FOUND ❌'));
+        addLog('Last name field: ' + (document.querySelector('[name="last_name"]') ? 'FOUND ✅' : 'NOT FOUND ❌'));
+        addLog('Plate field: ' + (document.querySelector('[name="plate_mv_engine_chassis_no"]') ? 'FOUND ✅' : 'NOT FOUND ❌'));
+        addLog('Violation checkbox: ' + (document.querySelector('.violation-checkbox') ? 'FOUND ✅' : 'NOT FOUND ❌'));
+
+        // Test getValue function
+        function getValue(name) {
+            let element = document.getElementById(name);
+            if (!element) {
+                element = document.querySelector(`[name="${name}"]`);
+            }
+            const value = element ? element.value.trim() : '';
+            addLog(`getValue('${name}') = "${value}"`);
+            return value;
+        }
+
+        // Test hasDriverInfo function
+        function hasDriverInfo() {
+            const licenseNumber = getValue('license_number');
+            const plateNumber = getValue('plate_mv_engine_chassis_no');
+            const firstName = getValue('first_name');
+            const lastName = getValue('last_name');
+
+            const result = (licenseNumber || plateNumber) || (firstName && lastName);
+            addLog(`hasDriverInfo() = ${result}`);
+            return result;
+        }
+
+        // Add listener to checkbox
+        document.querySelector('.violation-checkbox').addEventListener('change', function() {
+            addLog('📝 Violation checkbox changed! Checked: ' + this.checked);
+
+            if (this.checked) {
+                addLog('👤 Checking driver info...');
+                const hasInfo = hasDriverInfo();
+
+                if (hasInfo) {
+                    addLog('✅ Driver info available! Would trigger duplicate check now.');
+                } else {
+                    addLog('❌ No driver info - check would be skipped');
+                }
+            }
+        });
+
+        addLog('✅ Test page loaded successfully!');
+        addLog('Click the checkbox to test detection...');
+    </script>
+</body>
+</html>

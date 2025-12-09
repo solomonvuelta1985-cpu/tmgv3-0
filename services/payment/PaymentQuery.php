@@ -104,6 +104,7 @@ class PaymentQuery {
         $sql = "SELECT
                     p.*,
                     c.ticket_number,
+                    c.apprehension_datetime as citation_date,
                     CONCAT(c.first_name, ' ', c.last_name) as driver_name,
                     c.license_number,
                     u.full_name as collector_name,

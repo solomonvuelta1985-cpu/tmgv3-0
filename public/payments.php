@@ -249,7 +249,8 @@ if ($pdo === null) {
                             <table class="table table-striped table-hover" id="paymentsTable">
                                 <thead>
                                     <tr>
-                                        <th>Date & Time</th>
+                                        <th>Date Processed</th>
+                                        <th>Citation Date</th>
                                         <th>Receipt No.</th>
                                         <th>Ticket No.</th>
                                         <th>Driver</th>
@@ -262,7 +263,7 @@ if ($pdo === null) {
                                 </thead>
                                 <tbody id="paymentsTableBody">
                                     <tr>
-                                        <td colspan="9" class="text-center">
+                                        <td colspan="10" class="text-center">
                                             <em>Loading payments...</em>
                                         </td>
                                     </tr>

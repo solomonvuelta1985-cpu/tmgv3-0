@@ -271,6 +271,7 @@ class DuplicateDetectionService {
                     c.apprehension_datetime,
                     c.status,
                     c.total_fine,
+                    v.violation_type_id,
                     vt.violation_type,
                     v.offense_count,
                     v.fine_amount
@@ -314,6 +315,7 @@ class DuplicateDetectionService {
                     c.status,
                     c.total_fine,
                     CONCAT(c.last_name, ', ', c.first_name) as driver_name,
+                    v.violation_type_id,
                     vt.violation_type,
                     v.offense_count,
                     v.fine_amount
