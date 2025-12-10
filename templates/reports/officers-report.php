@@ -8,7 +8,7 @@ $performance = $data['performance'] ?? [];
     <div class="col-12">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-user-shield"></i>Officer Performance Summary</span>
+                <span><i data-lucide="shield"></i>Officer Performance Summary</span>
                 <span class="badge bg-primary"><?php echo count($performance); ?> officers</span>
             </div>
             <div class="report-card-body no-padding">
@@ -38,11 +38,11 @@ $performance = $data['performance'] ?? [];
                                     <tr>
                                         <td>
                                             <?php if ($index == 0): ?>
-                                                <i class="fas fa-trophy text-warning"></i> #<?php echo $index + 1; ?>
+                                                <i data-lucide="trophy" class="text-warning" style="width: 16px; height: 16px;"></i> #<?php echo $index + 1; ?>
                                             <?php elseif ($index == 1): ?>
-                                                <i class="fas fa-medal" style="color: silver;"></i> #<?php echo $index + 1; ?>
+                                                <i data-lucide="award" style="color: silver; width: 16px; height: 16px;"></i> #<?php echo $index + 1; ?>
                                             <?php elseif ($index == 2): ?>
-                                                <i class="fas fa-medal" style="color: #cd7f32;"></i> #<?php echo $index + 1; ?>
+                                                <i data-lucide="award" style="color: #cd7f32; width: 16px; height: 16px;"></i> #<?php echo $index + 1; ?>
                                             <?php else: ?>
                                                 #<?php echo $index + 1; ?>
                                             <?php endif; ?>
@@ -78,7 +78,7 @@ $performance = $data['performance'] ?? [];
                     </div>
                 <?php else: ?>
                     <div class="empty-state">
-                        <i class="fas fa-user-shield"></i>
+                        <i data-lucide="shield"></i>
                         <h5>No Officer Data</h5>
                         <p>No officer performance data found for the selected period</p>
                     </div>
@@ -94,7 +94,7 @@ $performance = $data['performance'] ?? [];
     <div class="col-12">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-chart-bar"></i>Citations Issued by Officer</span>
+                <span><i data-lucide="bar-chart-2"></i>Citations Issued by Officer</span>
             </div>
             <div class="report-card-body">
                 <div class="chart-container large">

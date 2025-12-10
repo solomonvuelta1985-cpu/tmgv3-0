@@ -10,7 +10,7 @@ $outstanding = $data['outstanding'] ?? [];
     <div class="col-md-6 col-lg-3">
         <div class="stat-card blue">
             <div class="stat-icon blue">
-                <i class="fas fa-file-invoice-dollar"></i>
+                <i data-lucide="file-text"></i>
             </div>
             <div class="stat-value">₱<?php echo number_format($summary['total_fines_issued'] ?? 0, 2); ?></div>
             <div class="stat-label">Total Fines Issued</div>
@@ -21,7 +21,7 @@ $outstanding = $data['outstanding'] ?? [];
     <div class="col-md-6 col-lg-3">
         <div class="stat-card green">
             <div class="stat-icon green">
-                <i class="fas fa-money-bill-wave"></i>
+                <i data-lucide="banknote"></i>
             </div>
             <div class="stat-value">₱<?php echo number_format($summary['total_fines_collected'] ?? 0, 2); ?></div>
             <div class="stat-label">Fines Collected</div>
@@ -32,7 +32,7 @@ $outstanding = $data['outstanding'] ?? [];
     <div class="col-md-6 col-lg-3">
         <div class="stat-card yellow">
             <div class="stat-icon yellow">
-                <i class="fas fa-clock"></i>
+                <i data-lucide="clock"></i>
             </div>
             <div class="stat-value">₱<?php echo number_format($summary['total_fines_pending'] ?? 0, 2); ?></div>
             <div class="stat-label">Pending Fines</div>
@@ -43,7 +43,7 @@ $outstanding = $data['outstanding'] ?? [];
     <div class="col-md-6 col-lg-3">
         <div class="stat-card purple">
             <div class="stat-icon purple">
-                <i class="fas fa-chart-line"></i>
+                <i data-lucide="trending-up"></i>
             </div>
             <div class="stat-value">₱<?php echo number_format($summary['average_fine'] ?? 0, 2); ?></div>
             <div class="stat-label">Average Fine</div>
@@ -57,7 +57,7 @@ $outstanding = $data['outstanding'] ?? [];
     <div class="col-12">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-chart-area"></i>Revenue Trends</span>
+                <span><i data-lucide="area-chart"></i>Revenue Trends</span>
             </div>
             <div class="report-card-body">
                 <?php if (!empty($trends)): ?>
@@ -66,7 +66,7 @@ $outstanding = $data['outstanding'] ?? [];
                     </div>
                 <?php else: ?>
                     <div class="empty-state">
-                        <i class="fas fa-chart-line"></i>
+                        <i data-lucide="trending-up"></i>
                         <h5>No Trend Data Available</h5>
                         <p>No revenue data found for the selected period</p>
                     </div>
@@ -81,7 +81,7 @@ $outstanding = $data['outstanding'] ?? [];
     <div class="col-12">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-exclamation-triangle"></i>Outstanding Fines (Aging Analysis)</span>
+                <span><i data-lucide="alert-triangle"></i>Outstanding Fines (Aging Analysis)</span>
                 <span class="badge bg-warning"><?php echo count($outstanding); ?> pending</span>
             </div>
             <div class="report-card-body no-padding">
@@ -121,9 +121,9 @@ $outstanding = $data['outstanding'] ?? [];
                                     };
                                 ?>
                                     <tr>
-                                        <td><strong><?php echo htmlspecialchars($fine['ticket_number']); ?></strong></td>
-                                        <td><?php echo htmlspecialchars($fine['driver_name']); ?></td>
-                                        <td><?php echo htmlspecialchars($fine['license_number']); ?></td>
+                                        <td><strong><?php echo htmlspecialchars($fine['ticket_number'] ?? ''); ?></strong></td>
+                                        <td><?php echo htmlspecialchars($fine['driver_name'] ?? ''); ?></td>
+                                        <td><?php echo htmlspecialchars($fine['license_number'] ?? ''); ?></td>
                                         <td>₱<?php echo number_format($fine['total_fine'], 2); ?></td>
                                         <td><?php echo date('M d, Y', strtotime($fine['created_at'])); ?></td>
                                         <td><?php echo $fine['days_outstanding']; ?> days</td>
@@ -149,7 +149,7 @@ $outstanding = $data['outstanding'] ?? [];
                     </div>
                 <?php else: ?>
                     <div class="empty-state">
-                        <i class="fas fa-check-circle"></i>
+                        <i data-lucide="check-circle"></i>
                         <h5>No Outstanding Fines</h5>
                         <p>All citations have been paid or resolved</p>
                     </div>

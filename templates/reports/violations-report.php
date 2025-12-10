@@ -21,7 +21,7 @@ if (isset($_GET['debug'])) {
     <div class="col-12">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-list-alt"></i>Violation Type Statistics</span>
+                <span><i data-lucide="list"></i>Violation Type Statistics</span>
                 <span class="badge bg-primary"><?php echo count($statistics); ?> types</span>
             </div>
             <div class="report-card-body no-padding">
@@ -62,11 +62,11 @@ if (isset($_GET['debug'])) {
                                         <td>₱<?php echo number_format($stat['average_fine'], 2); ?></td>
                                         <td>
                                             <?php if ($stat['percentage'] > 10): ?>
-                                                <i class="fas fa-arrow-up text-danger"></i> High
+                                                <i data-lucide="arrow-up" class="text-danger" style="width: 16px; height: 16px;"></i> High
                                             <?php elseif ($stat['percentage'] > 5): ?>
-                                                <i class="fas fa-minus text-warning"></i> Medium
+                                                <i data-lucide="minus" class="text-warning" style="width: 16px; height: 16px;"></i> Medium
                                             <?php else: ?>
-                                                <i class="fas fa-arrow-down text-success"></i> Low
+                                                <i data-lucide="arrow-down" class="text-success" style="width: 16px; height: 16px;"></i> Low
                                             <?php endif; ?>
                                         </td>
                                     </tr>
@@ -85,7 +85,7 @@ if (isset($_GET['debug'])) {
                     </div>
                 <?php else: ?>
                     <div class="empty-state">
-                        <i class="fas fa-inbox"></i>
+                        <i data-lucide="inbox"></i>
                         <h5>No Violation Data</h5>
                         <p>No violations found for the selected period</p>
                     </div>
@@ -100,7 +100,7 @@ if (isset($_GET['debug'])) {
     <div class="col-lg-8">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-chart-bar"></i>Top Violations (Bar Chart)</span>
+                <span><i data-lucide="bar-chart-2"></i>Top Violations (Bar Chart)</span>
             </div>
             <div class="report-card-body">
                 <?php if (!empty($statistics)): ?>
@@ -109,7 +109,7 @@ if (isset($_GET['debug'])) {
                     </div>
                 <?php else: ?>
                     <div class="empty-state">
-                        <i class="fas fa-chart-bar"></i>
+                        <i data-lucide="bar-chart-2"></i>
                         <h5>No Chart Data</h5>
                         <p>No violation data to display</p>
                     </div>
@@ -122,7 +122,7 @@ if (isset($_GET['debug'])) {
     <div class="col-lg-4">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-layer-group"></i>Offense Count Distribution</span>
+                <span><i data-lucide="layers"></i>Offense Count Distribution</span>
             </div>
             <div class="report-card-body">
                 <?php if (!empty($offense_distribution)): ?>
@@ -151,7 +151,7 @@ if (isset($_GET['debug'])) {
                     </table>
                 <?php else: ?>
                     <div class="empty-state">
-                        <i class="fas fa-layer-group"></i>
+                        <i data-lucide="layers"></i>
                         <p class="mb-0">No data</p>
                     </div>
                 <?php endif; ?>

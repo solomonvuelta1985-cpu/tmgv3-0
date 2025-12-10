@@ -8,7 +8,7 @@ $repeat_offenders = $data['repeat_offenders'] ?? [];
     <div class="col-12">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-users"></i>Repeat Offenders Report</span>
+                <span><i data-lucide="users"></i>Repeat Offenders Report</span>
                 <span class="badge bg-danger"><?php echo count($repeat_offenders); ?> drivers</span>
             </div>
             <div class="report-card-body no-padding">
@@ -45,13 +45,13 @@ $repeat_offenders = $data['repeat_offenders'] ?? [];
                                     <tr>
                                         <td>
                                             <?php if ($index == 0): ?>
-                                                <i class="fas fa-exclamation-triangle text-danger"></i> #<?php echo $index + 1; ?>
+                                                <i data-lucide="alert-triangle" class="text-danger" style="width: 16px; height: 16px;"></i> #<?php echo $index + 1; ?>
                                             <?php else: ?>
                                                 #<?php echo $index + 1; ?>
                                             <?php endif; ?>
                                         </td>
-                                        <td><strong><?php echo htmlspecialchars($driver['driver_name']); ?></strong></td>
-                                        <td><?php echo htmlspecialchars($driver['license_number']); ?></td>
+                                        <td><strong><?php echo htmlspecialchars($driver['driver_name'] ?? ''); ?></strong></td>
+                                        <td><?php echo htmlspecialchars($driver['license_number'] ?? ''); ?></td>
                                         <td>
                                             <span class="badge <?php echo $driver['citation_count'] >= 5 ? 'bg-danger' : ($driver['citation_count'] >= 3 ? 'bg-warning' : 'bg-info'); ?>">
                                                 <?php echo $driver['citation_count']; ?> citations
@@ -83,7 +83,7 @@ $repeat_offenders = $data['repeat_offenders'] ?? [];
                     </div>
                 <?php else: ?>
                     <div class="empty-state">
-                        <i class="fas fa-users"></i>
+                        <i data-lucide="users"></i>
                         <h5>No Repeat Offenders</h5>
                         <p>No drivers with multiple citations found for the selected period</p>
                     </div>
@@ -99,7 +99,7 @@ $repeat_offenders = $data['repeat_offenders'] ?? [];
     <div class="col-md-3">
         <div class="stat-card red">
             <div class="stat-icon red">
-                <i class="fas fa-user-times"></i>
+                <i data-lucide="user-x"></i>
             </div>
             <div class="stat-value"><?php echo count(array_filter($repeat_offenders, fn($d) => $d['citation_count'] >= 5)); ?></div>
             <div class="stat-label">High Risk Drivers</div>
@@ -110,7 +110,7 @@ $repeat_offenders = $data['repeat_offenders'] ?? [];
     <div class="col-md-3">
         <div class="stat-card yellow">
             <div class="stat-icon yellow">
-                <i class="fas fa-exclamation-circle"></i>
+                <i data-lucide="alert-circle"></i>
             </div>
             <div class="stat-value"><?php echo count(array_filter($repeat_offenders, fn($d) => $d['citation_count'] >= 3 && $d['citation_count'] < 5)); ?></div>
             <div class="stat-label">Medium Risk Drivers</div>
@@ -121,7 +121,7 @@ $repeat_offenders = $data['repeat_offenders'] ?? [];
     <div class="col-md-3">
         <div class="stat-card blue">
             <div class="stat-icon blue">
-                <i class="fas fa-redo"></i>
+                <i data-lucide="rotate-cw"></i>
             </div>
             <div class="stat-value"><?php echo count($repeat_offenders); ?></div>
             <div class="stat-label">Total Repeat Offenders</div>
@@ -132,7 +132,7 @@ $repeat_offenders = $data['repeat_offenders'] ?? [];
     <div class="col-md-3">
         <div class="stat-card green">
             <div class="stat-icon green">
-                <i class="fas fa-dollar-sign"></i>
+                <i data-lucide="dollar-sign"></i>
             </div>
             <div class="stat-value">₱<?php echo number_format(array_sum(array_column($repeat_offenders, 'total_fines')), 2); ?></div>
             <div class="stat-label">Total from Repeat Offenders</div>

@@ -96,12 +96,21 @@ function log_audit($user_id, $action, $details = null, $status = 'success') {
         $pdo = getPDO();
         $ip = get_client_ip();
 
+        // Get user agent
+        $user_agent = $_SERVER['HTTP_USER_AGENT'] ?? null;
+
         $stmt = $pdo->prepare(
-            "INSERT INTO audit_logs (user_id, ip_address, action, details, status, created_at)
+            "INSERT INTO audit_log (user_id, action, ip_address, user_agent, old_values, created_at)
              VALUES (?, ?, ?, ?, ?, NOW())"
         );
 
-        return $stmt->execute([$user_id, $ip, $action, $details, $status]);
+        // Store details and status as JSON in old_values field
+        $audit_data = json_encode([
+            'details' => $details,
+            'status' => $status
+        ]);
+
+        return $stmt->execute([$user_id, $action, $ip, $user_agent, $audit_data]);
     } catch (Exception $e) {
         error_log("Audit log error: " . $e->getMessage());
         return false;

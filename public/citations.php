@@ -45,6 +45,9 @@ $citationService->closeConnection();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/citation-list.css">
 
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <!-- Application Configuration - MUST be loaded before other JS files -->
     <?php include __DIR__ . '/../includes/js_config.php'; ?>
 </head>
@@ -57,5 +60,18 @@ $citationService->closeConnection();
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../assets/js/citation-list.js"></script>
+    <script>
+        // Initialize Lucide icons after DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+
+        // Also re-initialize after any dynamic content updates
+        if (typeof window.initLucideIcons === 'undefined') {
+            window.initLucideIcons = function() {
+                lucide.createIcons();
+            };
+        }
+    </script>
 </body>
 </html>

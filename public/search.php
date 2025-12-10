@@ -42,8 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !empty($_GET)) {
     // Driver Name
     if (!empty($_GET['driver_name'])) {
         $name = sanitize($_GET['driver_name']);
-        $where_clauses[] = "(c.first_name LIKE ? OR c.middle_name LIKE ? OR c.last_name LIKE ? OR CONCAT(c.first_name, ' ', c.last_name) LIKE ?)";
-        $params[] = "%$name%";
+        $where_clauses[] = "(c.first_name LIKE ? OR c.last_name LIKE ? OR CONCAT(c.first_name, ' ', c.last_name) LIKE ?)";
         $params[] = "%$name%";
         $params[] = "%$name%";
         $params[] = "%$name%";
@@ -385,8 +384,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !empty($_GET)) {
                                         <?php foreach ($officers as $officer): ?>
                                         <option value="<?php echo $officer['officer_id']; ?>"
                                                 <?php echo ($_GET['officer_id'] ?? '') == $officer['officer_id'] ? 'selected' : ''; ?>>
-                                            <?php echo htmlspecialchars($officer['officer_name']); ?>
-                                            (<?php echo htmlspecialchars($officer['badge_number']); ?>)
+                                            <?php echo htmlspecialchars($officer['officer_name'] ?? ''); ?>
+                                            (<?php echo htmlspecialchars($officer['badge_number'] ?? 'N/A'); ?>)
                                         </option>
                                         <?php endforeach; ?>
                                     </select>

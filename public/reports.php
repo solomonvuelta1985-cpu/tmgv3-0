@@ -131,7 +131,9 @@ if (isset($_GET['debug_data'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reports & Analytics - Traffic Citation System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../assets/css/reports.css">
 </head>
 <body>
@@ -141,9 +143,14 @@ if (isset($_GET['debug_data'])) {
         <div class="container-fluid">
             <!-- Page Header -->
             <div class="page-header">
-                <div>
-                    <h3><i class="fas fa-chart-bar me-2"></i>Reports & Analytics</h3>
-                    <p class="text-muted mb-0">Comprehensive reporting and data insights</p>
+                <div class="header-content">
+                    <div class="header-icon">
+                        <i data-lucide="bar-chart-3"></i>
+                    </div>
+                    <div>
+                        <h3>Reports & Analytics</h3>
+                        <p class="text-muted mb-0">Comprehensive reporting and data insights</p>
+                    </div>
                 </div>
             </div>
 
@@ -187,13 +194,16 @@ if (isset($_GET['debug_data'])) {
                     <?php endif; ?>
                     <div class="col-md-3 d-flex align-items-end gap-2">
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-filter me-1"></i>Apply Filters
+                            <i data-lucide="filter" style="width: 16px; height: 16px;"></i>
+                            <span>Apply Filters</span>
                         </button>
                         <button type="button" class="btn btn-success" id="exportBtn">
-                            <i class="fas fa-file-export me-1"></i>Export
+                            <i data-lucide="download" style="width: 16px; height: 16px;"></i>
+                            <span>Export</span>
                         </button>
                         <button type="button" class="btn btn-secondary" onclick="window.print()">
-                            <i class="fas fa-print me-1"></i>Print
+                            <i data-lucide="printer" style="width: 16px; height: 16px;"></i>
+                            <span>Print</span>
                         </button>
                     </div>
                 </form>
@@ -226,6 +236,11 @@ if (isset($_GET['debug_data'])) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="../assets/js/reports.js"></script>
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
 </body>
 </html>

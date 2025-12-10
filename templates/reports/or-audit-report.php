@@ -12,7 +12,7 @@ $cancelled_voided = $data['cancelled_voided'] ?? [];
     <div class="col-md-6 col-lg-3">
         <div class="stat-card blue">
             <div class="stat-icon blue">
-                <i class="fas fa-receipt"></i>
+                <i data-lucide="receipt"></i>
             </div>
             <div class="stat-value"><?php echo number_format($or_summary['total_or_used'] ?? 0); ?></div>
             <div class="stat-label">Total OR Used</div>
@@ -23,7 +23,7 @@ $cancelled_voided = $data['cancelled_voided'] ?? [];
     <div class="col-md-6 col-lg-3">
         <div class="stat-card green">
             <div class="stat-icon green">
-                <i class="fas fa-peso-sign"></i>
+                <i data-lucide="dollar-sign"></i>
             </div>
             <div class="stat-value">₱<?php echo number_format($or_summary['total_amount'] ?? 0, 2); ?></div>
             <div class="stat-label">Total Amount</div>
@@ -34,7 +34,7 @@ $cancelled_voided = $data['cancelled_voided'] ?? [];
     <div class="col-md-6 col-lg-3">
         <div class="stat-card yellow">
             <div class="stat-icon yellow">
-                <i class="fas fa-ban"></i>
+                <i data-lucide="ban"></i>
             </div>
             <div class="stat-value"><?php echo number_format($or_summary['total_cancelled'] ?? 0); ?></div>
             <div class="stat-label">Cancelled</div>
@@ -45,7 +45,7 @@ $cancelled_voided = $data['cancelled_voided'] ?? [];
     <div class="col-md-6 col-lg-3">
         <div class="stat-card purple">
             <div class="stat-icon purple">
-                <i class="fas fa-clock"></i>
+                <i data-lucide="clock"></i>
             </div>
             <div class="stat-value"><?php echo number_format($or_summary['pending_print'] ?? 0); ?></div>
             <div class="stat-label">Pending Print</div>
@@ -59,7 +59,7 @@ $cancelled_voided = $data['cancelled_voided'] ?? [];
     <div class="col-12">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-chart-line"></i> Daily OR Usage Trend</span>
+                <span><i data-lucide="trending-up"></i> Daily OR Usage Trend</span>
             </div>
             <div class="report-card-body">
                 <?php if (!empty($or_daily)): ?>
@@ -68,7 +68,7 @@ $cancelled_voided = $data['cancelled_voided'] ?? [];
                     </div>
                 <?php else: ?>
                     <div class="empty-state">
-                        <i class="fas fa-chart-line"></i>
+                        <i data-lucide="trending-up"></i>
                         <h5>No Data Available</h5>
                         <p>No OR usage data found for the selected period</p>
                     </div>
@@ -83,7 +83,7 @@ $cancelled_voided = $data['cancelled_voided'] ?? [];
     <div class="col-12">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-users"></i> OR Usage by Cashier</span>
+                <span><i data-lucide="users"></i> OR Usage by Cashier</span>
             </div>
             <div class="report-card-body">
                 <?php if (!empty($or_cashier)): ?>
@@ -121,7 +121,7 @@ $cancelled_voided = $data['cancelled_voided'] ?? [];
                     </div>
                 <?php else: ?>
                     <div class="empty-state">
-                        <i class="fas fa-users"></i>
+                        <i data-lucide="users"></i>
                         <h5>No Cashier Data</h5>
                         <p>No cashier activity found for the selected period</p>
                     </div>
@@ -136,7 +136,7 @@ $cancelled_voided = $data['cancelled_voided'] ?? [];
     <div class="col-12">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-history"></i> OR Audit Trail (Last 100 entries)</span>
+                <span><i data-lucide="history"></i> OR Audit Trail (Last 100 entries)</span>
             </div>
             <div class="report-card-body">
                 <?php if (!empty($audit_trail)): ?>
@@ -181,7 +181,7 @@ $cancelled_voided = $data['cancelled_voided'] ?? [];
                     </div>
                 <?php else: ?>
                     <div class="empty-state">
-                        <i class="fas fa-history"></i>
+                        <i data-lucide="history"></i>
                         <h5>No Audit Logs</h5>
                         <p>No audit trail entries found for the selected period</p>
                     </div>
@@ -196,7 +196,7 @@ $cancelled_voided = $data['cancelled_voided'] ?? [];
     <div class="col-12">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-times-circle"></i> Cancelled/Voided Payments</span>
+                <span><i data-lucide="x-circle"></i> Cancelled/Voided Payments</span>
             </div>
             <div class="report-card-body">
                 <?php if (!empty($cancelled_voided)): ?>
@@ -235,7 +235,7 @@ $cancelled_voided = $data['cancelled_voided'] ?? [];
                     </div>
                 <?php else: ?>
                     <div class="empty-state">
-                        <i class="fas fa-check-circle text-success"></i>
+                        <i data-lucide="check-circle" class="text-success"></i>
                         <h5>No Cancelled or Voided Payments</h5>
                         <p>All payments in this period were successfully completed</p>
                     </div>

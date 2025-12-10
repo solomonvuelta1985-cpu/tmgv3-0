@@ -10,7 +10,7 @@ $resolution_time = $data['resolution_time'] ?? [];
     <div class="col-lg-6">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-chart-pie"></i>Status Distribution</span>
+                <span><i data-lucide="pie-chart"></i>Status Distribution</span>
             </div>
             <div class="report-card-body">
                 <?php if (!empty($distribution)): ?>
@@ -19,7 +19,7 @@ $resolution_time = $data['resolution_time'] ?? [];
                     </div>
                 <?php else: ?>
                     <div class="empty-state">
-                        <i class="fas fa-chart-pie"></i>
+                        <i data-lucide="pie-chart"></i>
                         <h5>No Status Data</h5>
                         <p>No data available</p>
                     </div>
@@ -32,7 +32,7 @@ $resolution_time = $data['resolution_time'] ?? [];
     <div class="col-lg-6">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-list"></i>Status Breakdown</span>
+                <span><i data-lucide="list"></i>Status Breakdown</span>
             </div>
             <div class="report-card-body no-padding">
                 <?php if (!empty($distribution)): ?>
@@ -89,7 +89,7 @@ $resolution_time = $data['resolution_time'] ?? [];
                     </div>
                 <?php else: ?>
                     <div class="empty-state">
-                        <i class="fas fa-list"></i>
+                        <i data-lucide="list"></i>
                         <p>No data</p>
                     </div>
                 <?php endif; ?>
@@ -104,7 +104,7 @@ $resolution_time = $data['resolution_time'] ?? [];
     <div class="col-12">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-hourglass-half"></i>Average Case Resolution Time</span>
+                <span><i data-lucide="hourglass"></i>Average Case Resolution Time</span>
             </div>
             <div class="report-card-body">
                 <div class="row">
@@ -112,7 +112,7 @@ $resolution_time = $data['resolution_time'] ?? [];
                         <div class="col-md-6">
                             <div class="stat-card <?php echo $res['status'] === 'paid' ? 'green' : 'blue'; ?>">
                                 <div class="stat-icon <?php echo $res['status'] === 'paid' ? 'green' : 'blue'; ?>">
-                                    <i class="fas fa-<?php echo $res['status'] === 'paid' ? 'money-bill-wave' : 'gavel'; ?>"></i>
+                                    <i data-lucide="<?php echo $res['status'] === 'paid' ? 'banknote' : 'scale'; ?>"></i>
                                 </div>
                                 <div class="stat-value"><?php echo round($res['avg_days_to_resolve']); ?> days</div>
                                 <div class="stat-label">Average Resolution Time - <?php echo ucfirst($res['status']); ?></div>
@@ -134,7 +134,7 @@ $resolution_time = $data['resolution_time'] ?? [];
     <div class="col-12">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-exclamation-circle"></i>Contested Citations</span>
+                <span><i data-lucide="alert-circle"></i>Contested Citations</span>
                 <span class="badge bg-info"><?php echo count($contested); ?> contested</span>
             </div>
             <div class="report-card-body no-padding">
@@ -169,7 +169,7 @@ $resolution_time = $data['resolution_time'] ?? [];
                     </div>
                 <?php else: ?>
                     <div class="empty-state">
-                        <i class="fas fa-check-circle"></i>
+                        <i data-lucide="check-circle"></i>
                         <h5>No Contested Citations</h5>
                         <p>No contested citations found for the selected period</p>
                     </div>

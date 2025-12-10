@@ -3,12 +3,48 @@
 $vehicle_stats = $data['vehicle_stats'] ?? [];
 ?>
 
+<!-- Vehicle Type Summary Cards - Top KPIs -->
+<?php if (!empty($vehicle_stats)): ?>
+    <?php
+    // Get top 4 vehicle types for summary cards
+    $top_vehicles = array_slice($vehicle_stats, 0, 4);
+    $colors = ['blue', 'green', 'yellow', 'purple'];
+    $icons = [
+        'Motorcycle' => 'bike',
+        'Car' => 'car',
+        'Truck' => 'truck',
+        'Van' => 'truck',
+        'Bus' => 'bus',
+        'SUV' => 'car',
+        'Tricycle' => 'bike'
+    ];
+    ?>
+    <div class="row mb-4">
+        <?php foreach ($top_vehicles as $index => $vehicle): ?>
+            <?php
+            $color = $colors[$index % 4];
+            $icon = $icons[$vehicle['vehicle_type']] ?? 'car';
+            ?>
+            <div class="col-md-6 col-lg-3">
+                <div class="stat-card <?php echo $color; ?>">
+                    <div class="stat-icon <?php echo $color; ?>">
+                        <i data-lucide="<?php echo $icon; ?>"></i>
+                    </div>
+                    <div class="stat-value"><?php echo number_format($vehicle['citation_count']); ?></div>
+                    <div class="stat-label"><?php echo htmlspecialchars($vehicle['vehicle_type']); ?> Citations</div>
+                    <div class="stat-sublabel">₱<?php echo number_format($vehicle['total_fines'], 2); ?> total</div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>
+
 <!-- Vehicle Type Statistics -->
-<div class="row mb-4">
-    <div class="col-lg-8">
+<div class="row">
+    <div class="col-lg-7">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-car"></i>Citations by Vehicle Type</span>
+                <span><i data-lucide="car"></i>Citations by Vehicle Type</span>
             </div>
             <div class="report-card-body no-padding">
                 <?php if (!empty($vehicle_stats)): ?>
@@ -61,7 +97,7 @@ $vehicle_stats = $data['vehicle_stats'] ?? [];
                     </div>
                 <?php else: ?>
                     <div class="empty-state">
-                        <i class="fas fa-car"></i>
+                        <i data-lucide="car"></i>
                         <h5>No Vehicle Data</h5>
                         <p>No vehicle data found for the selected period</p>
                     </div>
@@ -71,10 +107,10 @@ $vehicle_stats = $data['vehicle_stats'] ?? [];
     </div>
 
     <!-- Vehicle Type Chart -->
-    <div class="col-lg-4">
+    <div class="col-lg-5">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-chart-pie"></i>Distribution</span>
+                <span><i data-lucide="pie-chart"></i>Distribution</span>
             </div>
             <div class="report-card-body">
                 <?php if (!empty($vehicle_stats)): ?>
@@ -83,7 +119,7 @@ $vehicle_stats = $data['vehicle_stats'] ?? [];
                     </div>
                 <?php else: ?>
                     <div class="empty-state">
-                        <i class="fas fa-chart-pie"></i>
+                        <i data-lucide="pie-chart"></i>
                         <p>No data</p>
                     </div>
                 <?php endif; ?>
@@ -91,39 +127,3 @@ $vehicle_stats = $data['vehicle_stats'] ?? [];
         </div>
     </div>
 </div>
-
-<!-- Vehicle Type Summary Cards -->
-<?php if (!empty($vehicle_stats)): ?>
-    <?php
-    // Get top 4 vehicle types for summary cards
-    $top_vehicles = array_slice($vehicle_stats, 0, 4);
-    $colors = ['blue', 'green', 'yellow', 'purple'];
-    $icons = [
-        'Motorcycle' => 'fa-motorcycle',
-        'Car' => 'fa-car',
-        'Truck' => 'fa-truck',
-        'Van' => 'fa-shuttle-van',
-        'Bus' => 'fa-bus',
-        'SUV' => 'fa-car-side',
-        'Tricycle' => 'fa-bicycle'
-    ];
-    ?>
-    <div class="row">
-        <?php foreach ($top_vehicles as $index => $vehicle): ?>
-            <?php
-            $color = $colors[$index % 4];
-            $icon = $icons[$vehicle['vehicle_type']] ?? 'fa-car';
-            ?>
-            <div class="col-md-6 col-lg-3">
-                <div class="stat-card <?php echo $color; ?>">
-                    <div class="stat-icon <?php echo $color; ?>">
-                        <i class="fas <?php echo $icon; ?>"></i>
-                    </div>
-                    <div class="stat-value"><?php echo number_format($vehicle['citation_count']); ?></div>
-                    <div class="stat-label"><?php echo htmlspecialchars($vehicle['vehicle_type']); ?> Citations</div>
-                    <div class="stat-sublabel">₱<?php echo number_format($vehicle['total_fines'], 2); ?> total</div>
-                </div>
-            </div>
-        <?php endforeach; ?>
-    </div>
-<?php endif; ?>

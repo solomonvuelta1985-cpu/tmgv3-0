@@ -11,7 +11,7 @@ $recent_payments = $data['recent_payments'] ?? [];
     <div class="col-md-6 col-lg-3">
         <div class="stat-card blue">
             <div class="stat-icon blue">
-                <i class="fas fa-file-alt"></i>
+                <i data-lucide="file-text"></i>
             </div>
             <div class="stat-value"><?php echo number_format($summary['total_citations'] ?? 0); ?></div>
             <div class="stat-label">Citations Created</div>
@@ -25,7 +25,7 @@ $recent_payments = $data['recent_payments'] ?? [];
     <div class="col-md-6 col-lg-3">
         <div class="stat-card orange">
             <div class="stat-icon orange">
-                <i class="fas fa-peso-sign"></i>
+                <i data-lucide="dollar-sign"></i>
             </div>
             <div class="stat-value">₱<?php echo number_format($summary['total_fines'] ?? 0, 2); ?></div>
             <div class="stat-label">Total Fines Issued</div>
@@ -36,7 +36,7 @@ $recent_payments = $data['recent_payments'] ?? [];
     <div class="col-md-6 col-lg-3">
         <div class="stat-card green">
             <div class="stat-icon green">
-                <i class="fas fa-money-bill-wave"></i>
+                <i data-lucide="banknote"></i>
             </div>
             <div class="stat-value"><?php echo number_format($summary['total_payments'] ?? 0); ?></div>
             <div class="stat-label">Payments Processed</div>
@@ -50,7 +50,7 @@ $recent_payments = $data['recent_payments'] ?? [];
     <div class="col-md-6 col-lg-3">
         <div class="stat-card purple">
             <div class="stat-icon purple">
-                <i class="fas fa-coins"></i>
+                <i data-lucide="coins"></i>
             </div>
             <div class="stat-value">₱<?php echo number_format($summary['total_amount'] ?? 0, 2); ?></div>
             <div class="stat-label">Total Amount Collected</div>
@@ -65,7 +65,7 @@ $recent_payments = $data['recent_payments'] ?? [];
     <div class="col-12">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-users"></i>Staff Performance Comparison</span>
+                <span><i data-lucide="users"></i>Staff Performance Comparison</span>
                 <span class="badge bg-primary"><?php echo count($performance); ?> user(s)</span>
             </div>
             <div class="report-card-body no-padding">
@@ -108,7 +108,7 @@ $recent_payments = $data['recent_payments'] ?? [];
     <div class="col-12">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-list"></i>Recent Citations Created</span>
+                <span><i data-lucide="list"></i>Recent Citations Created</span>
                 <span class="badge bg-info"><?php echo count($recent_citations); ?> recent</span>
             </div>
             <div class="report-card-body no-padding">
@@ -145,7 +145,7 @@ $recent_payments = $data['recent_payments'] ?? [];
                     </div>
                 <?php else: ?>
                     <div class="empty-state">
-                        <i class="fas fa-inbox"></i>
+                        <i data-lucide="inbox"></i>
                         <h5>No Citations Created</h5>
                         <p>No citations created in the selected period</p>
                     </div>
@@ -160,7 +160,7 @@ $recent_payments = $data['recent_payments'] ?? [];
     <div class="col-12">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-receipt"></i>Recent Payments Processed</span>
+                <span><i data-lucide="receipt"></i>Recent Payments Processed</span>
                 <span class="badge bg-success"><?php echo $data['payments_total_count'] ?? 0; ?> total</span>
             </div>
             <div class="report-card-body no-padding">
@@ -263,7 +263,7 @@ $recent_payments = $data['recent_payments'] ?? [];
                     <?php endif; ?>
                 <?php else: ?>
                     <div class="empty-state">
-                        <i class="fas fa-inbox"></i>
+                        <i data-lucide="inbox"></i>
                         <h5>No Payments Processed</h5>
                         <p>No payments processed in the selected period</p>
                     </div>

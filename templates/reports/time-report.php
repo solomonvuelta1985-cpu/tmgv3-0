@@ -10,7 +10,7 @@ $monthly = $data['monthly'] ?? [];
     <div class="col-lg-6">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-clock"></i>Citations by Hour of Day</span>
+                <span><i data-lucide="clock"></i>Citations by Hour of Day</span>
             </div>
             <div class="report-card-body">
                 <?php if (!empty($hourly)): ?>
@@ -19,7 +19,7 @@ $monthly = $data['monthly'] ?? [];
                     </div>
                 <?php else: ?>
                     <div class="empty-state">
-                        <i class="fas fa-clock"></i>
+                        <i data-lucide="clock"></i>
                         <h5>No Hourly Data</h5>
                         <p>No data available</p>
                     </div>
@@ -32,7 +32,7 @@ $monthly = $data['monthly'] ?? [];
     <div class="col-lg-6">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-calendar-week"></i>Citations by Day of Week</span>
+                <span><i data-lucide="calendar"></i>Citations by Day of Week</span>
             </div>
             <div class="report-card-body">
                 <?php if (!empty($day_of_week)): ?>
@@ -41,7 +41,7 @@ $monthly = $data['monthly'] ?? [];
                     </div>
                 <?php else: ?>
                     <div class="empty-state">
-                        <i class="fas fa-calendar-week"></i>
+                        <i data-lucide="calendar"></i>
                         <h5>No Weekly Data</h5>
                         <p>No data available</p>
                     </div>
@@ -64,7 +64,7 @@ $monthly = $data['monthly'] ?? [];
         <div class="col-12">
             <div class="report-card">
                 <div class="report-card-header">
-                    <span><i class="fas fa-chart-line"></i>Peak Citation Hours</span>
+                    <span><i data-lucide="trending-up"></i>Peak Citation Hours</span>
                 </div>
                 <div class="report-card-body">
                     <div class="row">
@@ -90,7 +90,7 @@ $monthly = $data['monthly'] ?? [];
     <div class="col-12">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-table"></i>Day of Week Statistics</span>
+                <span><i data-lucide="table"></i>Day of Week Statistics</span>
             </div>
             <div class="report-card-body no-padding">
                 <div class="table-responsive">
@@ -139,7 +139,7 @@ $monthly = $data['monthly'] ?? [];
     <div class="col-12">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i class="fas fa-chart-area"></i>Monthly Trends</span>
+                <span><i data-lucide="area-chart"></i>Monthly Trends</span>
             </div>
             <div class="report-card-body">
                 <div class="chart-container large">

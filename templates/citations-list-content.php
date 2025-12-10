@@ -150,50 +150,47 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                                 </span>
                             </td>
                             <td>
-                                <div class="btn-group" role="group">
+                                <div class="d-flex gap-1" role="group">
+                                    <!-- View Details Button -->
                                     <button type="button" class="btn btn-info btn-sm" onclick="viewCitation(<?php echo $citation['citation_id']; ?>)" title="View Details">
-                                        <i class="fas fa-eye"></i>
+                                        <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
                                     </button>
-                                    <button type="button" class="btn btn-secondary btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false" title="More Actions">
-                                        <span class="visually-hidden">More actions</span>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <?php if ($can_pay && $citation['status'] !== 'paid'): ?>
-                                        <li>
-                                            <a class="dropdown-item" href="/tmg/public/process_payment.php?citation_id=<?php echo $citation['citation_id']; ?>">
-                                                <i class="fas fa-money-bill text-success"></i> Process Payment
-                                            </a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <?php endif; ?>
-                                        <?php if ($can_edit): ?>
-                                        <li>
-                                            <a class="dropdown-item" href="#" onclick="editCitation(<?php echo $citation['citation_id']; ?>); return false;">
-                                                <i class="fas fa-edit text-warning"></i> Edit Citation
-                                            </a>
-                                        </li>
-                                        <?php endif; ?>
-                                        <li>
-                                            <a class="dropdown-item" href="#" onclick="quickInfo(<?php echo $citation['citation_id']; ?>); return false;">
-                                                <i class="fas fa-info-circle text-primary"></i> Quick Summary
-                                            </a>
-                                        </li>
-                                        <?php if (is_admin()): ?>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <a class="dropdown-item text-danger" href="#" onclick="deleteCitation(<?php echo $citation['citation_id']; ?>); return false;">
-                                                <i class="fas fa-trash"></i> Delete Citation
-                                            </a>
-                                        </li>
+
+                                    <!-- Process Payment Button -->
+                                    <?php if ($can_pay && $citation['status'] !== 'paid'): ?>
+                                    <a href="/tmg/public/process_payment.php?citation_id=<?php echo $citation['citation_id']; ?>" class="btn btn-success btn-sm" title="Process Payment">
+                                        <i data-lucide="dollar-sign" style="width: 16px; height: 16px;"></i>
+                                    </a>
+                                    <?php endif; ?>
+
+                                    <!-- Edit Button -->
+                                    <?php if ($can_edit): ?>
+                                        <?php if ($citation['status'] === 'paid'): ?>
+                                        <button type="button" class="btn btn-secondary btn-sm" disabled title="Paid citations cannot be edited">
+                                            <i data-lucide="lock" style="width: 16px; height: 16px;"></i>
+                                        </button>
                                         <?php else: ?>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <a class="dropdown-item text-muted disabled" href="#" onclick="return false;" title="Admin access required to delete citations" style="cursor: not-allowed; opacity: 0.6;">
-                                                <i class="fas fa-lock"></i> Delete Citation (Admin Only)
-                                            </a>
-                                        </li>
+                                        <button type="button" class="btn btn-warning btn-sm" onclick="editCitation(<?php echo $citation['citation_id']; ?>); return false;" title="Edit Citation">
+                                            <i data-lucide="edit" style="width: 16px; height: 16px;"></i>
+                                        </button>
                                         <?php endif; ?>
-                                    </ul>
+                                    <?php endif; ?>
+
+                                    <!-- Quick Summary Button -->
+                                    <button type="button" class="btn btn-primary btn-sm" onclick="quickInfo(<?php echo $citation['citation_id']; ?>); return false;" title="Quick Summary">
+                                        <i data-lucide="info" style="width: 16px; height: 16px;"></i>
+                                    </button>
+
+                                    <!-- Delete Button -->
+                                    <?php if (is_admin()): ?>
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="deleteCitation(<?php echo $citation['citation_id']; ?>); return false;" title="Delete Citation">
+                                        <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
+                                    </button>
+                                    <?php else: ?>
+                                    <button type="button" class="btn btn-secondary btn-sm" disabled title="Admin access required to delete citations">
+                                        <i data-lucide="lock" style="width: 16px; height: 16px;"></i>
+                                    </button>
+                                    <?php endif; ?>
                                 </div>
                             </td>
                         </tr>
@@ -285,21 +282,21 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 <?php if ($can_change_status): ?>
-                <div class="dropdown">
+                <div class="dropdown" id="statusDropdownContainer">
                     <button class="btn btn-primary dropdown-toggle" type="button" id="statusDropdown" data-bs-toggle="dropdown">
-                        <i class="fas fa-tasks"></i> Update Status
+                        <i data-lucide="list-checks" style="width: 16px; height: 16px;"></i> Update Status
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#" onclick="openStatusModal('contested')"><i class="fas fa-gavel text-primary"></i> Contest Citation</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="openStatusModal('dismissed')"><i class="fas fa-times-circle text-secondary"></i> Dismiss Citation</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="openStatusModal('void')"><i class="fas fa-ban text-danger"></i> Void Citation</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="openStatusModal('contested')"><i data-lucide="shield-question" class="text-primary" style="width: 16px; height: 16px;"></i> Contest Citation</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="openStatusModal('dismissed')"><i data-lucide="x-circle" class="text-secondary" style="width: 16px; height: 16px;"></i> Dismiss Citation</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="openStatusModal('void')"><i data-lucide="ban" class="text-danger" style="width: 16px; height: 16px;"></i> Void Citation</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#" onclick="openStatusModal('pending')"><i class="fas fa-clock text-warning"></i> Reset to Pending</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="openStatusModal('pending')"><i data-lucide="clock" class="text-warning" style="width: 16px; height: 16px;"></i> Reset to Pending</a></li>
                     </ul>
                 </div>
                 <?php else: ?>
                 <button type="button" class="btn btn-outline-secondary" disabled title="Enforcer/Admin access required to change citation status">
-                    <i class="fas fa-lock"></i> Update Status (Restricted)
+                    <i data-lucide="lock" style="width: 16px; height: 16px;"></i> Update Status (Restricted)
                 </button>
                 <?php endif; ?>
                 <?php if ($can_edit): ?>

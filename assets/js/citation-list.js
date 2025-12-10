@@ -32,7 +32,52 @@ function viewCitation(id) {
         .then(data => {
             if (data.status === 'success') {
                 displayCitationDetails(data.citation);
-                document.getElementById('editFromViewBtn').onclick = () => editCitation(id);
+
+                // Handle Edit button based on citation status
+                const editBtn = document.getElementById('editFromViewBtn');
+                if (editBtn) {
+                    if (data.citation.status === 'paid') {
+                        editBtn.disabled = true;
+                        editBtn.classList.remove('btn-warning');
+                        editBtn.classList.add('btn-secondary');
+                        editBtn.title = 'Paid citations cannot be edited';
+                        editBtn.innerHTML = '<i class="fas fa-lock"></i> Edit (Paid)';
+                        editBtn.onclick = null;
+                    } else {
+                        editBtn.disabled = false;
+                        editBtn.classList.remove('btn-secondary');
+                        editBtn.classList.add('btn-warning');
+                        editBtn.title = 'Edit Citation';
+                        editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+                        editBtn.onclick = () => editCitation(id);
+                    }
+                }
+
+                // Handle Update Status dropdown based on citation status
+                const statusDropdown = document.getElementById('statusDropdown');
+                if (statusDropdown) {
+                    if (data.citation.status === 'paid') {
+                        statusDropdown.disabled = true;
+                        statusDropdown.classList.remove('btn-primary');
+                        statusDropdown.classList.add('btn-secondary');
+                        statusDropdown.title = 'Paid citations cannot have status changed';
+                        statusDropdown.innerHTML = '<i data-lucide="lock" style="width: 16px; height: 16px;"></i> Status Locked';
+                        // Re-initialize Lucide icons for the new lock icon
+                        if (typeof lucide !== 'undefined') {
+                            lucide.createIcons();
+                        }
+                    } else {
+                        statusDropdown.disabled = false;
+                        statusDropdown.classList.remove('btn-secondary');
+                        statusDropdown.classList.add('btn-primary');
+                        statusDropdown.title = '';
+                        statusDropdown.innerHTML = '<i data-lucide="list-checks" style="width: 16px; height: 16px;"></i> Update Status';
+                        // Re-initialize Lucide icons
+                        if (typeof lucide !== 'undefined') {
+                            lucide.createIcons();
+                        }
+                    }
+                }
             } else {
                 document.getElementById('viewModalContent').innerHTML = `
                     <div class="alert alert-danger">
@@ -177,6 +222,11 @@ function displayCitationDetails(citation) {
     `;
 
     document.getElementById('viewModalContent').innerHTML = html;
+
+    // Re-initialize Lucide icons if available
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 }
 
 // Edit citation
@@ -352,6 +402,11 @@ function displayQuickInfo(citation) {
     `;
 
     document.getElementById('quickInfoContent').innerHTML = html;
+
+    // Re-initialize Lucide icons if available
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 }
 
 // Confirm status update
