@@ -126,11 +126,15 @@ function renderTable(citations) {
     noResults.style.display = 'none';
     tableContainer.style.display = 'block';
 
-    tbody.innerHTML = citations.map(citation => {
+    tbody.innerHTML = citations.map((citation, index) => {
+        // Calculate row number based on current page
+        const rowNumber = (currentPage - 1) * currentLimit + index + 1;
+
         // Store citation data as base64 to avoid JSON escaping issues
         const citationJson = btoa(JSON.stringify(citation));
         return `
         <tr>
+            <td class="text-center text-muted"><strong>${rowNumber}</strong></td>
             <td><strong>${escapeHtml(citation.ticket_number)}</strong></td>
             <td>${escapeHtml(citation.driver_name)}</td>
             <td>${escapeHtml(citation.license_number || 'N/A')}</td>
@@ -148,12 +152,17 @@ function renderTable(citations) {
                     data-citation="${citationJson}"
                     onclick="openPaymentModalFromData(this)"
                 >
-                    <i class="fas fa-money-bill-wave"></i> Process Payment
+                    <i data-lucide="banknote"></i> Process Payment
                 </button>
             </td>
         </tr>
     `;
     }).join('');
+
+    // Reinitialize Lucide icons after table render
+    if (typeof reinitLucideIcons === 'function') {
+        setTimeout(reinitLucideIcons, 100);
+    }
 }
 
 /**
@@ -173,7 +182,7 @@ function renderPagination(pagination) {
     html += `
         <li class="page-item ${!pagination.has_prev ? 'disabled' : ''}">
             <a class="page-link" href="#" onclick="loadCitations(${pagination.current_page - 1}); return false;">
-                <i class="fas fa-chevron-left"></i> Previous
+                <i data-lucide="chevron-left"></i> Previous
             </a>
         </li>
     `;
@@ -224,12 +233,17 @@ function renderPagination(pagination) {
     html += `
         <li class="page-item ${!pagination.has_next ? 'disabled' : ''}">
             <a class="page-link" href="#" onclick="loadCitations(${pagination.current_page + 1}); return false;">
-                Next <i class="fas fa-chevron-right"></i>
+                Next <i data-lucide="chevron-right"></i>
             </a>
         </li>
     `;
 
     controls.innerHTML = html;
+
+    // Reinitialize Lucide icons in pagination
+    if (typeof reinitLucideIcons === 'function') {
+        setTimeout(reinitLucideIcons, 100);
+    }
 }
 
 /**
@@ -361,13 +375,18 @@ function showError(message) {
     const tbody = document.getElementById('citationsTableBody');
     tbody.innerHTML = `
         <tr>
-            <td colspan="9" class="text-center text-danger py-4">
-                <i class="fas fa-exclamation-triangle"></i> ${escapeHtml(message)}
+            <td colspan="10" class="text-center text-danger py-4">
+                <i data-lucide="alert-triangle"></i> ${escapeHtml(message)}
             </td>
         </tr>
     `;
     document.getElementById('tableContainer').style.display = 'block';
     document.getElementById('noResults').style.display = 'none';
+
+    // Reinitialize Lucide icons
+    if (typeof reinitLucideIcons === 'function') {
+        setTimeout(reinitLucideIcons, 100);
+    }
 }
 
 /**

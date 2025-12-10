@@ -105,6 +105,7 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
             <table>
                 <thead>
                     <tr>
+                        <th style="width: 50px; text-align: center;">#</th>
                         <th>Ticket #</th>
                         <th>Date/Time</th>
                         <th>Driver Name</th>
@@ -117,8 +118,12 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                     </tr>
                 </thead>
                 <tbody>
-                    <?php foreach ($citations as $citation): ?>
+                    <?php
+                    $rowNumber = $offset + 1; // Start row number from offset + 1
+                    foreach ($citations as $citation):
+                    ?>
                         <tr>
+                            <td style="text-align: center; color: #6c757d; font-weight: 600;"><strong><?php echo $rowNumber++; ?></strong></td>
                             <td><strong><?php echo htmlspecialchars($citation['ticket_number']); ?></strong></td>
                             <td><?php echo date('M d, Y h:i A', strtotime($citation['apprehension_datetime'])); ?></td>
                             <td>
@@ -205,10 +210,10 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
         <div class="pagination-container">
             <?php if ($page > 1): ?>
                 <a href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>&status=<?php echo urlencode($status_filter); ?>">
-                    <i class="fas fa-chevron-left"></i>
+                    <i data-lucide="chevron-left"></i>
                 </a>
             <?php else: ?>
-                <span class="disabled"><i class="fas fa-chevron-left"></i></span>
+                <span class="disabled"><i data-lucide="chevron-left"></i></span>
             <?php endif; ?>
 
             <?php
@@ -243,10 +248,10 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
 
             <?php if ($page < $total_pages): ?>
                 <a href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>&status=<?php echo urlencode($status_filter); ?>">
-                    <i class="fas fa-chevron-right"></i>
+                    <i data-lucide="chevron-right"></i>
                 </a>
             <?php else: ?>
-                <span class="disabled"><i class="fas fa-chevron-right"></i></span>
+                <span class="disabled"><i data-lucide="chevron-right"></i></span>
             <?php endif; ?>
         </div>
 

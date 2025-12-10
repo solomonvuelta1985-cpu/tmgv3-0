@@ -76,10 +76,12 @@ if ($pdo === null) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= htmlspecialchars($pageTitle) ?> - Traffic Citation System</title>
 
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <!-- SweetAlert2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <!-- Custom CSS -->
@@ -89,6 +91,135 @@ if ($pdo === null) {
     <?php include __DIR__ . '/../includes/js_config.php'; ?>
 
     <style>
+        /* Base Styles - Inter Font Family */
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-color: #f8f9fa;
+        }
+
+        /* Enhanced Button Styles */
+        .btn {
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn i[data-lucide] {
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-sm i[data-lucide] {
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn-lg i[data-lucide] {
+            width: 20px;
+            height: 20px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            border: none;
+            box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0a58ca 0%, #084298 100%);
+            box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #198754 0%, #157347 100%);
+            border: none;
+            box-shadow: 0 2px 4px rgba(25, 135, 84, 0.2);
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #157347 0%, #0f5132 100%);
+            box-shadow: 0 4px 8px rgba(25, 135, 84, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #ffb300 100%);
+            border: none;
+            color: #000;
+            box-shadow: 0 2px 4px rgba(255, 193, 7, 0.2);
+        }
+
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #ffb300 0%, #ffa000 100%);
+            box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3);
+            transform: translateY(-1px);
+            color: #000;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545 0%, #bb2d3b 100%);
+            border: none;
+            box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #bb2d3b 0%, #a02834 100%);
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+            transform: translateY(-1px);
+        }
+
+        /* Enhanced Card Styles */
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-bottom: 2px solid #e9ecef;
+            border-radius: 12px 12px 0 0 !important;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .card-header h5 {
+            font-weight: 600;
+            color: #212529;
+            margin: 0;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Enhanced Page Header */
+        .page-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .page-header h2 {
+            font-weight: 700;
+            color: #212529;
+            font-size: 2rem;
+            margin: 0;
+        }
+
         /* Additional modal styles that are specific to this page */
 
         /* Modal-specific styles */
@@ -130,8 +261,10 @@ if ($pdo === null) {
             color: #212529;
         }
 
-        .modal-title i {
+        .modal-title i[data-lucide] {
             color: #6c757d;
+            width: 18px;
+            height: 18px;
         }
 
         .modal-body {
@@ -161,13 +294,19 @@ if ($pdo === null) {
             background: #94a3b8;
         }
 
-        /* Citation Summary Box - Clean & Flat */
+        /* Citation Summary Box - Enhanced Modern Design */
         .summary-section {
             background: #ffffff;
-            padding: 1rem;
-            border-radius: 6px;
+            padding: 1.25rem;
+            border-radius: 12px;
             margin-bottom: 1rem;
-            border: 1px solid #dee2e6;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .summary-section:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .summary-section h6 {
@@ -184,8 +323,10 @@ if ($pdo === null) {
             border-bottom: 1px solid #e9ecef;
         }
 
-        .summary-section h6 i {
+        .summary-section h6 i[data-lucide] {
             color: #6c757d;
+            width: 16px;
+            height: 16px;
         }
 
         .summary-grid {
@@ -212,14 +353,21 @@ if ($pdo === null) {
             font-weight: 500;
         }
 
-        /* Amount Display - Clean Flat Design */
+        /* Amount Display - Enhanced Modern Design */
         .amount-display {
-            background: #ffffff;
-            padding: 1rem;
-            border-radius: 6px;
+            background: linear-gradient(135deg, #e8f4f8 0%, #f0f9ff 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
             margin: 1rem 0;
-            border: 1px solid #dee2e6;
-            border-left: 4px solid #0d6efd;
+            border: 2px solid #b8daff;
+            border-left: 5px solid #0d6efd;
+            box-shadow: 0 2px 8px rgba(13, 110, 253, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .amount-display:hover {
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15);
+            transform: translateY(-2px);
         }
 
         .amount-display small {
@@ -238,14 +386,21 @@ if ($pdo === null) {
             color: #212529;
         }
 
-        /* Change Display - Clean Flat Design */
+        /* Change Display - Enhanced Modern Design */
         .change-display {
-            background: #d1fae5;
-            padding: 1rem;
-            border-radius: 6px;
+            background: linear-gradient(135deg, #d1fae5 0%, #e8fdf4 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
             margin: 1rem 0;
-            border: 1px solid #a7f3d0;
-            border-left: 4px solid #198754;
+            border: 2px solid #a7f3d0;
+            border-left: 5px solid #198754;
+            box-shadow: 0 2px 8px rgba(25, 135, 84, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .change-display:hover {
+            box-shadow: 0 4px 12px rgba(25, 135, 84, 0.15);
+            transform: translateY(-2px);
         }
 
         .change-display small {
@@ -264,13 +419,19 @@ if ($pdo === null) {
             color: #0f5132;
         }
 
-        /* Payment Information Section - Clean & Flat */
+        /* Payment Information Section - Enhanced Modern Design */
         .payment-info-section {
             background: #ffffff;
-            padding: 1rem;
-            border-radius: 6px;
+            padding: 1.25rem;
+            border-radius: 12px;
             margin-bottom: 1rem;
-            border: 1px solid #dee2e6;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .payment-info-section:hover {
+            border-color: #cbd5e1;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .payment-info-section h6 {
@@ -287,8 +448,10 @@ if ($pdo === null) {
             border-bottom: 1px solid #e9ecef;
         }
 
-        .payment-info-section h6 i {
+        .payment-info-section h6 i[data-lucide] {
             color: #6c757d;
+            width: 16px;
+            height: 16px;
         }
 
         .payment-info-section .row {
@@ -306,24 +469,31 @@ if ($pdo === null) {
             gap: 0.5rem;
         }
 
-        .form-label i {
-            font-size: 0.875rem;
+        .form-label i[data-lucide] {
             color: #6c757d;
+            width: 16px;
+            height: 16px;
         }
 
         .form-control, .form-select {
             font-size: 0.875rem;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            transition: all 0.15s;
+            padding: 0.625rem 0.875rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            transition: all 0.2s ease;
             background: #ffffff;
+            font-family: 'Inter', sans-serif;
         }
 
         .form-control:focus, .form-select:focus {
             border-color: #0d6efd;
-            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
             outline: none;
+            background: #ffffff;
+        }
+
+        .form-control:hover:not(:focus), .form-select:hover:not(:focus) {
+            border-color: #cbd5e1;
         }
 
         textarea.form-control {
@@ -340,8 +510,10 @@ if ($pdo === null) {
             gap: 0.25rem;
         }
 
-        .form-text i {
+        .form-text i[data-lucide] {
             color: #6c757d;
+            width: 14px;
+            height: 14px;
         }
 
         .modal-footer {
@@ -370,16 +542,22 @@ if ($pdo === null) {
             border-color: #adb5bd;
         }
 
-        /* Alerts - Clean Design */
+        /* Alerts - Enhanced Modern Design */
         .alert {
             font-size: 0.875rem;
-            padding: 0.875rem 1rem;
-            border-radius: 4px;
-            border: 1px solid transparent;
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
         }
 
-        .alert i {
+        .alert i[data-lucide] {
             margin-right: 0.5rem;
+            width: 18px;
+            height: 18px;
+            vertical-align: text-bottom;
         }
 
         .alert-info {
@@ -394,20 +572,26 @@ if ($pdo === null) {
             border-color: #ffeaa7;
         }
 
-        /* Print Preview Modal - Clean & Flat */
+        /* Print Preview Modal - Enhanced Modern Design */
         .modern-modal {
-            border: 1px solid #dee2e6;
-            border-radius: 6px !important;
+            border: none;
+            border-radius: 16px !important;
             overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
         }
 
-        /* Clean Header */
-        .gradient-header {
-            background: #ffffff;
+        .modal-content {
+            border-radius: 16px !important;
             border: none;
-            padding: 1rem 1.25rem;
+        }
+
+        /* Enhanced Gradient Header */
+        .gradient-header {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: none;
+            padding: 1.5rem 1.75rem;
             color: #212529;
-            border-bottom: 1px solid #dee2e6;
+            border-bottom: 2px solid #e9ecef;
         }
 
         .header-content {
@@ -688,22 +872,91 @@ if ($pdo === null) {
             }
         }
 
-        /* Filter & Search Styles - Clean Design */
+        /* Enhanced Table Styles */
+        .table {
+            font-size: 0.875rem;
+        }
+
+        .table thead th {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            color: #495057;
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            padding: 1rem 0.75rem;
+        }
+
+        .table tbody td {
+            padding: 1rem 0.75rem;
+            vertical-align: middle;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f1f3f5;
+            transition: background-color 0.2s ease;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        /* Row number column styling */
+        .table tbody td:first-child {
+            font-weight: 600;
+            color: #6c757d;
+            font-family: 'Inter', monospace;
+            font-variant-numeric: tabular-nums;
+            font-size: 0.8125rem;
+            border-right: 2px solid #dee2e6;
+            background-color: #f8f9fa;
+        }
+
+        .table thead th:first-child {
+            text-align: center;
+            font-weight: 700;
+            border-right: 2px solid #dee2e6;
+            background-color: #f8f9fa;
+        }
+
+        /* Filter & Search Styles - Enhanced Design */
+        .input-group {
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
         .input-group-lg .input-group-text {
             font-size: 0.875rem;
-            background: #f8f9fa;
+            background: #ffffff;
             border-right: none;
-            border: 1px solid #ced4da;
+            border: 2px solid #e9ecef;
             color: #495057;
+            border-radius: 8px 0 0 8px;
+        }
+
+        .input-group-lg .input-group-text i[data-lucide] {
+            width: 18px;
+            height: 18px;
         }
 
         .input-group-lg .form-control {
             border-left: none;
+            border: 2px solid #e9ecef;
+            border-left: none;
             font-size: 0.875rem;
+            padding: 0.75rem 1rem;
         }
 
         .input-group-lg .form-control:focus {
             border-left: none;
+            border-color: #0d6efd;
+            box-shadow: none;
+        }
+
+        .input-group-lg .form-control:focus + .input-group-text,
+        .input-group:focus-within .input-group-text {
+            border-color: #0d6efd;
         }
 
         .stat-item {
@@ -907,7 +1160,7 @@ if ($pdo === null) {
             if ($pendingPrintCount > 0):
             ?>
                 <div class="alert alert-warning alert-dismissible fade show">
-                    <i class="fas fa-exclamation-triangle"></i>
+                    <i data-lucide="alert-triangle"></i>
                     <strong>Notice:</strong> You have <strong><?= $pendingPrintCount ?></strong> payment(s) waiting for print confirmation.
                     <a href="/tmg/public/pending_print_payments.php" class="alert-link">Click here to review them</a>.
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
@@ -925,7 +1178,7 @@ if ($pdo === null) {
                         <div class="row mb-3">
                             <div class="col-md-12">
                                 <div class="input-group input-group-lg">
-                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                    <span class="input-group-text"><i data-lucide="search"></i></span>
                                     <input
                                         type="text"
                                         class="form-control"
@@ -934,10 +1187,10 @@ if ($pdo === null) {
                                         autocomplete="off"
                                     >
                                     <button class="btn btn-primary" type="button" onclick="applyFilters()">
-                                        <i class="fas fa-search"></i> Search
+                                        <i data-lucide="search"></i> Search
                                     </button>
                                     <button class="btn btn-outline-secondary" type="button" onclick="clearFilters()">
-                                        <i class="fas fa-times"></i> Clear
+                                        <i data-lucide="x"></i> Clear
                                     </button>
                                 </div>
                             </div>
@@ -990,10 +1243,10 @@ if ($pdo === null) {
                             </div>
                             <div class="mt-3">
                                 <button class="btn btn-primary" type="button" onclick="applyFilters()">
-                                    <i class="fas fa-check"></i> Apply Filters
+                                    <i data-lucide="check"></i> Apply Filters
                                 </button>
                                 <button class="btn btn-outline-secondary" type="button" onclick="clearFilters()">
-                                    <i class="fas fa-redo"></i> Reset All
+                                    <i data-lucide="rotate-ccw"></i> Reset All
                                 </button>
                             </div>
                         </div>
@@ -1008,7 +1261,7 @@ if ($pdo === null) {
                                 aria-expanded="false"
                                 aria-controls="advancedFilters"
                             >
-                                <i class="fas fa-sliders-h"></i> Advanced Filters
+                                <i data-lucide="sliders-horizontal"></i> Advanced Filters
                             </a>
                         </div>
                     </form>
@@ -1053,10 +1306,10 @@ if ($pdo === null) {
                     <h5 class="mb-0">Pending Citations <span id="citationCount">(0)</span></h5>
                     <div>
                         <small class="text-muted me-3">
-                            <i class="fas fa-info-circle"></i> Showing citations awaiting payment
+                            <i data-lucide="info"></i> Showing citations awaiting payment
                         </small>
                         <button class="btn btn-sm btn-success" onclick="exportToCSV()" id="exportBtn" style="display: none;">
-                            <i class="fas fa-file-excel"></i> Export to CSV
+                            <i data-lucide="file-spreadsheet"></i> Export to CSV
                         </button>
                     </div>
                 </div>
@@ -1071,7 +1324,7 @@ if ($pdo === null) {
 
                     <!-- No Results Message -->
                     <div id="noResults" class="alert alert-info mb-0" style="display: none;">
-                        <i class="fas fa-info-circle"></i> No pending citations found matching your filters.
+                        <i data-lucide="info"></i> No pending citations found matching your filters.
                     </div>
 
                     <!-- Table Container -->
@@ -1080,6 +1333,7 @@ if ($pdo === null) {
                             <table class="table table-striped table-hover" id="citationsTable">
                                 <thead>
                                     <tr>
+                                        <th style="width: 50px;">#</th>
                                         <th>Ticket Number</th>
                                         <th>Driver</th>
                                         <th>License</th>
@@ -1140,7 +1394,7 @@ if ($pdo === null) {
                             <div class="modal-column-left">
                                 <!-- Citation Summary -->
                                 <div class="summary-section">
-                                    <h6><i class="fas fa-ticket-alt"></i> Citation Details</h6>
+                                    <h6><i data-lucide="ticket"></i> Citation Details</h6>
                                     <div class="summary-grid">
                                         <div class="summary-item">
                                             <span class="summary-label">Ticket Number</span>
@@ -1179,19 +1433,19 @@ if ($pdo === null) {
                                         <div class="amount-value">₱<span id="modal_amount">0.00</span></div>
                                     </div>
                                     <div class="amount-icon">
-                                        <i class="fas fa-peso-sign"></i>
+                                        <i data-lucide="peso-sign"></i>
                                     </div>
                                 </div>
 
                                 <!-- Payment Information Section -->
                                 <div class="payment-info-section">
-                                    <h6><i class="fas fa-credit-card"></i> Payment Information</h6>
+                                    <h6><i data-lucide="credit-card"></i> Payment Information</h6>
 
                                     <div class="row g-3">
                                         <!-- Payment Method -->
                                         <div class="col-md-6">
                                             <label for="payment_method" class="form-label">
-                                                <i class="fas fa-wallet"></i> Payment Method *
+                                                <i data-lucide="wallet"></i> Payment Method *
                                             </label>
                                             <select class="form-select" id="payment_method" name="payment_method" required>
                                                 <option value="">Select Method</option>
@@ -1206,7 +1460,7 @@ if ($pdo === null) {
                                         <!-- OR/Receipt Number -->
                                         <div class="col-md-6">
                                             <label for="receipt_number" class="form-label">
-                                                <i class="fas fa-receipt"></i> OR Number *
+                                                <i data-lucide="receipt"></i> OR Number *
                                             </label>
                                             <input
                                                 type="text"
@@ -1222,7 +1476,7 @@ if ($pdo === null) {
                                         <!-- Cash Received (only for cash payments) -->
                                         <div class="col-md-6" id="cashReceivedField">
                                             <label for="cash_received" class="form-label">
-                                                <i class="fas fa-money-bill"></i> Cash Received *
+                                                <i data-lucide="banknote"></i> Cash Received *
                                             </label>
                                             <input
                                                 type="number"
@@ -1238,7 +1492,7 @@ if ($pdo === null) {
                                         <!-- Reference Number (for non-cash payments) -->
                                         <div class="col-md-6" id="referenceField" style="display: none;">
                                             <label for="reference_number" class="form-label">
-                                                <i class="fas fa-hashtag"></i> Reference Number
+                                                <i data-lucide="hash"></i> Reference Number
                                             </label>
                                             <input
                                                 type="text"
@@ -1251,7 +1505,7 @@ if ($pdo === null) {
                                     </div>
 
                                     <div class="form-text mt-2">
-                                        <i class="fas fa-info-circle"></i> Enter the OR number exactly as it appears on the physical receipt booklet.
+                                        <i data-lucide="info"></i> Enter the OR number exactly as it appears on the physical receipt booklet.
                                     </div>
                                 </div>
 
@@ -1262,14 +1516,14 @@ if ($pdo === null) {
                                         <div class="change-value">₱<span id="change_amount">0.00</span></div>
                                     </div>
                                     <div class="change-icon">
-                                        <i class="fas fa-hand-holding-usd"></i>
+                                        <i data-lucide="hand-coins"></i>
                                     </div>
                                 </div>
 
                                 <!-- Notes -->
                                 <div class="mb-0">
                                     <label for="notes" class="form-label">
-                                        <i class="fas fa-sticky-note"></i> Notes (Optional)
+                                        <i data-lucide="sticky-note"></i> Notes (Optional)
                                     </label>
                                     <textarea
                                         class="form-control"
@@ -1287,7 +1541,7 @@ if ($pdo === null) {
                             Cancel
                         </button>
                         <button type="submit" class="btn btn-primary" id="confirmPaymentBtn">
-                            <i class="fas fa-check-circle"></i> Confirm Payment
+                            <i data-lucide="check-circle"></i> Confirm Payment
                         </button>
                     </div>
                 </form>
@@ -1301,7 +1555,7 @@ if ($pdo === null) {
             <div class="modal-content">
                 <div class="modal-header" style="background: #ffffff; border-bottom: 1px solid #e5e7eb;">
                     <h5 class="modal-title" id="reprintOptionsModalLabel" style="color: #0f172a; display: flex; align-items: center; gap: 12px;">
-                        <i class="fas fa-exclamation-triangle" style="color: #f59e0b; background: #fef3c7; padding: 8px; border-radius: 8px; font-size: 1.25rem;"></i>
+                        <i data-lucide="alert-triangle" style="color: #f59e0b; background: #fef3c7; padding: 8px; border-radius: 8px; font-size: 1.25rem;"></i>
                         <span>Printer Problem</span>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -1317,13 +1571,13 @@ if ($pdo === null) {
                     <div class="d-grid gap-3">
                         <!-- Option 1: Reprint -->
                         <button class="btn btn-primary btn-lg" onclick="reprintReceipt()">
-                            <i class="fas fa-redo"></i> REPRINT
+                            <i data-lucide="rotate-cw"></i> REPRINT
                             <div class="small">Use same OR: <span id="display_current_or"></span></div>
                         </button>
 
                         <!-- Option 2: Use New Receipt -->
                         <button class="btn btn-warning btn-lg" onclick="showNewOrInput()">
-                            <i class="fas fa-edit"></i> USE NEW RECEIPT
+                            <i data-lucide="edit"></i> USE NEW RECEIPT
                             <div class="small">Enter new OR number</div>
                         </button>
 
@@ -1340,13 +1594,13 @@ if ($pdo === null) {
                                 >
                             </div>
                             <button class="btn btn-success w-100" onclick="confirmNewOr()">
-                                <i class="fas fa-check"></i> Confirm New OR
+                                <i data-lucide="check"></i> Confirm New OR
                             </button>
                         </div>
 
                         <!-- Option 3: Cancel Payment -->
                         <button class="btn btn-danger btn-lg" onclick="voidPaymentConfirm()">
-                            <i class="fas fa-times-circle"></i> CANCEL PAYMENT
+                            <i data-lucide="x-circle"></i> CANCEL PAYMENT
                             <div class="small">Void this transaction</div>
                         </button>
                     </div>
@@ -1363,7 +1617,7 @@ if ($pdo === null) {
                 <div class="modal-header gradient-header">
                     <div class="header-content">
                         <div class="header-icon">
-                            <i class="fas fa-check-circle"></i>
+                            <i data-lucide="check-circle"></i>
                         </div>
                         <div class="header-text">
                             <h5 class="modal-title mb-0" id="printPreviewModalLabel">
@@ -1402,10 +1656,10 @@ if ($pdo === null) {
                     </div>
                     <div class="footer-actions">
                         <button type="button" class="btn btn-light btn-lg" data-bs-dismiss="modal">
-                            <i class="fas fa-times"></i> Cancel
+                            <i data-lucide="x"></i> Cancel
                         </button>
                         <button type="button" class="btn btn-success btn-lg" onclick="printReceiptFromPreview()">
-                            <i class="fas fa-print"></i> Print Receipt
+                            <i data-lucide="printer"></i> Print Receipt
                         </button>
                     </div>
                 </div>
@@ -1413,6 +1667,8 @@ if ($pdo === null) {
         </div>
     </div>
 
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <!-- SweetAlert2 JS -->
@@ -1423,5 +1679,19 @@ if ($pdo === null) {
     <script src="../assets/js/payments/payment-validation.js"></script>
     <!-- Custom JS -->
     <script src="../assets/js/process_payment.js"></script>
+    <!-- Initialize Lucide Icons -->
+    <script>
+        // Initialize Lucide icons after DOM content is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+
+        // Re-initialize icons after dynamic content updates
+        function reinitLucideIcons() {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+    </script>
 </body>
 </html>

@@ -116,9 +116,9 @@ function showPendingPaymentOptions(payment) {
         icon: 'info',
         showDenyButton: true,
         showCancelButton: true,
-        confirmButtonText: '<i class="fas fa-check-circle"></i> Resume & Print Receipt',
-        denyButtonText: '<i class="fas fa-trash"></i> Void & Start Over',
-        cancelButtonText: '<i class="fas fa-times"></i> Cancel',
+        confirmButtonText: '<i data-lucide="check-circle"></i> Resume & Print Receipt',
+        denyButtonText: '<i data-lucide="trash-2"></i> Void & Start Over',
+        cancelButtonText: '<i data-lucide="x"></i> Cancel',
         confirmButtonColor: '#059669',
         denyButtonColor: '#dc2626',
         cancelButtonColor: '#6b7280',
@@ -133,6 +133,11 @@ function showPendingPaymentOptions(payment) {
         }
         // If dismissed, do nothing
     });
+
+    // Reinitialize Lucide icons in the SweetAlert dialog
+    if (typeof reinitLucideIcons === 'function') {
+        setTimeout(reinitLucideIcons, 100);
+    }
 }
 
 /**
@@ -147,7 +152,7 @@ function resumePendingPayment(payment) {
     const summaryContent = `
         <div class="text-center mb-4">
             <div class="success-icon-wrapper">
-                <i class="fas fa-clock fa-5x text-warning"></i>
+                <i data-lucide="clock" style="width: 80px; height: 80px; color: #ffc107;"></i>
             </div>
             <h3 class="mt-3 mb-2">Resuming Pending Payment</h3>
             <p class="text-muted">This payment was recorded but not finalized</p>
@@ -155,7 +160,7 @@ function resumePendingPayment(payment) {
 
         <div class="payment-summary-card">
             <h6 class="summary-section-title">
-                <i class="fas fa-receipt"></i> Transaction Details
+                <i data-lucide="receipt"></i> Transaction Details
             </h6>
             <div class="summary-row">
                 <span class="summary-label">OR Number:</span>
@@ -183,7 +188,7 @@ function resumePendingPayment(payment) {
 
         <div class="payment-summary-card mt-3">
             <h6 class="summary-section-title">
-                <i class="fas fa-money-bill-wave"></i> Payment Breakdown
+                <i data-lucide="banknote"></i> Payment Breakdown
             </h6>
             <div class="summary-row">
                 <span class="summary-label">Amount Paid:</span>
@@ -202,13 +207,18 @@ function resumePendingPayment(payment) {
         </div>
 
         <div class="alert alert-warning mt-4">
-            <i class="fas fa-exclamation-triangle"></i>
+            <i data-lucide="alert-triangle"></i>
             <strong>Important:</strong> Print the receipt and confirm to complete this transaction.
         </div>
     `;
 
     // Update modal content
     document.getElementById('paymentSummaryContent').innerHTML = summaryContent;
+
+    // Reinitialize Lucide icons
+    if (typeof reinitLucideIcons === 'function') {
+        setTimeout(reinitLucideIcons, 100);
+    }
 
     // Show modal
     const summaryModal = new bootstrap.Modal(document.getElementById('printPreviewModal'));
@@ -419,7 +429,7 @@ function handlePaymentSubmit(e) {
                                 <strong>Date:</strong> ${new Date(data.existing_payment.payment_date).toLocaleString()}<br>
                                 <strong>Status:</strong> <span class="badge bg-${data.existing_payment.status === 'completed' ? 'success' : 'warning'}">${data.existing_payment.status.toUpperCase()}</span>
                             </div>
-                            <p class="mb-0 text-muted"><small><i class="fas fa-info-circle"></i> Please use a different OR number from your receipt booklet.</small></p>
+                            <p class="mb-0 text-muted"><small><i data-lucide="info"></i> Please use a different OR number from your receipt booklet.</small></p>
                         </div>
                     `,
                     confirmButtonColor: '#dc2626',
@@ -477,7 +487,7 @@ function validateAndSubmitPayment(e, paymentMethod, amountDue, cashReceived) {
         // Disable submit button
         const submitBtn = document.getElementById('confirmPaymentBtn');
         submitBtn.disabled = true;
-        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        submitBtn.innerHTML = '<i data-lucide="loader-2" class="animate-spin"></i> Processing...';
 
         // Prepare form data
         const formData = new FormData(e.target);
@@ -514,7 +524,7 @@ function validateAndSubmitPayment(e, paymentMethod, amountDue, cashReceived) {
                     confirmButtonColor: '#dc2626'
                 });
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Payment';
+                submitBtn.innerHTML = '<i data-lucide="check-circle"></i> Confirm Payment';
             }
         })
         .catch(error => {
@@ -525,7 +535,7 @@ function validateAndSubmitPayment(e, paymentMethod, amountDue, cashReceived) {
                 confirmButtonColor: '#dc2626'
             });
             submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-check-circle"></i> Confirm Payment';
+            submitBtn.innerHTML = '<i data-lucide="check-circle"></i> Confirm Payment';
         });
     });
 }
@@ -550,7 +560,7 @@ function showReceiptPreview(receiptNumber, paymentId) {
     const summaryContent = `
         <div class="text-center mb-4">
             <div class="success-icon-wrapper">
-                <i class="fas fa-check-circle fa-5x text-success"></i>
+                <i data-lucide="check-circle" style="width: 80px; height: 80px; color: #198754;"></i>
             </div>
             <h3 class="mt-3 mb-2">Payment Successful!</h3>
             <p class="text-muted">Transaction has been recorded</p>
@@ -558,7 +568,7 @@ function showReceiptPreview(receiptNumber, paymentId) {
 
         <div class="payment-summary-card">
             <h6 class="summary-section-title">
-                <i class="fas fa-receipt"></i> Transaction Details
+                <i data-lucide="receipt"></i> Transaction Details
             </h6>
             <div class="summary-row">
                 <span class="summary-label">OR Number:</span>
@@ -586,7 +596,7 @@ function showReceiptPreview(receiptNumber, paymentId) {
 
         <div class="payment-summary-card mt-3">
             <h6 class="summary-section-title">
-                <i class="fas fa-money-bill-wave"></i> Payment Breakdown
+                <i data-lucide="banknote"></i> Payment Breakdown
             </h6>
             <div class="summary-row">
                 <span class="summary-label">Amount Due:</span>
@@ -610,13 +620,18 @@ function showReceiptPreview(receiptNumber, paymentId) {
         </div>
 
         <div class="alert alert-info mt-4">
-            <i class="fas fa-info-circle"></i>
+            <i data-lucide="info"></i>
             <strong>Next Step:</strong> Click "Print Receipt" below to print the official receipt for the driver.
         </div>
     `;
 
     // Update modal content
     document.getElementById('paymentSummaryContent').innerHTML = summaryContent;
+
+    // Reinitialize Lucide icons
+    if (typeof reinitLucideIcons === 'function') {
+        setTimeout(reinitLucideIcons, 100);
+    }
 
     // Show modal
     const summaryModal = new bootstrap.Modal(document.getElementById('printPreviewModal'));
@@ -661,8 +676,8 @@ function showPrintConfirmation(paymentId, receiptNumber) {
         icon: 'question',
         showDenyButton: true,
         showCancelButton: false,
-        confirmButtonText: '<i class="fas fa-check"></i> Yes - Print OK',
-        denyButtonText: '<i class="fas fa-times"></i> No - Printer Problem',
+        confirmButtonText: '<i data-lucide="check"></i> Yes - Print OK',
+        denyButtonText: '<i data-lucide="x"></i> No - Printer Problem',
         confirmButtonColor: '#059669',
         denyButtonColor: '#dc2626',
         allowOutsideClick: false,
@@ -997,19 +1012,24 @@ function validateOrNumberFormat() {
     if (OR_NUMBER_PATTERN.test(value)) {
         // Valid format
         feedbackDiv.className = 'text-success';
-        feedbackDiv.innerHTML = '<i class="fas fa-check-circle"></i> Valid OR format (8 digits)';
+        feedbackDiv.innerHTML = '<i data-lucide="check-circle"></i> Valid OR format (8 digits)';
         input.style.borderColor = '#198754';
         input.style.backgroundColor = '#f0fdf4';
     } else {
         // Invalid format
         feedbackDiv.className = 'text-danger';
-        feedbackDiv.innerHTML = '<i class="fas fa-times-circle"></i> Invalid format. Expected: 8 digits (e.g., 15320501) or CGVM15320501';
+        feedbackDiv.innerHTML = '<i data-lucide="x-circle"></i> Invalid format. Expected: 8 digits (e.g., 15320501) or CGVM15320501';
         input.style.borderColor = '#dc3545';
         input.style.backgroundColor = '#fef2f2';
     }
 
     // Insert feedback after input
     input.parentNode.appendChild(feedbackDiv);
+
+    // Reinitialize Lucide icons
+    if (typeof reinitLucideIcons === 'function') {
+        setTimeout(reinitLucideIcons, 100);
+    }
 }
 
 /**
@@ -1094,10 +1114,10 @@ function showAlert(message, type) {
 
     // Add icon based on type
     let icon = '';
-    if (type === 'success') icon = '<i class="fas fa-check-circle"></i> ';
-    if (type === 'danger') icon = '<i class="fas fa-exclamation-circle"></i> ';
-    if (type === 'warning') icon = '<i class="fas fa-exclamation-triangle"></i> ';
-    if (type === 'info') icon = '<i class="fas fa-info-circle"></i> ';
+    if (type === 'success') icon = '<i data-lucide="check-circle"></i> ';
+    if (type === 'danger') icon = '<i data-lucide="alert-circle"></i> ';
+    if (type === 'warning') icon = '<i data-lucide="alert-triangle"></i> ';
+    if (type === 'info') icon = '<i data-lucide="info"></i> ';
 
     alertDiv.innerHTML = `
         ${icon}${message}
@@ -1106,6 +1126,11 @@ function showAlert(message, type) {
 
     const container = document.querySelector('.container-fluid');
     container.insertBefore(alertDiv, container.firstChild);
+
+    // Reinitialize Lucide icons
+    if (typeof reinitLucideIcons === 'function') {
+        setTimeout(reinitLucideIcons, 100);
+    }
 
     // Only auto-dismiss success and info alerts (NOT errors/warnings)
     if (type === 'success' || type === 'info') {
