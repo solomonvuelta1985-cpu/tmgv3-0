@@ -154,7 +154,7 @@ function require_cashier() {
  * @return bool
  */
 function can_create_citation() {
-    return is_admin() || is_enforcer();
+    return is_admin() || is_enforcer() || is_cashier();
 }
 
 /**

@@ -2,3 +2,31 @@
 [09-Dec-2025 14:20:47 Asia/Manila] Backup failed: SQLSTATE[0A000]: Feature not supported: 1415 Not allowed to return a result set from a trigger
 [09-Dec-2025 14:20:56 Asia/Manila] Backup failed: SQLSTATE[0A000]: Feature not supported: 1415 Not allowed to return a result set from a trigger
 [09-Dec-2025 14:21:48 Asia/Manila] Backup failed: SQLSTATE[0A000]: Feature not supported: 1415 Not allowed to return a result set from a trigger
+[09-Dec-2025 14:56:19 Asia/Manila] Audit log error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'action' in 'field list'
+[09-Dec-2025 15:01:08 Asia/Manila] Audit log error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'action' in 'field list'
+[09-Dec-2025 15:02:46 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[09-Dec-2025 15:02:46 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\search.php on line 389
+[09-Dec-2025 15:09:12 Asia/Manila] Audit log error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'action' in 'field list'
+[09-Dec-2025 15:11:16 Asia/Manila] Audit log error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'action' in 'field list'
+[09-Dec-2025 15:11:38 Asia/Manila] Audit log error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'action' in 'field list'
+[09-Dec-2025 15:12:36 Asia/Manila] Audit log error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'action' in 'field list'
+[09-Dec-2025 15:12:45 Asia/Manila] No valid pending payments found
+[09-Dec-2025 15:15:24 Asia/Manila] Finalizing payment ID=59, OR=23458985, Citation=06110
+[09-Dec-2025 15:15:24 Asia/Manila] Payment finalized successfully: ID=59, OR=23458985, Citation=06110, User=2
+[09-Dec-2025 15:15:45 Asia/Manila] No valid pending payments found
+[09-Dec-2025 15:16:04 Asia/Manila] Audit log error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'action' in 'field list'
+[09-Dec-2025 15:16:08 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\templates\reports\financial-report.php on line 126
+[09-Dec-2025 15:16:15 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\templates\reports\financial-report.php on line 126
+[09-Dec-2025 15:25:31 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\templates\reports\financial-report.php on line 126
+[09-Dec-2025 15:25:41 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\templates\reports\financial-report.php on line 126
+[09-Dec-2025 15:27:01 Asia/Manila] Audit log error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'action' in 'field list'
+[09-Dec-2025 15:34:47 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\templates\reports\financial-report.php on line 126
+[09-Dec-2025 15:35:39 Asia/Manila] Audit log error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'action' in 'field list'
+[09-Dec-2025 15:36:51 Asia/Manila] Finalizing payment ID=60, OR=CGVM15320990, Citation=06109
+[09-Dec-2025 15:36:51 Asia/Manila] Payment finalized successfully: ID=60, OR=CGVM15320990, Citation=06109, User=2
+[09-Dec-2025 16:00:45 Asia/Manila] Audit log error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'action' in 'field list'
+[10-Dec-2025 08:04:33 Asia/Manila] Audit log error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'action' in 'field list'
+[10-Dec-2025 08:05:36 Asia/Manila] Audit log error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'action' in 'field list'
+[10-Dec-2025 08:05:46 Asia/Manila] Audit log error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'action' in 'field list'
+[10-Dec-2025 08:18:54 Asia/Manila] Audit log error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'action' in 'field list'
+[10-Dec-2025 08:32:27 Asia/Manila] Audit log error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'action' in 'field list'

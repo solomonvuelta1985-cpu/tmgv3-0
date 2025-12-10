@@ -171,8 +171,8 @@ try {
         "INSERT INTO citations (ticket_number, driver_id, last_name, first_name,
         middle_initial, suffix, date_of_birth, age, zone, barangay, municipality, province, license_number,
         license_type, plate_mv_engine_chassis_no, vehicle_description,
-        apprehension_datetime, place_of_apprehension, apprehension_officer, remarks, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())",
+        apprehension_datetime, place_of_apprehension, apprehension_officer, remarks, created_by, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())",
         [
             $data['ticket_number'], $driver_id, $data['last_name'], $data['first_name'],
             $data['middle_initial'], $data['suffix'], $dob, $age, $data['zone'], $data['barangay'],
@@ -180,7 +180,7 @@ try {
             $data['license_number'] ?? null, $data['license_type'] ?? null,
             $data['plate_mv_engine_chassis_no'], $data['vehicle_description'],
             $data['apprehension_datetime'], $data['place_of_apprehension'],
-            $data['apprehension_officer'], $data['remarks']
+            $data['apprehension_officer'], $data['remarks'], $_SESSION['user_id']
         ]
     );
     $citation_id = $pdo->lastInsertId();

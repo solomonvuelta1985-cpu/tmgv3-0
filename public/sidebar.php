@@ -114,6 +114,17 @@
         </li>
         <?php endif; ?>
 
+        <!-- Cashier Reports Section -->
+        <?php if (function_exists('is_cashier') && is_cashier()): ?>
+        <li class="sidebar-divider"></li>
+        <li class="sidebar-heading">My Reports</li>
+        <li>
+            <a href="/tmg/public/reports.php?report_type=cashier" class="<?php echo (basename($_SERVER['PHP_SELF']) === 'reports.php' && isset($_GET['report_type']) && $_GET['report_type'] === 'cashier') ? 'active' : ''; ?>" title="My Performance">
+                <i data-lucide="chart-line"></i> <span>My Performance</span>
+            </a>
+        </li>
+        <?php endif; ?>
+
         <!-- Management Section -->
         <li class="sidebar-divider"></li>
         <li class="sidebar-heading">Team</li>

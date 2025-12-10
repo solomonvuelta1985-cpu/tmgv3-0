@@ -760,6 +760,218 @@ class ReportService {
     }
 
     /**
+     * Get cashier performance data
+     * @param string $start_date Start date
+     * @param string $end_date End date
+     * @return array Cashier performance data
+     */
+    public function getCashierPerformance($start_date = null, $end_date = null) {
+        try {
+            $sql = "SELECT
+                    u.user_id,
+                    u.full_name,
+                    u.role,
+                    COUNT(DISTINCT c.citation_id) as citations_created,
+                    COALESCE(SUM(c.total_fine), 0) as total_fines_issued,
+                    COUNT(DISTINCT p.payment_id) as payments_processed,
+                    COALESCE(SUM(p.amount_paid), 0) as total_collected,
+                    CASE
+                        WHEN COUNT(DISTINCT p.payment_id) > 0
+                        THEN COALESCE(SUM(p.amount_paid), 0) / COUNT(DISTINCT p.payment_id)
+                        ELSE 0
+                    END as avg_transaction
+                FROM users u
+                LEFT JOIN citations c ON u.user_id = c.created_by
+                    AND c.deleted_at IS NULL
+                    " . ($start_date && $end_date ? "AND DATE(c.created_at) BETWEEN :start_date_c AND :end_date_c" : "") . "
+                LEFT JOIN payments p ON u.user_id = p.collected_by
+                    " . ($start_date && $end_date ? "AND DATE(p.created_at) BETWEEN :start_date_p AND :end_date_p" : "") . "
+                WHERE u.role IN ('cashier', 'admin')
+                GROUP BY u.user_id, u.full_name, u.role
+                ORDER BY u.role ASC, total_collected DESC, u.full_name ASC";
+
+            $stmt = $this->conn->prepare($sql);
+            if ($start_date && $end_date) {
+                $stmt->bindValue(':start_date_c', $start_date);
+                $stmt->bindValue(':end_date_c', $end_date);
+                $stmt->bindValue(':start_date_p', $start_date);
+                $stmt->bindValue(':end_date_p', $end_date);
+            }
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error getting cashier performance: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Get cashier summary for specific cashier
+     * @param string $start_date Start date
+     * @param string $end_date End date
+     * @param int $user_id User ID
+     * @return array Cashier summary data
+     */
+    public function getCashierSummary($start_date = null, $end_date = null, $user_id = null) {
+        try {
+            // If no user_id provided, use current session user
+            if (!$user_id && isset($_SESSION['user_id'])) {
+                $user_id = $_SESSION['user_id'];
+            }
+
+            $where_clause_citations = $this->buildDateWhereClause($start_date, $end_date, 'c.created_at');
+            $where_clause_payments = $this->buildDateWhereClause($start_date, $end_date, 'p.created_at');
+
+            // Get citations created by cashier
+            $sql_citations = "SELECT
+                    COUNT(*) as total_citations,
+                    SUM(total_fine) as total_fines,
+                    COUNT(CASE WHEN status = 'pending' THEN 1 END) as pending_count,
+                    COUNT(CASE WHEN status = 'paid' THEN 1 END) as paid_count
+                FROM citations c
+                " . ($where_clause_citations ? $where_clause_citations . " AND" : "WHERE") . " created_by = :user_id
+                AND deleted_at IS NULL";
+
+            $stmt = $this->conn->prepare($sql_citations);
+            if ($start_date && $end_date) {
+                $stmt->bindValue(':start_date', $start_date);
+                $stmt->bindValue(':end_date', $end_date);
+            }
+            $stmt->bindValue(':user_id', $user_id);
+            $stmt->execute();
+            $citation_stats = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            // Get payments processed by cashier
+            $sql_payments = "SELECT
+                    COUNT(*) as total_payments,
+                    SUM(amount_paid) as total_amount,
+                    COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_payments,
+                    COUNT(CASE WHEN status = 'voided' THEN 1 END) as voided_payments,
+                    COUNT(CASE WHEN status = 'cancelled' THEN 1 END) as cancelled_payments
+                FROM payments p
+                " . ($where_clause_payments ? $where_clause_payments . " AND" : "WHERE") . " collected_by = :user_id";
+
+            $stmt = $this->conn->prepare($sql_payments);
+            if ($start_date && $end_date) {
+                $stmt->bindValue(':start_date', $start_date);
+                $stmt->bindValue(':end_date', $end_date);
+            }
+            $stmt->bindValue(':user_id', $user_id);
+            $stmt->execute();
+            $payment_stats = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            return array_merge($citation_stats, $payment_stats);
+        } catch (PDOException $e) {
+            error_log("Error getting cashier summary: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Get recent citations created by cashiers
+     * @param string $start_date Start date
+     * @param string $end_date End date
+     * @param int $limit Limit
+     * @return array Recent citations
+     */
+    public function getCashierRecentCitations($start_date = null, $end_date = null, $limit = 20) {
+        try {
+            $where_clause = $this->buildDateWhereClause($start_date, $end_date, 'c.created_at');
+
+            $sql = "SELECT
+                    c.citation_id,
+                    c.ticket_number,
+                    CONCAT(c.last_name, ', ', c.first_name) as driver_name,
+                    c.total_fine,
+                    c.status,
+                    c.created_at,
+                    u.full_name as cashier_name
+                FROM citations c
+                LEFT JOIN users u ON c.created_by = u.user_id
+                " . ($where_clause ? $where_clause . " AND" : "WHERE") . " c.deleted_at IS NULL
+                AND (u.role IN ('cashier', 'admin') OR c.created_by IS NULL)
+                ORDER BY c.created_at DESC
+                LIMIT :limit";
+
+            $stmt = $this->conn->prepare($sql);
+            $this->bindDateParams($stmt, $start_date, $end_date);
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error getting cashier recent citations: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Get recent payments processed by cashiers
+     * @param string $start_date Start date
+     * @param string $end_date End date
+     * @param int $limit Limit
+     * @return array Recent payments
+     */
+    public function getCashierRecentPayments($start_date = null, $end_date = null, $limit = 20, $offset = 0) {
+        try {
+            $where_clause = $this->buildDateWhereClause($start_date, $end_date, 'p.created_at');
+
+            $sql = "SELECT
+                    p.payment_id,
+                    p.receipt_number,
+                    c.ticket_number,
+                    CONCAT(c.last_name, ', ', c.first_name) as driver_name,
+                    p.amount_paid,
+                    p.payment_method,
+                    p.status,
+                    p.created_at,
+                    u.full_name as cashier_name
+                FROM payments p
+                INNER JOIN citations c ON p.citation_id = c.citation_id
+                LEFT JOIN users u ON p.collected_by = u.user_id
+                " . ($where_clause ? $where_clause . " AND" : "WHERE") . " (u.role IN ('cashier', 'admin') OR p.collected_by IS NULL)
+                ORDER BY p.created_at DESC
+                LIMIT :limit OFFSET :offset";
+
+            $stmt = $this->conn->prepare($sql);
+            $this->bindDateParams($stmt, $start_date, $end_date);
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error getting cashier recent payments: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Get total count of cashier recent payments (for pagination)
+     * @param string $start_date Start date
+     * @param string $end_date End date
+     * @return int Total count
+     */
+    public function getCashierRecentPaymentsCount($start_date = null, $end_date = null) {
+        try {
+            $where_clause = $this->buildDateWhereClause($start_date, $end_date, 'p.created_at');
+
+            $sql = "SELECT COUNT(*) as total
+                FROM payments p
+                INNER JOIN citations c ON p.citation_id = c.citation_id
+                LEFT JOIN users u ON p.collected_by = u.user_id
+                " . ($where_clause ? $where_clause . " AND" : "WHERE") . " (u.role IN ('cashier', 'admin') OR p.collected_by IS NULL)";
+
+            $stmt = $this->conn->prepare($sql);
+            $this->bindDateParams($stmt, $start_date, $end_date);
+            $stmt->execute();
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            return (int)($result['total'] ?? 0);
+        } catch (PDOException $e) {
+            error_log("Error getting cashier recent payments count: " . $e->getMessage());
+            return 0;
+        }
+    }
+
+    /**
      * Close database connection
      */
     public function closeConnection() {

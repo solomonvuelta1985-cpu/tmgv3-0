@@ -80,6 +80,22 @@ switch ($report_type) {
         $data['cancelled_voided'] = $reportService->getCancelledVoidedPayments($start_date, $end_date);
         break;
 
+    case 'cashier':
+        // Pagination parameters for recent payments
+        $payments_page = isset($_GET['payments_page']) ? max(1, (int)$_GET['payments_page']) : 1;
+        $payments_per_page = 20;
+        $payments_offset = ($payments_page - 1) * $payments_per_page;
+
+        $data['performance'] = $reportService->getCashierPerformance($start_date, $end_date);
+        $data['summary'] = $reportService->getCashierSummary($start_date, $end_date, $_SESSION['user_id']);
+        $data['recent_citations'] = $reportService->getCashierRecentCitations($start_date, $end_date, 20);
+        $data['recent_payments'] = $reportService->getCashierRecentPayments($start_date, $end_date, $payments_per_page, $payments_offset);
+        $data['payments_total_count'] = $reportService->getCashierRecentPaymentsCount($start_date, $end_date);
+        $data['payments_page'] = $payments_page;
+        $data['payments_per_page'] = $payments_per_page;
+        $data['payments_total_pages'] = ceil($data['payments_total_count'] / $payments_per_page);
+        break;
+
     default:
         $data['summary'] = $reportService->getFinancialSummary($start_date, $end_date);
         break;
@@ -143,6 +159,7 @@ if (isset($_GET['debug_data'])) {
                             <option value="or_audit" <?php echo $report_type === 'or_audit' ? 'selected' : ''; ?>>OR Usage & Audit Trail</option>
                             <option value="violations" <?php echo $report_type === 'violations' ? 'selected' : ''; ?>>Violation Analytics</option>
                             <option value="officers" <?php echo $report_type === 'officers' ? 'selected' : ''; ?>>Officer Performance</option>
+                            <option value="cashier" <?php echo $report_type === 'cashier' ? 'selected' : ''; ?>>Cashier Performance</option>
                             <option value="drivers" <?php echo $report_type === 'drivers' ? 'selected' : ''; ?>>Driver Reports</option>
                             <option value="time" <?php echo $report_type === 'time' ? 'selected' : ''; ?>>Time-Based Analytics</option>
                             <option value="status" <?php echo $report_type === 'status' ? 'selected' : ''; ?>>Status & Operations</option>
@@ -192,6 +209,8 @@ if (isset($_GET['debug_data'])) {
                     <?php include ROOT_PATH . '/templates/reports/violations-report.php'; ?>
                 <?php elseif ($report_type === 'officers'): ?>
                     <?php include ROOT_PATH . '/templates/reports/officers-report.php'; ?>
+                <?php elseif ($report_type === 'cashier'): ?>
+                    <?php include ROOT_PATH . '/templates/reports/cashier-report.php'; ?>
                 <?php elseif ($report_type === 'drivers'): ?>
                     <?php include ROOT_PATH . '/templates/reports/drivers-report.php'; ?>
                 <?php elseif ($report_type === 'time'): ?>

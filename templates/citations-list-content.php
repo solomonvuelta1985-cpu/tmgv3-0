@@ -72,9 +72,15 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
         </div>
 
         <div class="action-buttons">
+            <?php if (can_create_citation()): ?>
             <a href="index2.php" class="btn btn-primary">
                 <i class="fas fa-plus"></i> New Citation
             </a>
+            <?php else: ?>
+            <button type="button" class="btn btn-outline-primary" disabled title="Enforcer/Admin access required to create citations">
+                <i class="fas fa-lock"></i> New Citation (Restricted)
+            </button>
+            <?php endif; ?>
             <button type="button" class="btn btn-success" onclick="exportCSV()">
                 <i class="fas fa-file-csv"></i> Export CSV
             </button>
@@ -179,6 +185,13 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                                                 <i class="fas fa-trash"></i> Delete Citation
                                             </a>
                                         </li>
+                                        <?php else: ?>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item text-muted disabled" href="#" onclick="return false;" title="Admin access required to delete citations" style="cursor: not-allowed; opacity: 0.6;">
+                                                <i class="fas fa-lock"></i> Delete Citation (Admin Only)
+                                            </a>
+                                        </li>
                                         <?php endif; ?>
                                     </ul>
                                 </div>
@@ -271,6 +284,7 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <?php if ($can_change_status): ?>
                 <div class="dropdown">
                     <button class="btn btn-primary dropdown-toggle" type="button" id="statusDropdown" data-bs-toggle="dropdown">
                         <i class="fas fa-tasks"></i> Update Status
@@ -283,9 +297,20 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                         <li><a class="dropdown-item" href="#" onclick="openStatusModal('pending')"><i class="fas fa-clock text-warning"></i> Reset to Pending</a></li>
                     </ul>
                 </div>
+                <?php else: ?>
+                <button type="button" class="btn btn-outline-secondary" disabled title="Enforcer/Admin access required to change citation status">
+                    <i class="fas fa-lock"></i> Update Status (Restricted)
+                </button>
+                <?php endif; ?>
+                <?php if ($can_edit): ?>
                 <button type="button" class="btn btn-warning" id="editFromViewBtn">
                     <i class="fas fa-edit"></i> Edit
                 </button>
+                <?php else: ?>
+                <button type="button" class="btn btn-outline-warning" disabled title="Enforcer/Admin access required to edit citations">
+                    <i class="fas fa-lock"></i> Edit (Restricted)
+                </button>
+                <?php endif; ?>
                 <button type="button" class="btn btn-info" onclick="printCitation()">
                     <i class="fas fa-print"></i> Print
                 </button>
