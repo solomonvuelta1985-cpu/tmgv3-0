@@ -759,6 +759,48 @@ tbody td:last-child {
 }
 
 /* Responsive Design */
+
+/* Tablet Styles (1024px and below) */
+@media (max-width: 1024px) {
+    .content {
+        margin-left: 250px;
+        padding-top: 64px;
+    }
+
+    .main-card {
+        padding: 20px;
+    }
+
+    .page-header {
+        margin-top: 8px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 10px;
+    }
+
+    .stat-card {
+        padding: 16px;
+    }
+
+    .action-section {
+        padding: 16px;
+        gap: 12px;
+    }
+
+    .search-box {
+        min-width: 200px;
+    }
+
+    /* Make table scrollable on tablet */
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* Mobile Styles (768px and below) */
 @media (max-width: 768px) {
     .content {
         margin-left: 0;
@@ -770,26 +812,144 @@ tbody td:last-child {
     .main-card {
         padding: 1rem;
         min-height: calc(100vh - 70px);
+        border-radius: 0;
     }
 
+    .page-header {
+        margin-top: 16px;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .page-title {
+        font-size: 1.375rem;
+    }
+
+    .page-subtitle {
+        font-size: 0.8125rem;
+    }
+
+    /* Statistics Grid - 2 columns on mobile */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-bottom: 1rem;
+    }
+
+    .stat-card {
+        padding: 12px;
+    }
+
+    .stat-number {
+        font-size: 1.375rem;
+    }
+
+    .stat-label {
+        font-size: 0.75rem;
+    }
+
+    .stat-label i {
+        font-size: 0.75rem;
+    }
+
+    /* Action Section - Stack vertically */
     .action-section {
         flex-direction: column;
         align-items: stretch;
-        padding: 1rem;
+        padding: 12px;
+        gap: 10px;
     }
 
     .search-box {
         max-width: 100%;
+        min-width: 100%;
+        order: 1;
+    }
+
+    .filter-box {
+        order: 2;
+    }
+
+    .filter-box select {
+        width: 100%;
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
+
+    .search-box input {
+        font-size: 16px; /* Prevent zoom on iOS */
+        padding: 10px 12px;
     }
 
     .action-buttons {
+        order: 3;
+        justify-content: stretch;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .action-buttons .btn {
+        width: 100%;
         justify-content: center;
+        padding: 10px 16px;
+        min-height: 44px; /* Touch-friendly */
     }
 
-    .stats-grid {
-        grid-template-columns: 1fr;
+    /* Table - Horizontal scroll on mobile */
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 4px;
+        margin-left: -1rem;
+        margin-right: -1rem;
+        border-left: none;
+        border-right: none;
     }
 
+    table {
+        min-width: 900px;
+        font-size: 0.8125rem;
+    }
+
+    th {
+        padding: 10px 8px;
+        font-size: 0.75rem;
+        position: sticky;
+        top: 0;
+        background: #f8f9fa;
+        z-index: 10;
+    }
+
+    td {
+        padding: 10px 8px;
+        font-size: 0.8125rem;
+    }
+
+    td .btn-sm {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+
+    td .d-flex {
+        gap: 4px;
+    }
+
+    /* Pagination */
+    .pagination-container {
+        margin-top: 1rem;
+        gap: 4px;
+        flex-wrap: wrap;
+        padding: 0 0.5rem;
+    }
+
+    .pagination-container a,
+    .pagination-container span {
+        padding: 8px 12px;
+        font-size: 0.8125rem;
+        min-width: 40px;
+        text-align: center;
+    }
+
+    /* Modal improvements */
     .detail-grid {
         grid-template-columns: 1fr;
     }
@@ -800,20 +960,28 @@ tbody td:last-child {
     }
 
     .modal-header {
-        padding: 1rem;
+        padding: 12px 16px;
+    }
+
+    .modal-title {
+        font-size: 0.9375rem;
     }
 
     .modal-body {
-        padding: 1rem;
+        padding: 16px;
+        max-height: calc(100vh - 180px);
     }
 
     .modal-footer {
-        padding: 1rem;
+        padding: 12px 16px;
         flex-wrap: wrap;
+        gap: 8px;
     }
 
     .modal-footer .btn {
-        width: 100%;
+        flex: 1 1 calc(50% - 4px);
+        min-width: 120px;
+        font-size: 0.8125rem;
     }
 
     .modal-icon {
@@ -823,19 +991,445 @@ tbody td:last-child {
     }
 
     .detail-card {
-        padding: 0.875rem;
+        padding: 12px;
+        margin-bottom: 12px;
+    }
+
+    .detail-card-title {
+        font-size: 0.8125rem;
     }
 
     .total-fine-display {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
+        padding: 12px;
+    }
+
+    .total-fine-amount {
+        font-size: 1.25rem;
     }
 
     .violation-card {
         flex-direction: column;
         align-items: flex-start;
         gap: 0.5rem;
+        padding: 10px 12px;
+    }
+
+    .violation-fine {
+        font-size: 0.9375rem;
+    }
+
+    /* Empty state */
+    .empty-state {
+        padding: 30px 15px;
+    }
+
+    .empty-state i {
+        font-size: 2.5rem;
+    }
+}
+
+/* Small Mobile Styles (480px and below) */
+@media (max-width: 480px) {
+    .content {
+        padding-top: 70px;
+    }
+
+    .main-card {
+        padding: 12px;
+    }
+
+    .page-header {
+        margin-top: 12px;
+        margin-bottom: 12px;
+    }
+
+    .page-title {
+        font-size: 1.25rem;
+    }
+
+    .page-title i {
+        font-size: 1rem;
+    }
+
+    .page-subtitle {
+        font-size: 0.75rem;
+    }
+
+    /* Statistics - Single column on small mobile */
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .stat-card {
+        padding: 10px 12px;
+    }
+
+    .stat-number {
+        font-size: 1.25rem;
+    }
+
+    .stat-label {
+        font-size: 0.6875rem;
+    }
+
+    /* Action section */
+    .action-section {
+        padding: 10px;
+        gap: 8px;
+    }
+
+    .search-box input,
+    .filter-box select {
+        padding: 9px 12px;
+        font-size: 16px;
+    }
+
+    .action-buttons .btn {
+        padding: 9px 14px;
+        font-size: 0.8125rem;
+    }
+
+    /* Table container */
+    .table-container {
+        margin-left: -12px;
+        margin-right: -12px;
+    }
+
+    table {
+        min-width: 850px;
+        font-size: 0.75rem;
+    }
+
+    th {
+        padding: 8px 6px;
+        font-size: 0.6875rem;
+    }
+
+    td {
+        padding: 8px 6px;
+        font-size: 0.75rem;
+    }
+
+    td .btn-sm {
+        padding: 5px 8px;
+        font-size: 0.6875rem;
+    }
+
+    td .d-flex {
+        gap: 3px;
+    }
+
+    .badge {
+        padding: 4px 8px;
+        font-size: 0.6875rem;
+    }
+
+    /* Pagination */
+    .pagination-container {
+        gap: 3px;
+        padding: 0 0.25rem;
+    }
+
+    .pagination-container a,
+    .pagination-container span {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+        min-width: 36px;
+    }
+
+    /* Modal adjustments */
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+
+    .modal-header {
+        padding: 10px 12px;
+    }
+
+    .modal-title {
+        font-size: 0.875rem;
+    }
+
+    .modal-icon {
+        width: 24px;
+        height: 24px;
+        font-size: 0.75rem;
+    }
+
+    .modal-body {
+        padding: 12px;
+        font-size: 0.8125rem;
+    }
+
+    .modal-footer {
+        padding: 10px 12px;
+        flex-direction: column;
+    }
+
+    .modal-footer .btn {
+        width: 100%;
+        min-width: 100%;
+    }
+
+    .detail-card {
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+
+    .detail-card-header {
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.5rem;
+    }
+
+    .detail-card-title {
+        font-size: 0.75rem;
+    }
+
+    .detail-label {
+        font-size: 0.6875rem;
+    }
+
+    .detail-value {
+        font-size: 0.8125rem;
+    }
+
+    .section-title {
+        padding: 8px 12px;
+        font-size: 0.8125rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .violation-card {
+        padding: 8px 10px;
+        margin-bottom: 0.5rem;
+    }
+
+    .violation-type {
+        font-size: 0.8125rem;
+    }
+
+    .violation-offense {
+        font-size: 0.6875rem;
+    }
+
+    .violation-fine {
+        font-size: 0.875rem;
+    }
+
+    .total-fine-display {
+        padding: 10px;
+    }
+
+    .total-fine-label {
+        font-size: 0.8125rem;
+    }
+
+    .total-fine-amount {
+        font-size: 1.125rem;
+    }
+
+    .remarks-box {
+        padding: 10px 12px;
+        font-size: 0.8125rem;
+    }
+}
+
+/* Extra Small Devices (375px and below) */
+@media (max-width: 375px) {
+    .main-card {
+        padding: 10px;
+    }
+
+    .page-header {
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .page-title {
+        font-size: 1.125rem;
+    }
+
+    .page-subtitle {
+        font-size: 0.6875rem;
+    }
+
+    .stats-grid {
+        gap: 6px;
+    }
+
+    .stat-card {
+        padding: 8px 10px;
+    }
+
+    .stat-number {
+        font-size: 1.125rem;
+    }
+
+    .stat-label {
+        font-size: 0.625rem;
+    }
+
+    .action-section {
+        padding: 8px;
+        gap: 6px;
+    }
+
+    .search-box input,
+    .filter-box select {
+        padding: 8px 10px;
+    }
+
+    .action-buttons .btn {
+        padding: 8px 12px;
+        font-size: 0.75rem;
+        min-height: 40px;
+    }
+
+    table {
+        min-width: 800px;
+    }
+
+    .pagination-container a,
+    .pagination-container span {
+        padding: 5px 8px;
+        font-size: 0.6875rem;
+        min-width: 32px;
+    }
+
+    .empty-state {
+        padding: 20px 10px;
+    }
+
+    .empty-state i {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+
+    .empty-state h5 {
+        font-size: 1rem;
+    }
+
+    .empty-state p {
+        font-size: 0.8125rem;
+    }
+}
+
+/* Touch Device Optimization */
+@media (hover: none) and (pointer: coarse) {
+    .btn {
+        min-height: 44px; /* iOS recommended touch target */
+    }
+
+    .search-box input,
+    .filter-box select {
+        min-height: 44px;
+    }
+
+    .pagination-container a,
+    .pagination-container span {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    td .btn-sm {
+        min-height: 36px;
+        min-width: 36px;
+    }
+}
+
+/* Landscape Orientation for Mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+    .main-card {
+        padding: 12px 16px;
+    }
+
+    .page-header {
+        margin-top: 8px;
+        margin-bottom: 12px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .stat-card {
+        padding: 8px;
+    }
+
+    .stat-number {
+        font-size: 1.125rem;
+    }
+
+    .stat-label {
+        font-size: 0.6875rem;
+    }
+
+    .action-section {
+        flex-direction: row;
+        padding: 10px;
+        gap: 8px;
+    }
+
+    .search-box {
+        flex: 1;
+        min-width: 200px;
+        order: 1;
+    }
+
+    .filter-box {
+        flex: 0 0 auto;
+        order: 2;
+    }
+
+    .action-buttons {
+        flex-direction: row;
+        order: 3;
+        width: auto;
+    }
+
+    .action-buttons .btn {
+        width: auto;
+        padding: 8px 16px;
+        font-size: 0.75rem;
+    }
+
+    .modal-body {
+        max-height: calc(100vh - 120px);
+    }
+}
+
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    table {
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .stat-card:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    }
+}
+
+/* Reduced Motion for Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .btn,
+    .stat-card,
+    tbody tr,
+    .pagination-container a {
+        transition: none;
+    }
+}
+
+/* Sidebar collapsed state */
+@media (min-width: 769px) {
+    .sidebar-collapsed .content {
+        margin-left: 72px;
     }
 }
 

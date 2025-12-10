@@ -113,7 +113,7 @@ if (empty($_SESSION['csrf_token'])) {
             padding: 0 20px 20px 20px !important;
             padding-top: 64px !important; /* Only top navbar height */
             min-height: 100vh;
-            background: #f8fafc !important;
+            background: #f5f7fa !important;
             transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -133,6 +133,8 @@ if (empty($_SESSION['csrf_token'])) {
         .ticket-container {
             border-radius: 8px !important;
             min-height: calc(100vh - 120px);
+            background: #ffffff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         .swal-wide {
@@ -169,22 +171,24 @@ if (empty($_SESSION['csrf_token'])) {
         }
 
         .skeleton-section {
-            background-color: var(--white);
-            padding: 25px;
-            border-radius: 6px;
+            background-color: #ffffff;
+            padding: 24px;
+            border-radius: 8px;
             margin-bottom: 20px;
-            border: 1px solid var(--border-gray);
+            border: 1.5px solid #e5e7eb;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
         }
 
         /* Form Header Skeleton */
         .skeleton-header {
-            background-color: var(--white);
-            padding: 20px;
-            border-radius: 6px;
+            background-color: #ffffff;
+            padding: 24px;
+            border-radius: 8px;
             text-align: center;
-            margin-bottom: 25px;
-            border: 1px solid var(--border-gray);
-            border-left: 4px solid var(--primary);
+            margin-bottom: 24px;
+            border: 1.5px solid #e5e7eb;
+            border-left: 4px solid #3b82f6;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
         }
 
         .skeleton-header-line {
@@ -334,49 +338,53 @@ if (empty($_SESSION['csrf_token'])) {
 
         /* Page Header Styles */
         .page-header {
-            background: white;
-            padding: 20px 30px;
-            border-bottom: 1px solid #e5e7eb;
+            background: #ffffff;
+            padding: 24px 32px;
+            border-bottom: 2px solid #e2e8f0;
             margin-bottom: 0;
             position: sticky;
             top: 64px;
             z-index: 10;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
         .page-header h1 {
             margin: 0;
-            font-size: 1.5rem;
-            color: #111827;
+            font-size: 1.625rem;
+            color: #0f172a;
+            font-weight: 600;
             display: flex;
             align-items: center;
+            letter-spacing: -0.025em;
         }
 
         .page-header p {
-            margin: 5px 0 0 0;
-            color: #6b7280;
-            font-size: 0.9rem;
+            margin: 8px 0 0 0;
+            color: #64748b;
+            font-size: 0.875rem;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             flex-wrap: wrap;
         }
 
-        /* Citation Number Badge - Subtle Design */
+        /* Citation Number Badge - Clean Professional Design */
         .citation-badge {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
-            background: #f1f5f9;
-            color: #334155;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 500;
-            border: 1px solid #cbd5e1;
+            gap: 6px;
+            background: #f8fafc;
+            color: #1e293b;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            border: 1.5px solid #cbd5e1;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
         }
 
         .citation-badge-icon {
-            color: #64748b;
+            color: #3b82f6;
         }
 
         /* Lucide icon spinning animation */
@@ -405,13 +413,23 @@ if (empty($_SESSION['csrf_token'])) {
             gap: 10px;
         }
 
+        .header-actions .btn {
+            font-weight: 500;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .header-actions .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
         /* Form Actions */
         .form-actions {
             display: flex;
             gap: 12px;
             margin-top: 24px;
             padding-top: 20px;
-            border-top: 1px solid #e5e7eb;
+            border-top: 2px solid #e5e7eb;
             flex-wrap: wrap;
         }
 
@@ -422,11 +440,19 @@ if (empty($_SESSION['csrf_token'])) {
             float: right;
         }
 
+        /* Tablet view improvements */
+        @media (max-width: 1024px) {
+            .page-header {
+                margin-top: 8px;
+            }
+        }
+
         /* Mobile Improvements */
         @media (max-width: 768px) {
             .page-header {
                 padding: 15px 20px;
                 top: 64px;
+                margin-top: 32px;
             }
 
             .page-header h1 {
@@ -453,6 +479,52 @@ if (empty($_SESSION['csrf_token'])) {
             }
         }
 
+        /* Additional mobile spacing for smaller devices */
+        @media (max-width: 480px) {
+            .page-header {
+                padding: 12px 16px;
+                margin-top: 24px;
+            }
+
+            .page-header h1 {
+                font-size: 1.125rem;
+            }
+
+            .page-header p {
+                font-size: 0.8125rem;
+            }
+
+            .citation-badge {
+                padding: 4px 10px;
+                font-size: 0.75rem;
+            }
+        }
+
+        /* Extra small devices */
+        @media (max-width: 375px) {
+            .page-header {
+                padding: 10px 12px;
+                margin-top: 20px;
+            }
+
+            .page-header h1 {
+                font-size: 1rem;
+            }
+
+            .page-header p {
+                font-size: 0.75rem;
+            }
+
+            .citation-badge {
+                padding: 3px 8px;
+                font-size: 0.6875rem;
+            }
+
+            .citation-badge-number {
+                font-size: 0.75rem;
+            }
+        }
+
         /* Loading button state */
         .btn-loading {
             pointer-events: none;
@@ -466,22 +538,23 @@ if (empty($_SESSION['csrf_token'])) {
             position: fixed;
             right: 30px;
             top: 120px;
-            background: white;
+            background: #ffffff;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            padding: 20px 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            padding: 20px 16px;
             z-index: 100;
-            min-width: 180px;
+            min-width: 190px;
             transition: all 0.3s ease;
         }
 
         .form-navigation h6 {
-            margin: 0 0 15px 0;
-            font-size: 0.85rem;
-            font-weight: 600;
+            margin: 0 0 16px 0;
+            font-size: 0.75rem;
+            font-weight: 700;
             color: #64748b;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
         }
 
         .nav-item-link {
@@ -492,19 +565,20 @@ if (empty($_SESSION['csrf_token'])) {
             text-decoration: none;
             border-radius: 8px;
             transition: all 0.2s ease;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 6px;
             position: relative;
         }
 
         .nav-item-link:hover {
-            background: #f1f5f9;
+            background: #f8fafc;
             color: #3b82f6;
         }
 
         .nav-item-link.active {
-            background: #dbeafe;
-            color: #3b82f6;
+            background: #eff6ff;
+            color: #2563eb;
             font-weight: 600;
         }
 
@@ -515,9 +589,9 @@ if (empty($_SESSION['csrf_token'])) {
             top: 50%;
             transform: translateY(-50%);
             width: 3px;
-            height: 20px;
+            height: 24px;
             background: #3b82f6;
-            border-radius: 3px;
+            border-radius: 2px;
         }
 
         .nav-item-link i {
@@ -549,20 +623,21 @@ if (empty($_SESSION['csrf_token'])) {
         .progress-container {
             margin-bottom: 20px;
             padding-bottom: 20px;
-            border-bottom: 1px solid #e5e7eb;
+            border-bottom: 1.5px solid #e5e7eb;
         }
 
         .progress-label {
             display: flex;
             justify-content: space-between;
             font-size: 0.75rem;
+            font-weight: 600;
             color: #64748b;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         .progress-bar-container {
             width: 100%;
-            height: 6px;
+            height: 8px;
             background: #e5e7eb;
             border-radius: 10px;
             overflow: hidden;
@@ -570,7 +645,7 @@ if (empty($_SESSION['csrf_token'])) {
 
         .progress-bar-fill {
             height: 100%;
-            background: linear-gradient(90deg, #3b82f6, #2563eb);
+            background: #3b82f6;
             border-radius: 10px;
             transition: width 0.3s ease;
             width: 0%;
@@ -600,8 +675,8 @@ if (empty($_SESSION['csrf_token'])) {
         }
 
         .section-toggle {
-            background: #f1f5f9;
-            border: none;
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
             width: 32px;
             height: 32px;
             border-radius: 8px;
@@ -614,7 +689,8 @@ if (empty($_SESSION['csrf_token'])) {
         }
 
         .section-toggle:hover {
-            background: #e2e8f0;
+            background: #eff6ff;
+            border-color: #3b82f6;
             color: #3b82f6;
         }
 
@@ -648,12 +724,12 @@ if (empty($_SESSION['csrf_token'])) {
             background: #3b82f6;
             color: white;
             border: none;
-            border-radius: 50%;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
             z-index: 99;
             opacity: 0;
             visibility: hidden;
@@ -667,8 +743,8 @@ if (empty($_SESSION['csrf_token'])) {
 
         .scroll-to-top:hover {
             background: #2563eb;
-            transform: translateY(-3px);
-            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.35);
         }
 
         /* ==========================================
@@ -707,12 +783,13 @@ if (empty($_SESSION['csrf_token'])) {
         /* Mobile navigation at top */
         .mobile-progress {
             display: none;
-            background: white;
-            padding: 15px 20px;
-            border-bottom: 1px solid #e5e7eb;
+            background: #ffffff;
+            padding: 16px 20px;
+            border-bottom: 2px solid #e5e7eb;
             position: sticky;
             top: 64px;
             z-index: 50;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
         }
 
         @media (max-width: 768px) {
@@ -731,13 +808,13 @@ if (empty($_SESSION['csrf_token'])) {
            ========================================== */
         .offense-badge {
             display: inline-block;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.6875rem;
+            font-weight: 700;
             margin-left: 8px;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
+            letter-spacing: 0.4px;
             animation: pulse-badge 2s ease-in-out infinite;
         }
 
@@ -752,43 +829,53 @@ if (empty($_SESSION['csrf_token'])) {
 
         /* Highlight repeat offense violations */
         .violation-item.repeat-offense {
-            background: linear-gradient(to right, #fff5f5, #ffffff);
+            background: #fef2f2;
             border-left: 3px solid #fd7e14;
             padding-left: 10px;
+            border-radius: 4px;
         }
 
         .violation-item.repeat-offense-severe {
-            background: linear-gradient(to right, #fee, #ffffff);
+            background: #fee2e2;
             border-left: 3px solid #dc3545;
             padding-left: 10px;
+            border-radius: 4px;
         }
 
         /* Loading animation for violation updates */
         @keyframes shimmer {
             0% {
-                background-position: -1000px 0;
+                opacity: 0.6;
+            }
+            50% {
+                opacity: 1;
             }
             100% {
-                background-position: 1000px 0;
+                opacity: 0.6;
             }
         }
 
         .updating-violations {
-            animation: shimmer 2s infinite;
-            background: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
-            background-size: 1000px 100%;
+            animation: shimmer 1.5s ease-in-out infinite;
+            background: #f1f5f9;
         }
 
         /* ==========================================
            HYBRID CITATION NUMBER INPUT
            ========================================== */
         .citation-number-input-group {
-            background: white;
-            padding: 20px 25px;
+            background: #ffffff;
+            padding: 20px 24px;
             border-radius: 8px;
-            border: 2px solid #3b82f6;
+            border: 2px solid #cbd5e1;
             margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .citation-number-input-group:focus-within {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
         }
 
         .citation-number-input-group label {
@@ -796,9 +883,9 @@ if (empty($_SESSION['csrf_token'])) {
             align-items: center;
             gap: 8px;
             font-weight: 600;
-            color: #1e293b;
+            color: #0f172a;
             margin-bottom: 10px;
-            font-size: 0.95rem;
+            font-size: 0.9375rem;
         }
 
         .citation-number-input-group label i {
@@ -843,14 +930,16 @@ if (empty($_SESSION['csrf_token'])) {
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 0.85rem;
+            font-size: 0.8125rem;
             color: #64748b;
-            margin-top: 8px;
+            margin-top: 10px;
+            line-height: 1.5;
         }
 
         .citation-help-text i {
             width: 14px;
             height: 14px;
+            flex-shrink: 0;
         }
 
         .citation-validation-feedback {
@@ -868,7 +957,7 @@ if (empty($_SESSION['csrf_token'])) {
             gap: 8px;
             background: #d1fae5;
             color: #065f46;
-            border: 1px solid #10b981;
+            border: 1.5px solid #10b981;
         }
 
         .citation-validation-feedback.invalid {
@@ -877,16 +966,16 @@ if (empty($_SESSION['csrf_token'])) {
             gap: 8px;
             background: #fee2e2;
             color: #991b1b;
-            border: 1px solid #ef4444;
+            border: 1.5px solid #ef4444;
         }
 
         .citation-validation-feedback.checking {
             display: flex;
             align-items: center;
             gap: 8px;
-            background: #dbeafe;
+            background: #eff6ff;
             color: #1e40af;
-            border: 1px solid #3b82f6;
+            border: 1.5px solid #3b82f6;
         }
 
         @keyframes spin {
@@ -903,13 +992,18 @@ if (empty($_SESSION['csrf_token'])) {
             border-color: #3b82f6;
         }
 
+        .form-check-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
         .form-check-label {
             display: flex;
             align-items: center;
-            gap: 5px;
-            font-size: 0.9rem;
+            gap: 6px;
+            font-size: 0.875rem;
             font-weight: 500;
-            color: #475569;
+            color: #334155;
             cursor: pointer;
         }
 
@@ -933,9 +1027,9 @@ if (empty($_SESSION['csrf_token'])) {
         /* Citation Sequence Reference */
         .citation-sequence-info {
             margin-bottom: 12px;
-            padding: 10px 14px;
-            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-            border: 1px solid #bae6fd;
+            padding: 12px 16px;
+            background: #f0f9ff;
+            border: 1.5px solid #7dd3fc;
             border-radius: 8px;
         }
 
@@ -943,41 +1037,42 @@ if (empty($_SESSION['csrf_token'])) {
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 0.85rem;
+            font-size: 0.875rem;
             color: #0369a1;
             flex-wrap: wrap;
         }
 
         .sequence-label {
-            font-weight: 500;
+            font-weight: 600;
             color: #0c4a6e;
         }
 
         .sequence-number {
             font-family: 'Courier New', monospace;
             font-weight: 700;
-            font-size: 0.9rem;
-            background: white;
-            padding: 3px 10px;
+            font-size: 0.9375rem;
+            background: #ffffff;
+            padding: 4px 12px;
             border-radius: 6px;
             color: #0369a1;
-            border: 1px solid #7dd3fc;
+            border: 1.5px solid #7dd3fc;
             letter-spacing: 0.5px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
         }
 
         .sequence-next {
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
-            color: white;
-            border-color: #1d4ed8;
-            animation: pulse-glow 2s ease-in-out infinite;
+            background: #3b82f6;
+            color: #ffffff;
+            border-color: #2563eb;
+            box-shadow: 0 2px 4px rgba(59, 130, 246, 0.25);
         }
 
         @keyframes pulse-glow {
             0%, 100% {
-                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+                box-shadow: 0 2px 4px rgba(59, 130, 246, 0.25);
             }
             50% {
-                box-shadow: 0 0 0 4px rgba(59, 130, 246, 0);
+                box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
             }
         }
 

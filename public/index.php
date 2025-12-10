@@ -257,27 +257,28 @@ if ($pdo) {
 
         /* Hero Welcome Card */
         .hero-card {
-            background: linear-gradient(135deg, #9155fd 0%, #7367f0 100%);
+            background: #9155fd;
             border-radius: var(--radius-lg);
-            padding: clamp(1rem, 3vw, 1.5rem);
+            padding: clamp(1.25rem, 3vw, 1.75rem);
             margin-bottom: var(--spacing-2);
-            box-shadow: var(--shadow-3);
+            box-shadow: 0 4px 12px rgba(145, 85, 253, 0.25);
             color: white;
             position: relative;
             overflow: hidden;
             width: 100%;
             max-width: 100%;
             box-sizing: border-box;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .hero-card::before {
             content: '';
             position: absolute;
-            top: -50px;
-            right: -50px;
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+            top: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 50%;
         }
 
@@ -302,36 +303,40 @@ if ($pdo) {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
             border-radius: var(--radius-full);
-            font-size: 0.75rem;
+            font-size: 0.8125rem;
             font-weight: 600;
             margin-bottom: var(--spacing-2);
-            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .hero-title {
-            font-size: clamp(1.25rem, 3vw, 1.75rem);
+            font-size: clamp(1.375rem, 3vw, 1.875rem);
             font-weight: 700;
             margin-bottom: var(--spacing-1);
-            letter-spacing: -0.02em;
+            letter-spacing: -0.025em;
+            line-height: 1.2;
         }
 
         .hero-subtitle {
-            font-size: clamp(0.875rem, 1.8vw, 0.9375rem);
+            font-size: clamp(0.9375rem, 1.8vw, 1rem);
             opacity: 0.95;
+            line-height: 1.5;
         }
 
         .hero-icon-circle {
-            width: clamp(80px, 15vw, 120px);
-            height: clamp(80px, 15vw, 120px);
-            background: rgba(255, 255, 255, 0.2);
+            width: clamp(90px, 15vw, 130px);
+            height: clamp(90px, 15vw, 130px);
+            background: rgba(255, 255, 255, 0.15);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .hero-cta-btn {
@@ -340,21 +345,23 @@ if ($pdo) {
             gap: var(--spacing-1);
             background: white;
             color: var(--color-primary);
-            padding: 12px 28px;
+            padding: 14px 32px;
             border-radius: var(--radius-sm);
             font-weight: 600;
-            font-size: 0.9375rem;
+            font-size: 1rem;
             text-decoration: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             z-index: 1;
+            border: 2px solid transparent;
         }
 
         .hero-cta-btn:hover {
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
             color: var(--color-primary);
+            border-color: rgba(145, 85, 253, 0.1);
         }
 
         .hero-meta-bar {
@@ -372,32 +379,36 @@ if ($pdo) {
             align-items: center;
             gap: var(--spacing-1);
             color: white;
-            font-size: clamp(0.75rem, 1.5vw, 0.875rem);
-            padding: 8px 14px;
-            background: rgba(255, 255, 255, 0.2);
+            font-size: clamp(0.8125rem, 1.5vw, 0.9375rem);
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.15);
             border-radius: var(--radius-sm);
-            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-weight: 500;
         }
 
         .hero-notification-btn {
             position: relative;
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 1.5px solid rgba(255, 255, 255, 0.25);
             border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s;
-            backdrop-filter: blur(10px);
             color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .hero-notification-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.25);
+            border-color: rgba(255, 255, 255, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
 
         .hero-notification-btn .count {
@@ -406,12 +417,14 @@ if ($pdo) {
             right: -6px;
             background: var(--color-danger);
             color: white;
-            font-size: 0.625rem;
+            font-size: 0.6875rem;
             font-weight: 700;
-            padding: 3px 7px;
+            padding: 4px 8px;
             border-radius: var(--radius-full);
-            min-width: 20px;
+            min-width: 22px;
             text-align: center;
+            box-shadow: 0 2px 6px rgba(255, 76, 81, 0.4);
+            border: 2px solid white;
         }
 
         /* Top Actions Bar */
@@ -524,13 +537,13 @@ if ($pdo) {
         .compact-metric-card {
             background: var(--bg-card);
             border-radius: var(--radius-md);
-            padding: 12px;
+            padding: 16px;
             display: flex;
             align-items: center;
             gap: var(--spacing-2);
-            box-shadow: var(--shadow-1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid transparent;
+            border: 1.5px solid var(--border-color);
             box-sizing: border-box;
             min-width: 0;
             overflow: hidden;
@@ -538,13 +551,13 @@ if ($pdo) {
 
         .compact-metric-card:hover {
             transform: translateY(-2px);
-            box-shadow: var(--shadow-2);
-            border-color: var(--border-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: var(--color-primary);
         }
 
         .metric-icon-wrapper {
-            width: 42px;
-            height: 42px;
+            width: 48px;
+            height: 48px;
             border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
@@ -1023,6 +1036,36 @@ if ($pdo) {
             .charts-grid {
                 grid-template-columns: 1fr;
             }
+
+            .hero-card {
+                padding: clamp(1rem, 2.5vw, 1.5rem);
+            }
+        }
+
+        /* Tablet Styles */
+        @media (max-width: 1024px) {
+            .hero-card {
+                padding: 1.25rem;
+                margin-top: var(--spacing-1);
+            }
+
+            .hero-title {
+                font-size: clamp(1.25rem, 2.8vw, 1.5rem);
+            }
+
+            .hero-subtitle {
+                font-size: clamp(0.875rem, 1.6vw, 0.9375rem);
+            }
+
+            .hero-icon-circle {
+                width: clamp(80px, 12vw, 100px);
+                height: clamp(80px, 12vw, 100px);
+            }
+
+            .hero-cta-btn {
+                padding: 12px 24px;
+                font-size: 0.9375rem;
+            }
         }
 
         @media (max-width: 768px) {
@@ -1043,19 +1086,72 @@ if ($pdo) {
                 max-width: 100vw !important;
             }
 
+            /* Hero Card Mobile */
+            .hero-card {
+                padding: 1.25rem 1rem;
+                border-radius: 12px;
+                margin-top: var(--spacing-2);
+            }
+
             .hero-content {
                 flex-direction: column;
                 text-align: center;
-                gap: var(--spacing-2);
+                gap: var(--spacing-3);
+                margin-bottom: var(--spacing-3);
+            }
+
+            .hero-text {
+                order: 2;
+            }
+
+            .hero-illustration {
+                order: 1;
             }
 
             .hero-meta-bar {
                 justify-content: center;
+                gap: var(--spacing-1);
+            }
+
+            .hero-date-display {
+                padding: 8px 12px;
+                font-size: 0.75rem;
+            }
+
+            .hero-notification-btn {
+                width: 40px;
+                height: 40px;
+            }
+
+            .hero-badge {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+
+            .hero-title {
+                font-size: 1.5rem;
+                margin-bottom: 0.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 0.875rem;
             }
 
             .hero-icon-circle {
-                width: 80px;
-                height: 80px;
+                width: 90px;
+                height: 90px;
+            }
+
+            .hero-icon-circle i {
+                width: 40px !important;
+                height: 40px !important;
+            }
+
+            .hero-cta-btn {
+                width: 100%;
+                justify-content: center;
+                padding: 12px 24px;
+                font-size: 0.9375rem;
             }
 
             .compact-metrics-grid {
@@ -1086,6 +1182,7 @@ if ($pdo) {
             }
         }
 
+        /* Small Mobile Devices */
         @media (max-width: 480px) {
             .main-container {
                 margin-left: 0 !important;
@@ -1103,18 +1200,244 @@ if ($pdo) {
                 max-width: 100vw !important;
             }
 
-            .compact-metrics-grid {
-                grid-template-columns: 1fr;
+            /* Hero Card Small Mobile */
+            .hero-card {
+                padding: 1rem 0.875rem;
+                border-radius: 10px;
+                margin-top: var(--spacing-2);
+            }
+
+            .hero-card::before {
+                width: 200px;
+                height: 200px;
+                top: -80px;
+                right: -80px;
+            }
+
+            .hero-meta-bar {
+                flex-direction: row;
+                gap: 0.5rem;
+                margin-bottom: 1rem;
+            }
+
+            .hero-date-display {
+                flex: 1;
+                padding: 6px 10px;
+                font-size: 0.6875rem;
+                gap: 6px;
+            }
+
+            .hero-date-display i {
+                width: 14px !important;
+                height: 14px !important;
+            }
+
+            .hero-notification-btn {
+                width: 36px;
+                height: 36px;
+                flex-shrink: 0;
+            }
+
+            .hero-notification-btn i {
+                width: 18px !important;
+                height: 18px !important;
+            }
+
+            .hero-notification-btn .count {
+                font-size: 0.625rem;
+                padding: 3px 6px;
+                min-width: 18px;
+                top: -5px;
+                right: -5px;
+            }
+
+            .hero-badge {
+                padding: 5px 10px;
+                font-size: 0.6875rem;
+                gap: 4px;
+            }
+
+            .hero-badge i {
+                width: 12px !important;
+                height: 12px !important;
+            }
+
+            .hero-title {
+                font-size: 1.25rem;
+                margin-bottom: 0.5rem;
+                letter-spacing: -0.02em;
+            }
+
+            .hero-subtitle {
+                font-size: 0.8125rem;
+                line-height: 1.4;
             }
 
             .hero-icon-circle {
-                width: 60px;
-                height: 60px;
+                width: 75px;
+                height: 75px;
+                border-width: 1.5px;
+            }
+
+            .hero-icon-circle i {
+                width: 36px !important;
+                height: 36px !important;
             }
 
             .hero-cta-btn {
                 width: 100%;
                 justify-content: center;
+                padding: 11px 20px;
+                font-size: 0.875rem;
+                gap: 6px;
+            }
+
+            .hero-cta-btn i {
+                width: 16px !important;
+                height: 16px !important;
+            }
+
+            .hero-content {
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .compact-metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Extra Small Devices (iPhone SE, small phones) */
+        @media (max-width: 375px) {
+            .hero-card {
+                padding: 0.875rem 0.75rem;
+                margin-top: var(--spacing-2);
+            }
+
+            .hero-title {
+                font-size: 1.125rem;
+            }
+
+            .hero-subtitle {
+                font-size: 0.75rem;
+            }
+
+            .hero-icon-circle {
+                width: 65px;
+                height: 65px;
+            }
+
+            .hero-icon-circle i {
+                width: 32px !important;
+                height: 32px !important;
+            }
+
+            .hero-cta-btn {
+                padding: 10px 18px;
+                font-size: 0.8125rem;
+            }
+
+            .hero-date-display {
+                font-size: 0.625rem;
+                padding: 5px 8px;
+            }
+        }
+
+        /* Landscape Orientation for Mobile */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .hero-card {
+                padding: 0.875rem 1rem;
+                margin-top: var(--spacing-1);
+            }
+
+            .hero-content {
+                flex-direction: row;
+                text-align: left;
+                gap: var(--spacing-2);
+                margin-bottom: var(--spacing-2);
+            }
+
+            .hero-text {
+                order: 1;
+            }
+
+            .hero-illustration {
+                order: 2;
+            }
+
+            .hero-icon-circle {
+                width: 70px;
+                height: 70px;
+            }
+
+            .hero-icon-circle i {
+                width: 32px !important;
+                height: 32px !important;
+            }
+
+            .hero-title {
+                font-size: 1.125rem;
+                margin-bottom: 0.25rem;
+            }
+
+            .hero-subtitle {
+                font-size: 0.75rem;
+            }
+
+            .hero-badge {
+                margin-bottom: 0.5rem;
+            }
+
+            .hero-meta-bar {
+                margin-bottom: 0.75rem;
+            }
+
+            .hero-cta-btn {
+                width: auto;
+                padding: 8px 20px;
+                font-size: 0.8125rem;
+            }
+        }
+
+        /* Touch Device Optimization */
+        @media (hover: none) and (pointer: coarse) {
+            .hero-cta-btn {
+                min-height: 44px; /* iOS recommended touch target */
+            }
+
+            .hero-notification-btn {
+                min-width: 44px;
+                min-height: 44px;
+            }
+
+            .hero-date-display {
+                min-height: 36px;
+            }
+        }
+
+        /* High DPI Displays */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .hero-card {
+                box-shadow: 0 4px 14px rgba(145, 85, 253, 0.3);
+            }
+
+            .hero-cta-btn {
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+            }
+        }
+
+        /* Reduced Motion for Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            .hero-cta-btn,
+            .hero-notification-btn,
+            .hero-card,
+            .compact-metric-card {
+                transition: none;
+            }
+
+            .hero-cta-btn:hover,
+            .hero-notification-btn:hover {
+                transform: none;
             }
         }
     </style>
