@@ -74,10 +74,55 @@ try {
         $offense_counts = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
     }
 
-    // Cache violation types
+    // Fetch active violation categories (with fallback)
+    $violation_categories = [];
+    try {
+        $stmt = $conn->query("SELECT * FROM violation_categories WHERE is_active = 1 ORDER BY display_order ASC, category_name ASC");
+        $violation_categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        // Fallback categories if table doesn't exist
+        $violation_categories = [
+            ['category_id' => 1, 'category_name' => 'License / Registration', 'category_icon' => 'file-text'],
+            ['category_id' => 2, 'category_name' => 'Helmet Violations', 'category_icon' => 'shield'],
+            ['category_id' => 3, 'category_name' => 'Vehicle Condition', 'category_icon' => 'wrench'],
+            ['category_id' => 4, 'category_name' => 'Traffic Rules', 'category_icon' => 'traffic-cone'],
+            ['category_id' => 5, 'category_name' => 'Reckless Driving', 'category_icon' => 'alert-octagon'],
+            ['category_id' => 6, 'category_name' => 'Other', 'category_icon' => 'more-horizontal']
+        ];
+    }
+
+    // Clear cached violations to fetch fresh data with category_id
+    unset($_SESSION['violation_types']);
+
+    // Cache violation types with category_id
     if (!isset($_SESSION['violation_types'])) {
-        $stmt = $conn->query("SELECT violation_type_id, violation_type, fine_amount_1, fine_amount_2, fine_amount_3 FROM violation_types WHERE is_active = 1 ORDER BY violation_type");
-        $_SESSION['violation_types'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        try {
+            $stmt = $conn->query("SELECT violation_type_id, violation_type, fine_amount_1, fine_amount_2, fine_amount_3, category_id FROM violation_types WHERE is_active = 1 ORDER BY violation_type");
+            $_SESSION['violation_types'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            // Fallback without category_id
+            $stmt = $conn->query("SELECT violation_type_id, violation_type, fine_amount_1, fine_amount_2, fine_amount_3 FROM violation_types WHERE is_active = 1 ORDER BY violation_type");
+            $violations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            // Auto-assign categories based on keywords
+            foreach ($violations as &$v) {
+                $name = strtoupper($v['violation_type']);
+                if (strpos($name, 'LICENSE') !== false || strpos($name, 'REGISTRATION') !== false || strpos($name, 'OPLAN') !== false) {
+                    $v['category_id'] = 1;
+                } elseif (strpos($name, 'HELMET') !== false) {
+                    $v['category_id'] = 2;
+                } elseif (strpos($name, 'DEFECTIVE') !== false || strpos($name, 'MUFFLER') !== false || strpos($name, 'MODIFICATION') !== false) {
+                    $v['category_id'] = 3;
+                } elseif (strpos($name, 'TRAFFIC') !== false || strpos($name, 'PARKING') !== false || strpos($name, 'OBSTRUCTION') !== false) {
+                    $v['category_id'] = 4;
+                } elseif (strpos($name, 'RECKLESS') !== false || strpos($name, 'DRAG') !== false || strpos($name, 'DRUNK') !== false) {
+                    $v['category_id'] = 5;
+                } else {
+                    $v['category_id'] = 6; // Other
+                }
+            }
+            $_SESSION['violation_types'] = $violations;
+        }
     }
     $violation_types = $_SESSION['violation_types'];
 
@@ -104,9 +149,16 @@ if (empty($_SESSION['csrf_token'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Edit Citation - <?php echo htmlspecialchars($citation['ticket_number']); ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/citation-form.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
+            --sidebar-width: 260px;
+            --sidebar-collapsed-width: 72px;
             --primary: #0d6efd;
             --primary-dark: #0b5ed7;
             --success: #198754;
@@ -126,22 +178,25 @@ if (empty($_SESSION['csrf_token'])) {
 
         body {
             background-color: var(--off-white);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             color: var(--text-dark);
             line-height: 1.6;
             margin: 0;
             padding: 0;
             min-height: 100vh;
-            display: flex;
             font-size: 16px;
         }
 
         .content {
-            flex: 1;
-            margin-left: 260px;
-            padding: clamp(15px, 3vw, 20px);
-            overflow-y: auto;
-            height: 100vh;
+            margin-left: var(--sidebar-width);
+            padding: clamp(20px, 3vw, 30px);
+            transition: margin-left 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                margin-left: var(--sidebar-collapsed-width);
+            }
         }
 
         .ticket-container {
@@ -149,51 +204,128 @@ if (empty($_SESSION['csrf_token'])) {
             padding: clamp(20px, 4vw, 30px);
             border-radius: 6px;
             border: 1px solid var(--border-gray);
-            max-height: calc(100vh - 2rem);
-            overflow-y: auto;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             width: 100%;
+            max-width: 1400px;
+            margin: 0 auto 24px auto;
         }
 
         .header {
-            background-color: var(--white);
-            color: var(--text-dark);
-            padding: 20px;
-            border-radius: 6px;
-            text-align: center;
-            margin-bottom: 25px;
-            position: relative;
+            background: var(--white);
+            padding: clamp(18px, 2.5vw, 24px);
+            border-radius: 8px;
+            margin-bottom: 20px;
             border: 1px solid var(--border-gray);
-            border-left: 4px solid var(--warning);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
-        .header h4 {
-            font-size: clamp(1rem, 2.5vw, 1.2rem);
-            font-weight: 500;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            margin-bottom: 0.25rem;
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+            min-width: 0;
         }
 
-        .header h1 {
-            font-size: clamp(1.5rem, 4vw, 2rem);
+        .edit-mode-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #fff3cd;
+            color: #856404;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 0.875rem;
             font-weight: 600;
-            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid #ffc107;
+            white-space: nowrap;
+        }
+
+        .edit-mode-badge i {
+            width: 18px;
+            height: 18px;
+        }
+
+        .header-title {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .header-title h4 {
+            font-size: 0.75rem;
+            font-weight: 400;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            color: #9ca3af;
+            margin: 0 0 4px 0;
+            line-height: 1.3;
+        }
+
+        .header-title h1 {
+            font-size: clamp(1.15rem, 2.8vw, 1.5rem);
+            font-weight: 700;
+            letter-spacing: -0.01em;
             margin: 0;
             color: var(--text-dark);
+            line-height: 1.2;
         }
 
-        .ticket-number {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-weight: 600;
-            background: var(--warning);
+        .citation-number-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f8fafc;
             padding: 10px 18px;
-            border: 1px solid #e0a800;
-            border-radius: 4px;
-            font-size: clamp(1rem, 2.5vw, 1.1rem);
-            color: #000;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        .citation-number-badge .badge-label {
+            color: #64748b;
+            font-weight: 500;
+            font-size: 0.875rem;
+            letter-spacing: 0.3px;
+        }
+
+        .citation-number-badge .badge-value {
+            color: #0f172a;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .citation-number-badge i {
+            width: 18px;
+            height: 18px;
+            color: #3b82f6;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-left {
+                width: 100%;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .citation-number-badge {
+                width: 100%;
+                justify-content: center;
+            }
         }
 
         .section {
@@ -251,26 +383,79 @@ if (empty($_SESSION['csrf_token'])) {
         }
 
         .btn-custom {
-            background-color: var(--warning);
-            color: #000;
-            padding: 12px 24px;
-            border-radius: 4px;
+            background: var(--primary);
+            color: var(--white);
+            padding: 11px 22px;
+            border-radius: 8px;
             font-weight: 600;
-            font-size: clamp(1rem, 2.5vw, 1.1rem);
-            border: 1px solid #e0a800;
-            transition: all 0.2s ease;
+            font-size: clamp(0.9rem, 2.2vw, 1rem);
+            border: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 4px rgba(13, 110, 253, 0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
         .btn-custom:hover {
-            background-color: #e0a800;
-            transform: translateY(-1px);
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+            color: var(--white);
+        }
+
+        .btn-custom i {
+            width: 18px;
+            height: 18px;
         }
 
         .btn-secondary {
-            padding: 12px 24px;
-            border-radius: 4px;
+            padding: 11px 22px;
+            border-radius: 8px;
             font-weight: 600;
-            font-size: clamp(1rem, 2.5vw, 1.1rem);
+            font-size: clamp(0.9rem, 2.2vw, 1rem);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
+        }
+
+        .btn-secondary i {
+            width: 18px;
+            height: 18px;
+        }
+
+        .btn-outline-secondary {
+            padding: 11px 22px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: clamp(0.9rem, 2.2vw, 1rem);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--border-gray);
+            background: white;
+            color: var(--text-dark);
+        }
+
+        .btn-outline-secondary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
+            background: var(--light-gray);
+            color: var(--text-dark);
+        }
+
+        .btn-outline-secondary i {
+            width: 18px;
+            height: 18px;
         }
 
         .status-section {
@@ -286,22 +471,125 @@ if (empty($_SESSION['csrf_token'])) {
             color: #664d03;
         }
 
-        @media (max-width: 768px) {
-            .content {
-                margin-left: 260px;
-            }
-            .ticket-number {
-                position: static;
-                display: inline-block;
-                margin-top: 10px;
-            }
+        /* ==========================================
+           CITATION NUMBER INPUT - MODERN STYLING
+           ========================================== */
+        .citation-number-input-group {
+            background: white;
+            padding: 20px 25px;
+            border-radius: 8px;
+            border: 2px solid #3b82f6;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
         }
 
-        @media (max-width: 576px) {
-            .content {
-                margin-left: 200px;
-            }
+        .citation-number-input-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
         }
+
+        .citation-number-input-group label i {
+            color: #3b82f6;
+        }
+
+        #ticket_number {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            padding: 12px 16px;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+        }
+
+        #ticket_number:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        #ticket_number.is-valid {
+            border-color: #10b981;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2310b981' d='M2.3 6.73.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px 20px;
+            padding-right: 40px;
+        }
+
+        #ticket_number.is-invalid {
+            border-color: #ef4444;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23ef4444'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23ef4444' stroke='none'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px 20px;
+            padding-right: 40px;
+        }
+
+        .citation-help-text {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 8px;
+        }
+
+        .citation-help-text i {
+            width: 14px;
+            height: 14px;
+        }
+
+        .citation-validation-feedback {
+            display: none;
+            margin-top: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .citation-validation-feedback.valid {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        .citation-validation-feedback.invalid {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+
+        .citation-validation-feedback.checking {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
     </style>
 </head>
 <body>
@@ -313,10 +601,52 @@ if (empty($_SESSION['csrf_token'])) {
 
             <div class="ticket-container">
                 <div class="header">
-                    <h4><i class="fas fa-edit"></i> EDIT MODE</h4>
-                    <h1>TRAFFIC CITATION TICKET</h1>
-                    <input type="hidden" name="ticket_number" value="<?php echo htmlspecialchars($citation['ticket_number']); ?>" pattern="[A-Z0-9\-]{6,8}" minlength="6" maxlength="8">
-                    <div class="ticket-number"><?php echo htmlspecialchars($citation['ticket_number']); ?></div>
+                    <div class="header-left">
+                        <div class="edit-mode-badge">
+                            <i data-lucide="pencil"></i>
+                            <span>Edit Mode</span>
+                        </div>
+                        <div class="header-title">
+                            <h4>Municipality of Baggao</h4>
+                            <h1>Traffic Citation Ticket</h1>
+                        </div>
+                    </div>
+                    <div class="citation-number-badge">
+                        <i data-lucide="hash"></i>
+                        <span class="badge-label">Citation</span>
+                        <span class="badge-value"><?php echo htmlspecialchars($citation['ticket_number']); ?></span>
+                    </div>
+                </div>
+
+                <!-- Editable Citation Number Section -->
+                <div class="citation-number-input-group">
+                    <label for="ticket_number" class="mb-0">
+                        <i data-lucide="hash"></i>
+                        Citation Number
+                        <span class="text-danger">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        name="ticket_number"
+                        class="form-control"
+                        id="ticket_number"
+                        value="<?php echo htmlspecialchars($citation['ticket_number']); ?>"
+                        required
+                        pattern="[A-Z0-9\-]{6,8}"
+                        minlength="6"
+                        maxlength="8"
+                        title="Citation number must be 6 to 8 characters (letters, numbers, or hyphens)"
+                        autocomplete="off"
+                        data-original-value="<?php echo htmlspecialchars($citation['ticket_number']); ?>"
+                    >
+
+                    <div class="citation-help-text" id="citationHelpText">
+                        <i data-lucide="info"></i>
+                        <span>Edit the citation number if needed. Must be 6-8 characters (letters, numbers, hyphens only).</span>
+                    </div>
+
+                    <div class="citation-validation-feedback" id="citationFeedback" role="alert"></div>
                 </div>
 
                 <!-- Status Section -->
@@ -476,106 +806,119 @@ if (empty($_SESSION['csrf_token'])) {
                     </div>
                 </div>
 
-                <!-- Violations -->
+                <!-- Violations (Tabbed Interface) -->
                 <div class="section">
-                    <h5 class="text-danger"><i class="fas fa-exclamation-triangle me-2"></i>Violation(s) *</h5>
-                    <div class="accordion violation-list" id="violationsAccordion">
+                    <h5 class="text-danger"><i data-lucide="alert-triangle" style="width: 20px; height: 20px; margin-right: 8px;"></i>Violation(s) *</h5>
+
+                    <!-- Search Box -->
+                    <div class="violation-search-box mb-3">
+                        <div class="search-wrapper">
+                            <i data-lucide="search" class="search-icon"></i>
+                            <input type="text" class="search-input" id="violationSearch" placeholder="Search all violations...">
+                            <button class="search-clear" type="button" id="clearSearch" title="Clear search">
+                                <i data-lucide="x"></i>
+                            </button>
+                        </div>
+                        <small class="search-hint">
+                            <i data-lucide="info" style="width: 14px; height: 14px;"></i> Search works across all categories
+                        </small>
+                    </div>
+
+                    <!-- Tabs Navigation - Modern Pills -->
+                    <div class="violation-tabs-wrapper">
+                        <div class="violation-tabs" id="violationTabs">
+                            <?php
+                            $tab_index = 0;
+                            foreach ($violation_categories as $cat) {
+                                $category_slug = strtolower(str_replace(' ', '-', $cat['category_name']));
+                                $active_class = $tab_index === 0 ? ' active' : '';
+
+                                echo "<button class='tab-pill$active_class' data-tab='$category_slug' data-category-id='" . $cat['category_id'] . "' type='button'>";
+                                echo "<i data-lucide='" . htmlspecialchars($cat['category_icon']) . "' class='tab-icon'></i>";
+                                echo "<span class='tab-label'>" . htmlspecialchars($cat['category_name']) . "</span>";
+                                echo "<span class='tab-badge' data-tab='$category_slug'>0</span>";
+                                echo "</button>";
+                                $tab_index++;
+                            }
+                            ?>
+                        </div>
+                    </div>
+
+                    <!-- Tab Content -->
+                    <div class="violation-tab-content" id="violationTabsContent">
                         <?php
-                        $categories = [
-                            'Helmet Violations' => ['HELMET'],
-                            'License / Registration' => ['LICENSE', 'REGISTRATION', 'OPLAN VISA', 'E-OV MATCH'],
-                            'Vehicle Condition' => ['DEFECTIVE', 'MUFFLER', 'MODIFICATION', 'PARTS'],
-                            'Reckless / Improper Driving' => ['RECKLESS', 'DRAG RACING', 'DRUNK', 'DRIVING IN SHORT', 'ARROGANT'],
-                            'Traffic Rules' => ['TRAFFIC SIGN', 'PARKING', 'OBSTRUCTION', 'PEDESTRIAN', 'LOADING', 'PASSENGER ON TOP'],
-                            'Miscellaneous' => ['COLORUM', 'TRASHBIN', 'OVERLOADED', 'CHARGING', 'REFUSAL']
-                        ];
+                        $tab_index = 0;
 
-                        $displayed_violations = [];
+                        foreach ($violation_categories as $cat) {
+                            $category_slug = strtolower(str_replace(' ', '-', $cat['category_name']));
+                            $active_class = $tab_index === 0 ? ' active' : '';
 
-                        foreach ($categories as $category => $keywords) {
-                            $category_id = htmlspecialchars(strtolower(str_replace([' ', '/', '(', ')'], '', $category)));
-                            echo "<div class='accordion-item'>";
-                            echo "<h2 class='accordion-header' id='heading-$category_id'>";
-                            echo "<button class='accordion-button collapsed' type='button' data-bs-toggle='collapse' data-bs-target='#collapse-$category_id' aria-expanded='false' aria-controls='collapse-$category_id'>$category</button>";
-                            echo "</h2>";
-                            echo "<div id='collapse-$category_id' class='accordion-collapse collapse' aria-labelledby='heading-$category_id' data-bs-parent='#violationsAccordion'>";
-                            echo "<div class='accordion-body p-3'>";
+                            echo "<div class='tab-pane$active_class' data-pane='$category_slug'>";
+                            echo "<div class='violations-list'>";
 
+                            // Check if this is "Other" category for custom violation input
+                            $isOtherCategory = ($cat['category_name'] === 'Other');
+
+                            if ($isOtherCategory) {
+                                // Custom violation
+                                echo "<div class='violation-item'>";
+                                echo "<div class='custom-checkbox'>";
+                                echo "<input type='checkbox' class='checkbox-input' name='other_violation' id='other_violation'>";
+                                echo "<label class='checkbox-label' for='other_violation'>";
+                                echo "<span class='checkbox-box'></span>";
+                                echo "<span class='checkbox-text'>Other Violation (Specify below)</span>";
+                                echo "</label>";
+                                echo "</div></div>";
+                                echo "<input type='text' name='other_violation_input' class='form-control mt-2' id='otherViolationInput' placeholder='Specify other violation' style='display: none;'>";
+                            }
+
+                            // Find violations matching this category
+                            $violations_found = false;
                             foreach ($violation_types as $v) {
-                                $matches_category = false;
-                                foreach ($keywords as $keyword) {
-                                    if (stripos($v['violation_type'], $keyword) !== false) {
-                                        $matches_category = true;
-                                        break;
-                                    }
-                                }
-                                if ($matches_category && !in_array($v['violation_type_id'], $displayed_violations)) {
-                                    $displayed_violations[] = $v['violation_type_id'];
+                                // Match violations by category_id
+                                if (isset($v['category_id']) && $v['category_id'] == $cat['category_id']) {
+                                    $violations_found = true;
                                     $offense_count = isset($offense_counts[$v['violation_type_id']]) ? min((int)$offense_counts[$v['violation_type_id']] + 1, 3) : 1;
                                     $fine_key = "fine_amount_$offense_count";
                                     $offense_suffix = $offense_count == 1 ? 'st' : ($offense_count == 2 ? 'nd' : 'rd');
                                     $label = $v['violation_type'] . " - {$offense_count}{$offense_suffix} Offense (₱" . number_format($v[$fine_key], 2) . ")";
                                     $input_id = 'violation_' . $v['violation_type_id'];
-                                    $is_checked = isset($citation_violations[$v['violation_type_id']]);
+                                    $is_checked = isset($citation_violations[$v['violation_type_id']]) ? 'checked' : '';
 
-                                    echo "<div class='form-check mb-2'>";
-                                    echo "<input type='checkbox' class='form-check-input violation-checkbox' name='violations[]' value='" . (int)$v['violation_type_id'] . "' id='$input_id' " . ($is_checked ? 'checked' : '') . ">";
-                                    echo "<label class='form-check-label' for='$input_id'>" . htmlspecialchars($label) . "</label>";
-                                    echo "</div>";
+                                    echo "<div class='violation-item' data-violation-text='" . htmlspecialchars(strtolower($v['violation_type'])) . "'>";
+                                    echo "<div class='custom-checkbox'>";
+                                    echo "<input type='checkbox' class='checkbox-input violation-checkbox' name='violations[]' value='" . (int)$v['violation_type_id'] . "' id='$input_id' data-offense='$offense_count' data-tab='$category_slug' $is_checked>";
+                                    echo "<label class='checkbox-label' for='$input_id'>";
+                                    echo "<span class='checkbox-box'></span>";
+                                    echo "<span class='checkbox-text'>" . htmlspecialchars($label) . "</span>";
+                                    echo "</label>";
+                                    echo "</div></div>";
                                 }
                             }
-                            echo "</div></div></div>";
-                        }
 
-                        // Uncategorized violations
-                        $uncategorized = [];
-                        foreach ($violation_types as $v) {
-                            if (!in_array($v['violation_type_id'], $displayed_violations)) {
-                                $uncategorized[] = $v;
-                            }
-                        }
-
-                        if (!empty($uncategorized)) {
-                            echo "<div class='accordion-item'>";
-                            echo "<h2 class='accordion-header' id='heading-uncategorized'>";
-                            echo "<button class='accordion-button collapsed' type='button' data-bs-toggle='collapse' data-bs-target='#collapse-uncategorized' aria-expanded='false' aria-controls='collapse-uncategorized'>Other Violations</button>";
-                            echo "</h2>";
-                            echo "<div id='collapse-uncategorized' class='accordion-collapse collapse' aria-labelledby='heading-uncategorized' data-bs-parent='#violationsAccordion'>";
-                            echo "<div class='accordion-body p-3'>";
-                            foreach ($uncategorized as $v) {
-                                $offense_count = isset($offense_counts[$v['violation_type_id']]) ? min((int)$offense_counts[$v['violation_type_id']] + 1, 3) : 1;
-                                $fine_key = "fine_amount_$offense_count";
-                                $offense_suffix = $offense_count == 1 ? 'st' : ($offense_count == 2 ? 'nd' : 'rd');
-                                $label = $v['violation_type'] . " - {$offense_count}{$offense_suffix} Offense (₱" . number_format($v[$fine_key], 2) . ")";
-                                $input_id = 'violation_' . $v['violation_type_id'];
-                                $is_checked = isset($citation_violations[$v['violation_type_id']]);
-
-                                echo "<div class='form-check mb-2'>";
-                                echo "<input type='checkbox' class='form-check-input violation-checkbox' name='violations[]' value='" . (int)$v['violation_type_id'] . "' id='$input_id' " . ($is_checked ? 'checked' : '') . ">";
-                                echo "<label class='form-check-label' for='$input_id'>" . htmlspecialchars($label) . "</label>";
+                            if (!$violations_found && !$isOtherCategory) {
+                                echo "<div class='empty-state'>";
+                                echo "<i data-lucide='inbox' style='width: 48px; height: 48px; color: #cbd5e1; margin-bottom: 8px;'></i>";
+                                echo "<p>No violations available in this category.</p>";
                                 echo "</div>";
                             }
-                            echo "</div></div></div>";
+
+                            echo "</div></div>";
+                            $tab_index++;
                         }
                         ?>
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="heading-other">
-                                <button class="accordion-button collapsed" type='button' data-bs-toggle='collapse' data-bs-target='#collapse-other' aria-expanded='false' aria-controls='collapse-other'>
-                                    Add New Violation Type
-                                </button>
-                            </h2>
-                            <div id="collapse-other" class="accordion-collapse collapse" aria-labelledby="heading-other" data-bs-parent="#violationsAccordion">
-                                <div class="accordion-body p-3">
-                                    <div class="form-check mb-2">
-                                        <input type="checkbox" class="form-check-input" name="other_violation" id="other_violation">
-                                        <label class="form-check-label" for="other_violation">Other Violation</label>
-                                    </div>
-                                    <input type="text" name="other_violation_input" class="form-control" id="otherViolationInput" placeholder="Specify other violation" style="display: none;">
-                                </div>
-                            </div>
+                    </div>
+
+                    <!-- No Results Message -->
+                    <div class="no-results" id="noResultsAlert" style="display: none;">
+                        <i data-lucide="search" class="no-results-icon"></i>
+                        <div class="no-results-text">
+                            No violations found matching "<strong id="searchQuery"></strong>"
+                            <br><small>Try different keywords</small>
                         </div>
                     </div>
-                    <div class="mt-3">
+
+                    <div class="mt-3 remarks">
                         <label class="form-label">Remarks</label>
                         <textarea name="remarks" class="form-control" rows="4"><?php echo htmlspecialchars($citation['remarks'] ?? ''); ?></textarea>
                     </div>
@@ -584,10 +927,12 @@ if (empty($_SESSION['csrf_token'])) {
                 <!-- Submit Buttons -->
                 <div class="d-flex gap-3">
                     <button type="submit" class="btn btn-custom">
-                        <i class="fas fa-save me-2"></i>Update Citation
+                        <i data-lucide="save"></i>
+                        <span>Update Citation</span>
                     </button>
-                    <a href="citations.php" class="btn btn-secondary">
-                        <i class="fas fa-times me-2"></i>Cancel
+                    <a href="citations.php" class="btn btn-outline-secondary">
+                        <i data-lucide="x"></i>
+                        <span>Cancel</span>
                     </a>
                 </div>
             </div>
@@ -596,6 +941,11 @@ if (empty($_SESSION['csrf_token'])) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+
     function toggleOtherVehicle(value) {
         const otherInput = document.getElementById('otherVehicleInput');
         if (value === 'Other') {
@@ -614,6 +964,133 @@ if (empty($_SESSION['csrf_token'])) {
         const otherViolationInput = document.getElementById('otherViolationInput');
         const dateOfBirthInput = document.getElementById('dateOfBirth');
         const ageField = document.getElementById('ageField');
+
+        // Citation Number Real-Time Validation
+        const citationInput = document.getElementById('ticket_number');
+        const citationFeedback = document.getElementById('citationFeedback');
+        const citationHelpText = document.getElementById('citationHelpText');
+        const originalValue = citationInput.getAttribute('data-original-value');
+        let checkTimeout;
+        let isValidCitation = true;
+
+        function resetValidation() {
+            citationInput.classList.remove('is-valid', 'is-invalid');
+            citationFeedback.className = 'citation-validation-feedback';
+            citationFeedback.innerHTML = '';
+        }
+
+        function showValidation(type, message) {
+            citationFeedback.className = `citation-validation-feedback ${type}`;
+
+            if (type === 'checking') {
+                citationFeedback.innerHTML = `
+                    <i data-lucide="loader-2" class="spinner"></i>
+                    <span>${message}</span>
+                `;
+            } else if (type === 'valid') {
+                citationInput.classList.remove('is-invalid');
+                citationInput.classList.add('is-valid');
+                citationFeedback.innerHTML = `
+                    <i data-lucide="check-circle"></i>
+                    <span>${message}</span>
+                `;
+            } else if (type === 'invalid') {
+                citationInput.classList.remove('is-valid');
+                citationInput.classList.add('is-invalid');
+                citationFeedback.innerHTML = `
+                    <i data-lucide="alert-circle"></i>
+                    <span>${message}</span>
+                `;
+            }
+
+            // Reinitialize Lucide icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        function checkCitationDuplicate() {
+            const citationNo = citationInput.value.trim().toUpperCase();
+
+            // If value is the same as original, skip validation
+            if (citationNo === originalValue) {
+                resetValidation();
+                citationInput.classList.add('is-valid');
+                showValidation('valid', 'Citation number unchanged.');
+                isValidCitation = true;
+                return;
+            }
+
+            // Check length
+            if (citationNo.length < 6 || citationNo.length > 8) {
+                showValidation('invalid', 'Citation number must be 6 to 8 characters long.');
+                isValidCitation = false;
+                return;
+            }
+
+            // Check format
+            if (!/^[A-Z0-9\-]{6,8}$/.test(citationNo)) {
+                showValidation('invalid', 'Invalid format. Use only uppercase letters, numbers, and hyphens.');
+                isValidCitation = false;
+                return;
+            }
+
+            // Show checking state
+            showValidation('checking', 'Checking availability...');
+
+            // Perform AJAX check
+            fetch('../api/check_citation_duplicate.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: 'citation_no=' + encodeURIComponent(citationNo)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.exists) {
+                        showValidation('invalid', 'This citation number already exists in the database.');
+                        isValidCitation = false;
+                    } else {
+                        showValidation('valid', 'Citation number is available.');
+                        isValidCitation = true;
+                    }
+                } else {
+                    showValidation('invalid', data.error || 'Validation error');
+                    isValidCitation = false;
+                }
+            })
+            .catch(error => {
+                console.error('Validation error:', error);
+                showValidation('invalid', 'Could not verify citation number. Please try again.');
+                isValidCitation = false;
+            });
+        }
+
+        // Auto-uppercase and debounced validation
+        if (citationInput && citationFeedback) {
+            citationInput.addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+
+                clearTimeout(checkTimeout);
+                resetValidation();
+
+                if (this.value.trim()) {
+                    checkTimeout = setTimeout(() => {
+                        checkCitationDuplicate();
+                    }, 500);
+                } else {
+                    isValidCitation = false;
+                }
+            });
+
+            citationInput.addEventListener('blur', function() {
+                if (this.value.trim()) {
+                    checkCitationDuplicate();
+                }
+            });
+        }
 
         // Age calculation
         function calculateAge(birthDate) {
@@ -638,24 +1115,182 @@ if (empty($_SESSION['csrf_token'])) {
             }
         });
 
-        // Other violation toggle
-        if (otherViolationCheckbox && otherViolationInput) {
-            otherViolationCheckbox.addEventListener('change', function() {
-                if (this.checked) {
-                    otherViolationInput.style.display = 'block';
-                    otherViolationInput.required = true;
-                    otherViolationInput.focus();
-                } else {
-                    otherViolationInput.style.display = 'none';
-                    otherViolationInput.required = false;
-                    otherViolationInput.value = '';
-                }
+        // ==========================================
+        // VIOLATION TABS AND SEARCH FUNCTIONALITY
+        // ==========================================
+        function initViolationTabs() {
+            const searchInput = document.getElementById('violationSearch');
+            const clearSearchBtn = document.getElementById('clearSearch');
+            const tabContent = document.getElementById('violationTabsContent');
+            const noResultsAlert = document.getElementById('noResultsAlert');
+            const searchQuerySpan = document.getElementById('searchQuery');
+            const tabButtons = document.querySelectorAll('.tab-pill');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+
+            if (!searchInput || !tabContent) {
+                return;
+            }
+
+            // Tab switching
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+
+                    // Remove active from all tabs
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabPanes.forEach(pane => pane.classList.remove('active'));
+
+                    // Add active to clicked tab
+                    this.classList.add('active');
+                    const targetPane = document.querySelector(`[data-pane="${targetTab}"]`);
+                    if (targetPane) {
+                        targetPane.classList.add('active');
+                    }
+
+                    // Reinitialize Lucide icons
+                    if (typeof lucide !== 'undefined') {
+                        lucide.createIcons();
+                    }
+                });
             });
+
+            // Search functionality
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase().trim();
+                filterViolations(query);
+            });
+
+            // Clear search button
+            if (clearSearchBtn) {
+                clearSearchBtn.addEventListener('click', function() {
+                    searchInput.value = '';
+                    filterViolations('');
+                    searchInput.focus();
+                });
+            }
+
+            function filterViolations(query) {
+                const allItems = tabContent.querySelectorAll('.violation-item');
+                let totalVisible = 0;
+                let visiblePerTab = {};
+
+                // Initialize counters for each tab
+                tabPanes.forEach(pane => {
+                    const tabId = pane.getAttribute('data-pane');
+                    visiblePerTab[tabId] = 0;
+                });
+
+                allItems.forEach(item => {
+                    const violationText = item.getAttribute('data-violation-text') || '';
+                    const label = item.querySelector('.checkbox-text');
+                    const labelText = label ? label.textContent.toLowerCase() : '';
+
+                    // Check if item matches search query
+                    const matches = query === '' || violationText.includes(query) || labelText.includes(query);
+
+                    if (matches) {
+                        item.classList.remove('hidden');
+                        totalVisible++;
+
+                        // Count visible items per tab
+                        const parentPane = item.closest('.tab-pane');
+                        if (parentPane) {
+                            const tabId = parentPane.getAttribute('data-pane');
+                            visiblePerTab[tabId]++;
+                        }
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+
+                // Show/hide no results message
+                if (totalVisible === 0 && query !== '') {
+                    noResultsAlert.style.display = 'flex';
+                    if (searchQuerySpan) {
+                        searchQuerySpan.textContent = query;
+                    }
+                } else {
+                    noResultsAlert.style.display = 'none';
+                }
+
+                // If searching, switch to first tab with results
+                if (query !== '' && totalVisible > 0) {
+                    for (let tabId in visiblePerTab) {
+                        if (visiblePerTab[tabId] > 0) {
+                            const firstTabWithResults = document.querySelector(`[data-tab="${tabId}"]`);
+                            if (firstTabWithResults && !firstTabWithResults.classList.contains('active')) {
+                                firstTabWithResults.click();
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Tab badge counts
+            function updateTabCounts() {
+                const badges = document.querySelectorAll('.tab-badge');
+
+                badges.forEach(badge => {
+                    const tabName = badge.getAttribute('data-tab');
+                    const checkboxes = tabContent.querySelectorAll(`.violation-checkbox[data-tab="${tabName}"]:checked`);
+                    const count = checkboxes.length;
+
+                    badge.textContent = count;
+
+                    if (count > 0) {
+                        badge.classList.add('has-selections');
+                    } else {
+                        badge.classList.remove('has-selections');
+                    }
+                });
+            }
+
+            // Listen for checkbox changes to update counts
+            const allCheckboxes = tabContent.querySelectorAll('.violation-checkbox');
+            allCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateTabCounts);
+            });
+
+            // Initialize counts on page load
+            updateTabCounts();
+
+            // Other violation checkbox
+            const otherViolationCheckbox = document.getElementById('other_violation');
+            const otherViolationInput = document.getElementById('otherViolationInput');
+            if (otherViolationCheckbox && otherViolationInput) {
+                otherViolationCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        otherViolationInput.style.display = 'block';
+                        otherViolationInput.required = true;
+                        otherViolationInput.focus();
+                    } else {
+                        otherViolationInput.style.display = 'none';
+                        otherViolationInput.required = false;
+                        otherViolationInput.value = '';
+                    }
+                });
+            }
         }
+
+        // Initialize violation tabs
+        initViolationTabs();
 
         // Form submission
         document.getElementById('editCitationForm').addEventListener('submit', function(e) {
             e.preventDefault();
+
+            // Validate citation number
+            if (!isValidCitation) {
+                Swal.fire({
+                    title: 'Invalid Citation Number',
+                    text: 'Please enter a valid and unique citation number before submitting.',
+                    icon: 'error',
+                    confirmButtonColor: '#dc3545'
+                });
+                citationInput.focus();
+                return;
+            }
 
             // Validate vehicle type
             const selectedVehicleType = document.querySelector('input[name="vehicle_type"]:checked');
@@ -684,16 +1319,70 @@ if (empty($_SESSION['csrf_token'])) {
                 method: 'POST',
                 body: formData
             })
-            .then(response => response.json())
-            .then(data => {
+            .then(response => {
+                const status = response.status;
+                return response.json().then(data => ({status, data}));
+            })
+            .then(({status, data}) => {
                 if (data.status === 'success') {
-                    alert(data.message);
+                    Swal.fire({
+                        title: 'Success!',
+                        text: data.message,
+                        icon: 'success',
+                        confirmButtonColor: '#198754'
+                    }).then(() => {
+                        if (data.new_csrf_token) {
+                            csrfTokenInput.value = data.new_csrf_token;
+                        }
+                        window.location.href = 'citations.php';
+                    });
+                } else if (status === 409 && data.error_type === 'duplicate_citation') {
+                    // Show detailed duplicate citation error
+                    const duplicateInfo = data.duplicate_info || {};
+                    const createdDate = duplicateInfo.created_at ?
+                        new Date(duplicateInfo.created_at).toLocaleString() : 'Unknown';
+
+                    Swal.fire({
+                        title: 'Citation Already Exists!',
+                        html: `
+                            <div style="text-align: left; padding: 15px;">
+                                <p style="font-size: 1.1rem; margin-bottom: 15px;">
+                                    <strong>Citation Number:</strong>
+                                    <span style="color: #dc3545; font-family: monospace; font-size: 1.2rem;">
+                                        ${duplicateInfo.ticket_number || 'Unknown'}
+                                    </span>
+                                </p>
+                                <p style="color: #6c757d;">
+                                    <strong>Previously created:</strong> ${createdDate}
+                                </p>
+                                <hr style="margin: 15px 0;">
+                                <p style="font-size: 0.95rem; color: #495057;">
+                                    This citation number has already been used in the system.
+                                    Please use a different citation number.
+                                </p>
+                            </div>
+                        `,
+                        icon: 'warning',
+                        confirmButtonColor: '#dc3545',
+                        confirmButtonText: 'OK, I\'ll Change It',
+                        width: '600px'
+                    }).then(() => {
+                        const citationInput = document.getElementById('ticket_number');
+                        if (citationInput) {
+                            citationInput.focus();
+                            citationInput.select();
+                        }
+                    });
                     if (data.new_csrf_token) {
                         csrfTokenInput.value = data.new_csrf_token;
                     }
-                    window.location.href = 'citations.php';
                 } else {
-                    alert('Error: ' + data.message);
+                    Swal.fire({
+                        title: 'Error',
+                        text: data.message || 'An error occurred while updating the citation.',
+                        icon: 'error',
+                        confirmButtonColor: '#dc3545'
+                    });
                     if (data.new_csrf_token) {
                         csrfTokenInput.value = data.new_csrf_token;
                     }
@@ -701,7 +1390,12 @@ if (empty($_SESSION['csrf_token'])) {
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error updating citation: ' + error.message);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'Error updating citation: ' + error.message,
+                    icon: 'error',
+                    confirmButtonColor: '#dc3545'
+                });
             });
         });
     });

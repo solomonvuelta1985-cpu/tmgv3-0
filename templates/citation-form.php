@@ -113,13 +113,15 @@
                         <option value="" disabled <?php echo (!isset($driver_data['barangay']) || $driver_data['barangay'] == '') ? 'selected' : ''; ?>>Select Barangay</option>
                         <?php
                         $barangays = [
-                            'Adag', 'Agaman', 'Agaman Norte', 'Agaman Sur', 'Alaguia', 'Alba', 'Annayatan', 'Asassi',
-                            'Asinga-Via', 'Awallan', 'Bacagan', 'Bagunot', 'Barsat East', 'Barsat West', 'Bitag Grande',
-                            'Bitag Pequeño', 'Bungel', 'Canagatan', 'Carupian', 'Catayauan', 'Dabburab', 'Dalin', 'Dallang',
-                            'Furagui', 'Hacienda Intal', 'Immurung', 'Jomlo', 'Mabangguc', 'Masical', 'Mission', 'Mocag',
-                            'Nangalinan', 'Pallagao', 'Paragat', 'Piggatan', 'Poblacion', 'Remus', 'San Antonio',
-                            'San Francisco', 'San Isidro', 'San Jose', 'San Vicente', 'Santa Margarita', 'Santor',
-                            'Taguing', 'Taguntungan', 'Tallang', 'Taytay', 'Other'
+                            'Adaoag', 'Agaman (Proper)', 'Agaman Norte', 'Agaman Sur', 'Alba', 'Annayatan',
+                            'Asassi', 'Asinga-Via', 'Awallan', 'Bacagan', 'Bagunot', 'Barsat East',
+                            'Barsat West', 'Bitag Grande', 'Bitag Pequeño', 'Bunugan', 'C. Verzosa (Valley Cove)',
+                            'Canagatan', 'Carupian', 'Catugay', 'Dabbac Grande', 'Dalin', 'Dalla',
+                            'Hacienda Intal', 'Ibulo', 'Immurung', 'J. Pallagao', 'Lasilat', 'Mabini',
+                            'Masical', 'Mocag', 'Nangalinan', 'Poblacion (Centro)', 'Remus', 'San Antonio',
+                            'San Francisco', 'San Isidro', 'San Jose', 'San Miguel', 'San Vicente',
+                            'Santa Margarita', 'Santor', 'Taguing', 'Taguntungan', 'Tallang', 'Taytay',
+                            'Temblique', 'Tungel', 'Other'
                         ];
                         foreach ($barangays as $barangay) {
                             $selected = (isset($driver_data['barangay']) && $driver_data['barangay'] == $barangay) ? 'selected' : '';
@@ -127,6 +129,9 @@
                         }
                         ?>
                     </select>
+                </div>
+                <div class="col-md-3" id="otherBarangayDiv" style="display: none;">
+                    <label class="form-label">Specify Other Barangay *</label>
                     <input type="text" name="other_barangay" class="form-control" id="otherBarangayInput" placeholder="Enter other barangay" value="<?php echo (isset($driver_data['barangay']) && $driver_data['barangay'] == 'Other') ? htmlspecialchars($driver_data['barangay']) : ''; ?>">
                 </div>
                 <div class="col-md-3" id="municipalityDiv" style="display: <?php echo (isset($driver_data['barangay']) && $driver_data['barangay'] != 'Other' && $driver_data['barangay'] != '') ? 'block' : 'none'; ?>;">

@@ -13,7 +13,7 @@
     <div class="loader-container">
         <div class="scene">
             <!-- The Main Changing Shape -->
-            <div class="morph-object state-arrow" id="morphShape"></div>
+            <div class="morph-object state-light" id="morphShape"></div>
             <!-- The Cone Base (Only visible in cone state) -->
             <div class="cone-base" id="coneBase"></div>
         </div>
@@ -81,15 +81,7 @@
     box-shadow: 0 10px 20px rgba(0,0,0,0.15);
 }
 
-/* --- STATE A: ARROW (Locating) --- */
-.morph-object.state-arrow {
-    background-color: #4285F4;
-    clip-path: polygon(50% 0, 0% 100%, 50% 80%, 100% 100%);
-    transform: rotate(45deg) translate(-5px, -5px);
-    animation: arrow-float 1.5s ease-in-out infinite alternate;
-}
-
-/* --- STATE B: STOP LIGHT (Checking) --- */
+/* --- STATE 1: STOP LIGHT --- */
 .morph-object.state-light {
     background-color: #2d2d2d;
     clip-path: polygon(20% 0%, 20% 100%, 80% 100%, 80% 0%);
@@ -115,7 +107,7 @@
     animation: traffic-blink 1s infinite;
 }
 
-/* --- STATE C: CONE (Rerouting) --- */
+/* --- STATE 2: TRAFFIC CONE --- */
 .morph-object.state-cone {
     background-color: #FF6700;
     clip-path: polygon(25% 15%, 15% 100%, 85% 100%, 75% 15%);
@@ -200,11 +192,6 @@
 }
 
 /* --- ANIMATIONS --- */
-@keyframes arrow-float {
-    0% { transform: rotate(45deg) translate(-5px, -5px); }
-    100% { transform: rotate(45deg) translate(-5px, -12px); }
-}
-
 @keyframes traffic-blink {
     0%, 100% { filter: brightness(1); }
     50% { filter: brightness(1.2); }
@@ -221,32 +208,19 @@
     const text = document.getElementById('statusText');
     const dot = document.getElementById('statusDot');
 
-    const STEP_DURATION = 1800;
+    const STEP_DURATION = 1500; // 1.5 seconds per state
+    const MIN_DISPLAY_TIME = 2500; // Minimum display time: 2.5 seconds
     let animationInterval = null;
+    const startTime = Date.now(); // Track when loader started
 
     function runSequence() {
-        // --- STEP 1: ARROW (Start) ---
-        setArrow();
+        // --- STEP 1: STOP LIGHT (Start) ---
+        setStopLight();
 
-        // --- STEP 2: STOP LIGHT (After 1.8s) ---
-        setTimeout(() => {
-            setStopLight();
-        }, STEP_DURATION);
-
-        // --- STEP 3: CONE (After 3.6s) ---
+        // --- STEP 2: TRAFFIC CONE (After 1.5s) ---
         setTimeout(() => {
             setCone();
-        }, STEP_DURATION * 2);
-    }
-
-    function setArrow() {
-        if (!shape) return;
-        shape.className = 'morph-object state-arrow';
-        base.classList.remove('visible');
-
-        text.innerText = "LOADING...";
-        dot.style.backgroundColor = "#4285F4";
-        dot.style.boxShadow = "0 0 0 2px rgba(255,255,255,0.5), 0 0 10px #4285F4";
+        }, STEP_DURATION);
     }
 
     function setStopLight() {
@@ -254,7 +228,7 @@
         shape.className = 'morph-object state-light';
         base.classList.remove('visible');
 
-        text.innerText = "PREPARING";
+        text.innerText = "LOADING...";
         dot.style.backgroundColor = "#2d2d2d";
         dot.style.boxShadow = "0 0 0 2px rgba(255,255,255,0.5), 0 0 10px #2d2d2d";
     }
@@ -285,6 +259,16 @@
         }
     }
 
+    function hideLoaderWithDelay() {
+        const elapsedTime = Date.now() - startTime;
+        const remainingTime = Math.max(0, MIN_DISPLAY_TIME - elapsedTime);
+
+        // Wait for minimum display time before hiding
+        setTimeout(() => {
+            hideLoader();
+        }, remainingTime);
+    }
+
     // Check if we should show the loader (from login redirect or slow connection)
     const shouldShowLoader = sessionStorage.getItem('showPageLoader') === 'true';
 
@@ -299,13 +283,13 @@
 
     // Initialize animation
     runSequence();
-    animationInterval = setInterval(runSequence, STEP_DURATION * 3);
+    animationInterval = setInterval(runSequence, STEP_DURATION * 2);
 
-    // Hide loader when page is fully loaded
+    // Hide loader when page is fully loaded (with minimum display time)
     if (document.readyState === 'complete') {
-        hideLoader();
+        hideLoaderWithDelay();
     } else {
-        window.addEventListener('load', hideLoader);
+        window.addEventListener('load', hideLoaderWithDelay);
     }
 
     // Fallback: Hide after 10 seconds max (in case of slow resources)

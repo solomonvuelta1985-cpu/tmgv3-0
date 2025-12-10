@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const licenseFields = document.querySelectorAll('.license-field');
     const barangaySelect = document.getElementById('barangaySelect');
     const otherBarangayInput = document.getElementById('otherBarangayInput');
+    const otherBarangayDiv = document.getElementById('otherBarangayDiv');
     const municipalityDiv = document.getElementById('municipalityDiv');
     const provinceDiv = document.getElementById('provinceDiv');
     const dateOfBirthInput = document.getElementById('dateOfBirth');
@@ -231,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
     barangaySelect.addEventListener('change', () => {
         const isOther = barangaySelect.value === 'Other';
         if (isOther) {
-            otherBarangayInput.style.cssText = 'display: block !important; margin-top: 8px;';
+            otherBarangayDiv.style.display = 'block';
             otherBarangayInput.required = true;
             otherBarangayInput.focus();
             municipalityDiv.style.display = 'block';
@@ -241,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
             municipalityDiv.querySelector('input').removeAttribute('readonly');
             provinceDiv.querySelector('input').removeAttribute('readonly');
         } else {
-            otherBarangayInput.style.cssText = 'display: none !important; margin-top: 8px;';
+            otherBarangayDiv.style.display = 'none';
             otherBarangayInput.required = false;
             otherBarangayInput.value = '';
             if (barangaySelect.value) {
@@ -394,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Hide "Others" inputs
                     otherViolationInput.style.cssText = 'display: none !important; margin-top: 8px;';
                     otherVehicleInput.style.cssText = 'display: none !important; margin-top: 8px;';
-                    otherBarangayInput.style.cssText = 'display: none !important; margin-top: 8px;';
+                    otherBarangayDiv.style.display = 'none';
                     otherViolationInput.required = false;
                     otherVehicleInput.required = false;
                     otherBarangayInput.required = false;
@@ -499,4 +500,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    // Initialize "Other Barangay" visibility on page load
+    if (barangaySelect && barangaySelect.value === 'Other') {
+        otherBarangayDiv.style.display = 'block';
+        otherBarangayInput.required = true;
+    }
 });
