@@ -18,12 +18,61 @@
                 <h4>Republic of the Philippines • Province of Cagayan</h4>
                 <h1>Traffic Citation Ticket</h1>
             </div>
-            <input type="hidden" name="ticket_number" value="<?php echo htmlspecialchars($next_ticket); ?>">
             <input type="hidden" name="csrf_token" id="csrfToken" value="<?php echo generate_token(); ?>">
-            <div class="citation-number-display">
-                <span class="citation-label">Citation No.</span>
-                <span class="citation-value"><?php echo htmlspecialchars($next_ticket); ?></span>
+        </div>
+
+        <!-- Hybrid Citation Number Input with Toggle -->
+        <div class="citation-number-input-group">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <label for="citation_no" class="mb-0">
+                    <i data-lucide="hash"></i>
+                    Citation Number
+                    <span class="text-danger">*</span>
+                </label>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="autoGenerateToggle" checked>
+                    <label class="form-check-label" for="autoGenerateToggle">
+                        <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i>
+                        Auto-generate
+                    </label>
+                </div>
             </div>
+
+            <!-- Last Citation Reference -->
+            <?php if (!empty($last_citation)): ?>
+            <div class="citation-sequence-info">
+                <div class="sequence-badge">
+                    <i data-lucide="arrow-right-circle" style="width: 14px; height: 14px;"></i>
+                    <span class="sequence-label">Last saved:</span>
+                    <span class="sequence-number"><?php echo htmlspecialchars($last_citation); ?></span>
+                    <i data-lucide="arrow-right" style="width: 14px; height: 14px; color: #94a3b8;"></i>
+                    <span class="sequence-label">Next:</span>
+                    <span class="sequence-number sequence-next"><?php echo htmlspecialchars($next_ticket); ?></span>
+                </div>
+            </div>
+            <?php endif; ?>
+
+            <input
+                type="text"
+                class="form-control"
+                id="citation_no"
+                name="ticket_number"
+                value="<?php echo htmlspecialchars($next_ticket); ?>"
+                required
+                readonly
+                pattern="[A-Z0-9\-]{6,8}"
+                placeholder="e.g., 061234"
+                autocomplete="off"
+                minlength="6"
+                maxlength="8"
+                data-auto-value="<?php echo htmlspecialchars($next_ticket); ?>"
+                title="Citation number must be 6 to 8 characters (letters, numbers, or hyphens)"
+            >
+            <div class="citation-help-text" id="citationHelp">
+                <i data-lucide="info"></i>
+                <span id="citationHelpText">Auto-generated citation number. Toggle switch to enter manually.</span>
+            </div>
+            <div class="citation-validation-feedback" id="citationFeedback"></div>
         </div>
 
         <!-- Driver Info -->

@@ -95,6 +95,51 @@ try {
         }
     }
 
+    // Validate citation/ticket number format and length
+    $ticket_number = trim($data['ticket_number']);
+    $ticket_length = strlen($ticket_number);
+
+    // Check length (6-8 characters)
+    if ($ticket_length < 6 || $ticket_length > 8) {
+        http_response_code(400);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Citation number must be 6 to 8 characters long.'
+        ]);
+        exit;
+    }
+
+    // Check format (alphanumeric and hyphens only)
+    if (!preg_match('/^[A-Z0-9\-]{6,8}$/', $ticket_number)) {
+        http_response_code(400);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Citation number must contain only uppercase letters, numbers, and hyphens (6-8 characters).'
+        ]);
+        exit;
+    }
+
+    // Check for duplicate citation/ticket number
+    $duplicate_check = db_query(
+        "SELECT ticket_number, created_at FROM citations WHERE ticket_number = ?",
+        [$ticket_number]
+    );
+    $duplicate = $duplicate_check->fetch();
+
+    if ($duplicate) {
+        http_response_code(409); // 409 Conflict
+        echo json_encode([
+            'status' => 'error',
+            'error_type' => 'duplicate_citation',
+            'message' => "Citation number '{$ticket_number}' is already in use!",
+            'duplicate_info' => [
+                'ticket_number' => $duplicate['ticket_number'],
+                'created_at' => $duplicate['created_at']
+            ]
+        ]);
+        exit;
+    }
+
     // Begin transaction for data consistency
     $pdo = getPDO();
     if (!$pdo) {

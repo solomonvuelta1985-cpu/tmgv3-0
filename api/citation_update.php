@@ -115,6 +115,30 @@ try {
     // Sanitize all inputs
     $data = sanitize($_POST);
 
+    // Validate citation/ticket number format and length
+    $ticket_number = trim($data['ticket_number']);
+    $ticket_length = strlen($ticket_number);
+
+    // Check length (6-8 characters)
+    if ($ticket_length < 6 || $ticket_length > 8) {
+        http_response_code(400);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Citation number must be 6 to 8 characters long.'
+        ]);
+        exit;
+    }
+
+    // Check format (alphanumeric and hyphens only)
+    if (!preg_match('/^[A-Z0-9\-]{6,8}$/', $ticket_number)) {
+        http_response_code(400);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Citation number must contain only uppercase letters, numbers, and hyphens (6-8 characters).'
+        ]);
+        exit;
+    }
+
     // Begin transaction
     $pdo->beginTransaction();
 

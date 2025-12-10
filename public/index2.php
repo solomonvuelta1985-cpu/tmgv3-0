@@ -18,6 +18,20 @@ $citationService = new CitationService();
 // Generate next ticket number
 $next_ticket = $citationService->generateNextTicketNumber();
 
+// Get last saved citation number for reference
+$last_citation = '';
+try {
+    $stmt = db_query(
+        "SELECT ticket_number FROM citations ORDER BY CAST(ticket_number AS UNSIGNED) DESC LIMIT 1"
+    );
+    $row = $stmt->fetch();
+    if ($row) {
+        $last_citation = $row['ticket_number'];
+    }
+} catch (Exception $e) {
+    error_log("Error fetching last citation: " . $e->getMessage());
+}
+
 // Pre-fill driver info if driver_id is provided
 $driver_data = [];
 $offense_counts = [];
@@ -764,6 +778,225 @@ if (empty($_SESSION['csrf_token'])) {
             background: linear-gradient(to right, #f6f7f8 0%, #edeef1 20%, #f6f7f8 40%, #f6f7f8 100%);
             background-size: 1000px 100%;
         }
+
+        /* ==========================================
+           HYBRID CITATION NUMBER INPUT
+           ========================================== */
+        .citation-number-input-group {
+            background: white;
+            padding: 20px 25px;
+            border-radius: 8px;
+            border: 2px solid #3b82f6;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+        }
+
+        .citation-number-input-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .citation-number-input-group label i {
+            color: #3b82f6;
+        }
+
+        #citation_no {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            padding: 12px 16px;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        #citation_no:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        #citation_no.is-valid {
+            border-color: #10b981;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2310b981' d='M2.3 6.73.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px 20px;
+            padding-right: 40px;
+        }
+
+        #citation_no.is-invalid {
+            border-color: #ef4444;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23ef4444'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23ef4444' stroke='none'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 20px 20px;
+            padding-right: 40px;
+        }
+
+        .citation-help-text {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-top: 8px;
+        }
+
+        .citation-help-text i {
+            width: 14px;
+            height: 14px;
+        }
+
+        .citation-validation-feedback {
+            display: none;
+            margin-top: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .citation-validation-feedback.valid {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        .citation-validation-feedback.invalid {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+
+        .citation-validation-feedback.checking {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        /* Toggle Switch Styling */
+        .form-check-input:checked {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        .form-check-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #475569;
+            cursor: pointer;
+        }
+
+        #citation_no[readonly] {
+            background-color: #f8fafc;
+            cursor: not-allowed;
+            border-color: #cbd5e1;
+        }
+
+        #citation_no:not([readonly]) {
+            background-color: white;
+            cursor: text;
+        }
+
+        #citation_no[readonly]:focus {
+            background-color: #f8fafc;
+            border-color: #94a3b8;
+            box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.1);
+        }
+
+        /* Citation Sequence Reference */
+        .citation-sequence-info {
+            margin-bottom: 12px;
+            padding: 10px 14px;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 1px solid #bae6fd;
+            border-radius: 8px;
+        }
+
+        .sequence-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: #0369a1;
+            flex-wrap: wrap;
+        }
+
+        .sequence-label {
+            font-weight: 500;
+            color: #0c4a6e;
+        }
+
+        .sequence-number {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            font-size: 0.9rem;
+            background: white;
+            padding: 3px 10px;
+            border-radius: 6px;
+            color: #0369a1;
+            border: 1px solid #7dd3fc;
+            letter-spacing: 0.5px;
+        }
+
+        .sequence-next {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border-color: #1d4ed8;
+            animation: pulse-glow 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 4px rgba(59, 130, 246, 0);
+            }
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .citation-sequence-info {
+                padding: 8px 10px;
+            }
+
+            .sequence-badge {
+                font-size: 0.75rem;
+                gap: 6px;
+            }
+
+            .sequence-number {
+                font-size: 0.8rem;
+                padding: 2px 8px;
+            }
+        }
     </style>
 </head>
 <body class="loading">
@@ -1272,6 +1505,197 @@ if (empty($_SESSION['csrf_token'])) {
             window.addEventListener('citationSubmitted', function() {
                 clearDraft();
                 formModified = false;
+            });
+
+        })();
+    </script>
+
+    <!-- Hybrid Citation Number Validation & Toggle -->
+    <script>
+        (function() {
+            'use strict';
+
+            const citationInput = document.getElementById('citation_no');
+            const citationFeedback = document.getElementById('citationFeedback');
+            const citationHelpText = document.getElementById('citationHelpText');
+            const autoGenerateToggle = document.getElementById('autoGenerateToggle');
+            const form = document.getElementById('citationForm');
+            let checkTimeout;
+            let isValidCitation = true;
+            let isAutoMode = true;
+
+            if (!citationInput || !citationFeedback || !autoGenerateToggle) {
+                return;
+            }
+
+            const autoValue = citationInput.getAttribute('data-auto-value');
+
+            // Toggle between auto and manual mode
+            autoGenerateToggle.addEventListener('change', function() {
+                isAutoMode = this.checked;
+
+                if (isAutoMode) {
+                    citationInput.value = autoValue;
+                    citationInput.setAttribute('readonly', 'readonly');
+                    citationHelpText.innerHTML = 'Auto-generated citation number. Toggle switch to enter manually.';
+                    resetValidation();
+                    isValidCitation = true;
+
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'info',
+                        title: 'Auto-generate mode enabled',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
+                } else {
+                    citationInput.removeAttribute('readonly');
+                    citationInput.focus();
+                    citationInput.select();
+                    citationHelpText.innerHTML = 'Enter citation number manually. Must be unique and use only uppercase letters, numbers, and hyphens.';
+
+                    if (citationInput.value.trim()) {
+                        checkCitationDuplicate();
+                    }
+
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'info',
+                        title: 'Manual entry mode enabled',
+                        showConfirmButton: false,
+                        timer: 2000,
+                        timerProgressBar: true
+                    });
+                }
+
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            });
+
+            // Duplicate check function
+            function checkCitationDuplicate() {
+                if (isAutoMode) return;
+
+                clearTimeout(checkTimeout);
+                const value = citationInput.value.trim().toUpperCase();
+                citationInput.value = value;
+
+                if (value.length === 0) {
+                    resetValidation();
+                    isValidCitation = false;
+                    return;
+                }
+
+                setCheckingState();
+
+                checkTimeout = setTimeout(async function() {
+                    try {
+                        const formData = new FormData();
+                        formData.append('citation_no', value);
+
+                        const response = await fetch('../api/check_citation_duplicate.php', {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            if (data.exists) {
+                                setInvalidState('This citation number already exists!');
+                                isValidCitation = false;
+                            } else {
+                                setValidState('Citation number is available');
+                                isValidCitation = true;
+                            }
+                        } else {
+                            if (data.error && data.error.includes('Invalid format')) {
+                                setInvalidState(data.error);
+                                isValidCitation = false;
+                            } else {
+                                resetValidation();
+                                isValidCitation = true;
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error checking citation:', error);
+                        resetValidation();
+                        isValidCitation = true;
+                    }
+                }, 500);
+            }
+
+            function setCheckingState() {
+                citationInput.classList.remove('is-valid', 'is-invalid');
+                citationFeedback.className = 'citation-validation-feedback checking';
+                citationFeedback.innerHTML = '<i data-lucide="loader-2" class="spinner" style="width: 16px; height: 16px;"></i> Checking availability...';
+                lucide.createIcons();
+            }
+
+            function setValidState(message) {
+                citationInput.classList.remove('is-invalid');
+                citationInput.classList.add('is-valid');
+                citationFeedback.className = 'citation-validation-feedback valid';
+                citationFeedback.innerHTML = '<i data-lucide="check-circle" style="width: 16px; height: 16px;"></i> ' + message;
+                lucide.createIcons();
+            }
+
+            function setInvalidState(message) {
+                citationInput.classList.remove('is-valid');
+                citationInput.classList.add('is-invalid');
+                citationFeedback.className = 'citation-validation-feedback invalid';
+                citationFeedback.innerHTML = '<i data-lucide="alert-circle" style="width: 16px; height: 16px;"></i> ' + message;
+                lucide.createIcons();
+            }
+
+            function resetValidation() {
+                citationInput.classList.remove('is-valid', 'is-invalid');
+                citationFeedback.className = 'citation-validation-feedback';
+                citationFeedback.innerHTML = '';
+            }
+
+            // Event listeners
+            citationInput.addEventListener('input', function() {
+                if (!isAutoMode) {
+                    checkCitationDuplicate();
+                }
+            });
+
+            citationInput.addEventListener('blur', function() {
+                if (!isAutoMode && this.value.trim()) {
+                    clearTimeout(checkTimeout);
+                    checkCitationDuplicate();
+                }
+            });
+
+            // Form submission validation
+            form.addEventListener('submit', function(e) {
+                const value = citationInput.value.trim();
+
+                if (!value) {
+                    e.preventDefault();
+                    citationInput.focus();
+                    setInvalidState('Citation number is required');
+                    return false;
+                }
+
+                if (!isAutoMode && !isValidCitation) {
+                    e.preventDefault();
+                    citationInput.focus();
+
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Citation Number',
+                        text: 'Please fix the citation number before submitting.',
+                        confirmButtonColor: '#3b82f6'
+                    });
+
+                    return false;
+                }
             });
 
         })();

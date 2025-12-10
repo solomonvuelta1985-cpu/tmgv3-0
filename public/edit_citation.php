@@ -315,7 +315,7 @@ if (empty($_SESSION['csrf_token'])) {
                 <div class="header">
                     <h4><i class="fas fa-edit"></i> EDIT MODE</h4>
                     <h1>TRAFFIC CITATION TICKET</h1>
-                    <input type="hidden" name="ticket_number" value="<?php echo htmlspecialchars($citation['ticket_number']); ?>">
+                    <input type="hidden" name="ticket_number" value="<?php echo htmlspecialchars($citation['ticket_number']); ?>" pattern="[A-Z0-9\-]{6,8}" minlength="6" maxlength="8">
                     <div class="ticket-number"><?php echo htmlspecialchars($citation['ticket_number']); ?></div>
                 </div>
 

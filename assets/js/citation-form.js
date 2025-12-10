@@ -371,10 +371,15 @@ document.addEventListener('DOMContentLoaded', () => {
             body: formData
         })
         .then(response => {
-            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-            return response.json();
+            // Store the status for duplicate detection
+            const responseStatus = response.status;
+
+            // Parse JSON regardless of status
+            return response.json().then(data => {
+                return { data, status: responseStatus };
+            });
         })
-        .then(data => {
+        .then(({ data, status }) => {
             if (data.status === 'success') {
                 Swal.fire({
                     title: 'Success!',
@@ -421,13 +426,54 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.reload();
                 });
             } else {
-                Swal.fire({
-                    title: 'Failed!',
-                    text: data.message || 'An error occurred while saving the citation.',
-                    icon: 'error',
-                    confirmButtonColor: '#d33',
-                    confirmButtonText: 'OK'
-                });
+                // Check if this is a duplicate citation error (HTTP 409)
+                if (status === 409 && data.error_type === 'duplicate_citation') {
+                    const duplicateInfo = data.duplicate_info || {};
+                    const createdDate = duplicateInfo.created_at ?
+                        new Date(duplicateInfo.created_at).toLocaleString() : 'Unknown';
+
+                    Swal.fire({
+                        title: 'Citation Already Exists!',
+                        html: `
+                            <div style="text-align: left; padding: 15px;">
+                                <p style="font-size: 1.1rem; margin-bottom: 15px;">
+                                    <strong>Citation Number:</strong>
+                                    <span style="color: #dc3545; font-family: monospace; font-size: 1.2rem;">
+                                        ${duplicateInfo.ticket_number || 'Unknown'}
+                                    </span>
+                                </p>
+                                <p style="color: #6c757d;">
+                                    <strong>Previously created:</strong> ${createdDate}
+                                </p>
+                                <hr style="margin: 15px 0;">
+                                <p style="font-size: 0.95rem; color: #495057;">
+                                    This citation number has already been used in the system.
+                                    Please use a different citation number or toggle to auto-generate mode.
+                                </p>
+                            </div>
+                        `,
+                        icon: 'warning',
+                        confirmButtonColor: '#dc3545',
+                        confirmButtonText: 'OK, I\'ll Change It',
+                        width: '600px'
+                    }).then(() => {
+                        // Focus on citation number field
+                        const citationInput = document.getElementById('citation_no');
+                        if (citationInput) {
+                            citationInput.focus();
+                            citationInput.select();
+                        }
+                    });
+                } else {
+                    // Generic error message
+                    Swal.fire({
+                        title: 'Failed!',
+                        text: data.message || 'An error occurred while saving the citation.',
+                        icon: 'error',
+                        confirmButtonColor: '#d33',
+                        confirmButtonText: 'OK'
+                    });
+                }
             }
         })
         .catch(error => {
