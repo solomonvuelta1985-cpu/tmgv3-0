@@ -11,6 +11,13 @@
 <!-- Page Loader Overlay -->
 <div id="pageLoader" class="page-loader-overlay">
     <div class="loader-container">
+        <!-- Logo and Title Section -->
+        <div class="logo-section">
+            <img src="../assets/img/LOGO1.png" alt="Logo" class="loader-logo">
+            <h1 class="loader-title">B-TRACS</h1>
+        </div>
+
+        <!-- Morph Animation Scene -->
         <div class="scene">
             <!-- The Main Changing Shape -->
             <div class="morph-object state-light" id="morphShape"></div>
@@ -55,7 +62,38 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 50px;
+    gap: 25px;
+    padding-top: 5vh;
+}
+
+/* --- LOGO AND TITLE SECTION --- */
+.logo-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    animation: logo-fade-in 0.8s ease-out;
+}
+
+.loader-logo {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+    animation: logo-pulse 2s ease-in-out infinite;
+}
+
+.loader-title {
+    font-size: 1.875rem;
+    font-weight: 800;
+    color: #185593;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin: 0;
+    text-shadow:
+        0 2px 4px rgba(24, 85, 147, 0.2),
+        0 4px 8px rgba(24, 85, 147, 0.1);
+    animation: title-shimmer 3s ease-in-out infinite;
 }
 
 .scene {
@@ -83,43 +121,73 @@
 
 /* --- STATE 1: STOP LIGHT --- */
 .morph-object.state-light {
-    background-color: #2d2d2d;
-    clip-path: polygon(20% 0%, 20% 100%, 80% 100%, 80% 0%);
+    background: linear-gradient(145deg, #2d2d2d, #1a1a1a);
+    clip-path: polygon(25% 0%, 25% 5%, 15% 8%, 15% 92%, 25% 95%, 25% 100%, 75% 100%, 75% 95%, 85% 92%, 85% 8%, 75% 5%, 75% 0%);
     transform: rotate(0deg) scale(1.1);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+    box-shadow:
+        0 15px 35px rgba(0,0,0,0.4),
+        inset 0 2px 4px rgba(255,255,255,0.1),
+        inset 0 -2px 4px rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.05);
+    animation: pulse-glow 3s ease-in-out infinite;
 }
 
-/* The Lights (Red/Yellow/Green) */
-.morph-object::before {
+/* Traffic Light Housing Details */
+.morph-object.state-light::before {
     content: '';
     position: absolute;
     inset: 0;
-    opacity: 0;
-    transition: opacity 0.3s;
+    opacity: 1;
     background:
-        radial-gradient(circle at 50% 20%, #ff5252 6px, transparent 7px),
-        radial-gradient(circle at 50% 50%, #ffeb3b 6px, transparent 7px),
-        radial-gradient(circle at 50% 80%, #4caf50 6px, transparent 7px);
+        /* Red Light */
+        radial-gradient(circle at 50% 18%, rgba(255, 82, 82, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 50% 18%, #ff5252 8px, transparent 9px),
+        radial-gradient(circle at 50% 18%, rgba(0,0,0,0.4) 9px, transparent 10px),
+        /* Yellow Light */
+        radial-gradient(circle at 50% 50%, rgba(255, 235, 59, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, #ffeb3b 8px, transparent 9px),
+        radial-gradient(circle at 50% 50%, rgba(0,0,0,0.4) 9px, transparent 10px),
+        /* Green Light */
+        radial-gradient(circle at 50% 82%, rgba(76, 175, 80, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 50% 82%, #4caf50 8px, transparent 9px),
+        radial-gradient(circle at 50% 82%, rgba(0,0,0,0.4) 9px, transparent 10px);
+    animation: traffic-sequence 3s infinite;
 }
 
-.morph-object.state-light::before {
+/* Light Reflections */
+.morph-object.state-light::after {
+    content: '';
+    position: absolute;
+    inset: 0;
     opacity: 1;
-    animation: traffic-blink 1s infinite;
+    background:
+        /* Red reflection */
+        radial-gradient(ellipse 4px 3px at 48% 16%, rgba(255,255,255,0.6), transparent),
+        /* Yellow reflection */
+        radial-gradient(ellipse 4px 3px at 48% 48%, rgba(255,255,255,0.6), transparent),
+        /* Green reflection */
+        radial-gradient(ellipse 4px 3px at 48% 80%, rgba(255,255,255,0.6), transparent);
+    pointer-events: none;
 }
 
 /* --- STATE 2: TRAFFIC CONE --- */
 .morph-object.state-cone {
-    background-color: #FF6700;
+    background: linear-gradient(135deg, #FF6700 0%, #FF8533 50%, #FF6700 100%);
     clip-path: polygon(25% 15%, 15% 100%, 85% 100%, 75% 15%);
     transform: rotate(0deg) translateY(0);
+    box-shadow:
+        0 12px 30px rgba(255, 103, 0, 0.4),
+        inset 0 2px 4px rgba(255, 255, 255, 0.3),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+    animation: cone-sway 2s ease-in-out infinite;
 }
 
 /* Cone Stripes */
-.morph-object::after {
+.morph-object.state-cone::before {
     content: '';
     position: absolute;
     inset: 0;
-    opacity: 0;
+    opacity: 1;
     transition: opacity 0.3s;
     background: linear-gradient(
         to bottom,
@@ -135,7 +203,7 @@
 }
 
 .morph-object.state-cone::after {
-    opacity: 1;
+    opacity: 0;
 }
 
 /* --- CONE BASE --- */
@@ -143,14 +211,18 @@
     position: absolute;
     bottom: 25px;
     width: 70px;
-    height: 8px;
-    background-color: #FF6700;
-    border-radius: 4px;
+    height: 10px;
+    background: linear-gradient(180deg, #CC5200 0%, #FF6700 50%, #CC5200 100%);
+    border-radius: 5px;
     z-index: 5;
     transform: scaleX(0);
     opacity: 0;
     transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+    box-shadow:
+        0 6px 15px rgba(0, 0, 0, 0.3),
+        inset 0 1px 2px rgba(255, 255, 255, 0.3),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 .cone-base.visible {
@@ -160,41 +232,210 @@
 
 /* --- BADGE --- */
 .info-card {
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    padding: 12px 24px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    padding: 14px 28px;
     border-radius: 50px;
-    border: 1px solid rgba(255, 255, 255, 0.9);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 1);
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.08),
+        inset 0 1px 2px rgba(255, 255, 255, 0.5),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.05);
     display: flex;
     align-items: center;
-    gap: 12px;
-    min-width: 180px;
+    gap: 14px;
+    min-width: 200px;
     justify-content: center;
+    animation: badge-float 3s ease-in-out infinite;
 }
 
 .status-dot {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background-color: #4285F4;
-    transition: background-color 0.4s;
-    box-shadow: 0 0 0 2px rgba(255,255,255,0.5), 0 0 10px currentColor;
+    transition: all 0.4s ease;
+    box-shadow:
+        0 0 0 3px rgba(255,255,255,0.6),
+        0 0 15px currentColor,
+        inset 0 1px 1px rgba(255,255,255,0.5);
+    animation: dot-pulse 1.5s ease-in-out infinite;
 }
 
 .status-text {
-    font-size: 0.85rem;
+    font-size: 0.875rem;
     font-weight: 800;
-    color: #555;
-    letter-spacing: 1px;
+    color: #2d2d2d;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.8);
 }
 
 /* --- ANIMATIONS --- */
-@keyframes traffic-blink {
-    0%, 100% { filter: brightness(1); }
-    50% { filter: brightness(1.2); }
+@keyframes traffic-sequence {
+    0%, 100% {
+        filter: brightness(1) drop-shadow(0 0 8px rgba(255, 82, 82, 0.8));
+    }
+    25% {
+        filter: brightness(1.3) drop-shadow(0 0 12px rgba(255, 82, 82, 1));
+    }
+    33% {
+        filter: brightness(1) drop-shadow(0 0 8px rgba(255, 235, 59, 0.8));
+    }
+    50% {
+        filter: brightness(1.3) drop-shadow(0 0 12px rgba(255, 235, 59, 1));
+    }
+    66% {
+        filter: brightness(1) drop-shadow(0 0 8px rgba(76, 175, 80, 0.8));
+    }
+    83% {
+        filter: brightness(1.3) drop-shadow(0 0 12px rgba(76, 175, 80, 1));
+    }
+}
+
+@keyframes pulse-glow {
+    0%, 100% {
+        box-shadow:
+            0 15px 35px rgba(0,0,0,0.4),
+            inset 0 2px 4px rgba(255,255,255,0.1),
+            inset 0 -2px 4px rgba(0,0,0,0.3);
+    }
+    50% {
+        box-shadow:
+            0 15px 35px rgba(0,0,0,0.4),
+            inset 0 2px 4px rgba(255,255,255,0.15),
+            inset 0 -2px 4px rgba(0,0,0,0.2),
+            0 0 20px rgba(255,235,59,0.3);
+    }
+}
+
+@keyframes cone-sway {
+    0%, 100% {
+        transform: rotate(0deg) translateY(0) translateX(0);
+    }
+    25% {
+        transform: rotate(-2deg) translateY(-2px) translateX(-1px);
+    }
+    75% {
+        transform: rotate(2deg) translateY(-2px) translateX(1px);
+    }
+}
+
+@keyframes badge-float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes dot-pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.8;
+    }
+}
+
+@keyframes logo-fade-in {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes logo-pulse {
+    0%, 100% {
+        transform: scale(1);
+        filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+    }
+    50% {
+        transform: scale(1.05);
+        filter: drop-shadow(0 6px 16px rgba(24, 85, 147, 0.25));
+    }
+}
+
+@keyframes title-shimmer {
+    0%, 100% {
+        opacity: 1;
+        text-shadow:
+            0 2px 4px rgba(24, 85, 147, 0.2),
+            0 4px 8px rgba(24, 85, 147, 0.1);
+    }
+    50% {
+        opacity: 0.9;
+        text-shadow:
+            0 2px 4px rgba(24, 85, 147, 0.3),
+            0 4px 8px rgba(24, 85, 147, 0.2),
+            0 0 20px rgba(24, 85, 147, 0.15);
+    }
+}
+
+/* --- RESPONSIVE STYLES --- */
+@media (max-width: 768px) {
+    .loader-logo {
+        width: 75px;
+        height: 75px;
+    }
+
+    .loader-title {
+        font-size: 1.5rem;
+        letter-spacing: 2.5px;
+    }
+
+    .loader-container {
+        gap: 20px;
+        padding-top: 4vh;
+    }
+
+    .logo-section {
+        gap: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .loader-logo {
+        width: 65px;
+        height: 65px;
+    }
+
+    .loader-title {
+        font-size: 1.25rem;
+        letter-spacing: 2px;
+    }
+
+    .loader-container {
+        gap: 18px;
+        padding-top: 3vh;
+    }
+
+    .logo-section {
+        gap: 8px;
+    }
+
+    .scene {
+        width: 100px;
+        height: 100px;
+    }
+
+    .morph-object {
+        width: 50px;
+        height: 60px;
+    }
+
+    .info-card {
+        padding: 12px 24px;
+        min-width: 180px;
+    }
 }
 </style>
 
