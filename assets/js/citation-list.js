@@ -141,9 +141,9 @@ function viewCitation(id) {
                     if (data.citation.status === 'paid') {
                         editBtn.disabled = true;
                         editBtn.classList.remove('btn-warning');
-                        editBtn.classList.add('btn-secondary');
+                        editBtn.classList.add('btn-outline');
                         editBtn.title = 'Paid citations cannot be edited';
-                        editBtn.innerHTML = '<i data-lucide="lock" style="width: 16px; height: 16px;"></i> Edit (Paid)';
+                        editBtn.innerHTML = '<i data-lucide="lock" style="width: 16px; height: 16px;"></i><span>Edit (Locked)</span>';
                         editBtn.onclick = null;
                         // Re-initialize Lucide icons
                         if (typeof lucide !== 'undefined') {
@@ -151,10 +151,10 @@ function viewCitation(id) {
                         }
                     } else {
                         editBtn.disabled = false;
-                        editBtn.classList.remove('btn-secondary');
+                        editBtn.classList.remove('btn-outline');
                         editBtn.classList.add('btn-warning');
                         editBtn.title = 'Edit Citation';
-                        editBtn.innerHTML = '<i data-lucide="edit" style="width: 16px; height: 16px;"></i> Edit';
+                        editBtn.innerHTML = '<i data-lucide="edit" style="width: 16px; height: 16px;"></i><span>Edit</span>';
                         // Re-initialize Lucide icons
                         if (typeof lucide !== 'undefined') {
                             lucide.createIcons();
@@ -168,20 +168,22 @@ function viewCitation(id) {
                 if (statusDropdown) {
                     if (data.citation.status === 'paid') {
                         statusDropdown.disabled = true;
-                        statusDropdown.classList.remove('btn-primary');
-                        statusDropdown.classList.add('btn-secondary');
+                        statusDropdown.classList.remove('btn-primary', 'dropdown-toggle');
+                        statusDropdown.classList.add('btn-outline');
                         statusDropdown.title = 'Paid citations cannot have status changed';
-                        statusDropdown.innerHTML = '<i data-lucide="lock" style="width: 16px; height: 16px;"></i> Status Locked';
+                        statusDropdown.innerHTML = '<i data-lucide="lock" style="width: 16px; height: 16px;"></i><span>Status (Locked)</span>';
+                        statusDropdown.removeAttribute('data-bs-toggle');
                         // Re-initialize Lucide icons for the new lock icon
                         if (typeof lucide !== 'undefined') {
                             lucide.createIcons();
                         }
                     } else {
                         statusDropdown.disabled = false;
-                        statusDropdown.classList.remove('btn-secondary');
-                        statusDropdown.classList.add('btn-primary');
+                        statusDropdown.classList.remove('btn-outline');
+                        statusDropdown.classList.add('btn-primary', 'dropdown-toggle');
                         statusDropdown.title = '';
-                        statusDropdown.innerHTML = '<i data-lucide="list-checks" style="width: 16px; height: 16px;"></i> Update Status';
+                        statusDropdown.innerHTML = '<i data-lucide="list-checks" style="width: 16px; height: 16px;"></i><span>Update Status</span>';
+                        statusDropdown.setAttribute('data-bs-toggle', 'dropdown');
                         // Re-initialize Lucide icons
                         if (typeof lucide !== 'undefined') {
                             lucide.createIcons();
@@ -212,127 +214,154 @@ function viewCitation(id) {
 }
 
 function displayCitationDetails(citation) {
-    const violationCards = citation.violations.map(v => `
-        <div class="violation-card">
-            <div class="violation-info">
-                <div class="violation-type">${v.violation_type}</div>
-                <div class="violation-offense">Offense #${v.offense_count}</div>
+    const violationsList = citation.violations.map(v => `
+        <div class="violation-item">
+            <div class="violation-item-content">
+                <div class="violation-item-name">${v.violation_type}</div>
+                <div class="violation-item-meta">Offense #${v.offense_count}</div>
             </div>
-            <div class="violation-fine">₱${parseFloat(v.fine_amount).toFixed(2)}</div>
+            <div class="violation-item-amount">₱${parseFloat(v.fine_amount).toFixed(2)}</div>
         </div>
     `).join('');
 
     const html = `
-        <div class="modal-two-column">
-            <!-- Left Column -->
-            <div class="modal-column-left">
-                <div class="detail-card">
-                    <div class="detail-card-header">
-                        <i data-lucide="ticket" style="width: 18px; height: 18px;"></i>
-                        <h6 class="detail-card-title">Citation Information</h6>
+        <div class="citation-detail-container">
+            <!-- Header Section with Status -->
+            <div class="citation-detail-header">
+                <div class="citation-header-main">
+                    <div class="citation-header-icon">
+                        <i data-lucide="file-text" style="width: 20px; height: 20px;"></i>
                     </div>
-                    <div class="detail-grid">
-                        <div class="detail-item">
-                            <span class="detail-label">Ticket Number</span>
-                            <span class="detail-value"><strong>${citation.ticket_number}</strong></span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Status</span>
-                            <span class="detail-value"><span class="badge badge-${citation.status}">${citation.status.toUpperCase()}</span></span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Date/Time</span>
-                            <span class="detail-value">${new Date(citation.apprehension_datetime).toLocaleString()}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Place of Apprehension</span>
-                            <span class="detail-value">${citation.place_of_apprehension}</span>
+                    <div>
+                        <div class="citation-ticket-number">${citation.ticket_number}</div>
+                        <div class="citation-datetime">
+                            <i data-lucide="calendar" style="width: 14px; height: 14px;"></i>
+                            ${new Date(citation.apprehension_datetime).toLocaleString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                                hour: 'numeric',
+                                minute: '2-digit',
+                                hour12: true
+                            })}
                         </div>
                     </div>
                 </div>
-
-                <div class="detail-card">
-                    <div class="detail-card-header">
-                        <i data-lucide="user" style="width: 18px; height: 18px;"></i>
-                        <h6 class="detail-card-title">Driver Information</h6>
-                    </div>
-                    <div class="detail-grid">
-                        <div class="detail-item" style="grid-column: 1 / -1;">
-                            <span class="detail-label">Full Name</span>
-                            <span class="detail-value"><strong>${citation.last_name}, ${citation.first_name} ${citation.middle_initial || ''} ${citation.suffix || ''}</strong></span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Age</span>
-                            <span class="detail-value">${citation.age || 'N/A'}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">License Number</span>
-                            <span class="detail-value">${citation.license_number || 'N/A'}</span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">License Type</span>
-                            <span class="detail-value">${citation.license_type || 'N/A'}</span>
-                        </div>
-                        <div class="detail-item" style="grid-column: 1 / -1;">
-                            <span class="detail-label">Address</span>
-                            <span class="detail-value">${citation.zone ? 'Zone ' + citation.zone + ', ' : ''}${citation.barangay}, ${citation.municipality}, ${citation.province}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="detail-card">
-                    <div class="detail-card-header">
-                        <i data-lucide="car" style="width: 18px; height: 18px;"></i>
-                        <h6 class="detail-card-title">Vehicle Information</h6>
-                    </div>
-                    <div class="detail-grid">
-                        <div class="detail-item">
-                            <span class="detail-label">Plate/MV/Engine/Chassis No.</span>
-                            <span class="detail-value"><strong>${citation.plate_mv_engine_chassis_no}</strong></span>
-                        </div>
-                        <div class="detail-item">
-                            <span class="detail-label">Vehicle Type</span>
-                            <span class="detail-value">${citation.vehicle_type || 'N/A'}</span>
-                        </div>
-                        <div class="detail-item" style="grid-column: 1 / -1;">
-                            <span class="detail-label">Vehicle Description</span>
-                            <span class="detail-value">${citation.vehicle_description || 'N/A'}</span>
-                        </div>
-                    </div>
-                </div>
+                <span class="badge badge-${citation.status} badge-lg">${citation.status.toUpperCase()}</span>
             </div>
 
-            <!-- Right Column -->
-            <div class="modal-column-right">
-                <div class="detail-card">
-                    <div class="detail-card-header">
-                        <i data-lucide="alert-triangle" style="width: 18px; height: 18px;"></i>
-                        <h6 class="detail-card-title">Violations (${citation.violations.length})</h6>
-                    </div>
-                    ${violationCards}
-                    <div class="total-fine-display">
-                        <span class="total-fine-label">Total Fine</span>
-                        <span class="total-fine-amount">₱${parseFloat(citation.total_fine).toFixed(2)}</span>
-                    </div>
-                </div>
-
-                <div class="detail-card">
-                    <div class="detail-card-header">
-                        <i data-lucide="shield-check" style="width: 18px; height: 18px;"></i>
-                        <h6 class="detail-card-title">Apprehension Officer</h6>
-                    </div>
-                    <div class="detail-value">${citation.apprehension_officer || 'N/A'}</div>
-                </div>
-
-                ${citation.remarks ? `
-                    <div class="detail-card">
-                        <div class="detail-card-header">
-                            <i data-lucide="message-square" style="width: 18px; height: 18px;"></i>
-                            <h6 class="detail-card-title">Remarks</h6>
+            <!-- Two Column Layout -->
+            <div class="citation-detail-grid">
+                <!-- Left Column -->
+                <div class="citation-detail-col">
+                    <!-- Driver Section -->
+                    <div class="detail-section">
+                        <div class="detail-section-header">
+                            <i data-lucide="user" style="width: 18px; height: 18px;"></i>
+                            <h6>Driver Information</h6>
                         </div>
-                        <div class="remarks-box">${citation.remarks}</div>
+                        <div class="detail-rows">
+                            <div class="detail-row">
+                                <span class="detail-row-label">Full Name</span>
+                                <span class="detail-row-value">${citation.last_name}, ${citation.first_name} ${citation.middle_initial || ''} ${citation.suffix || ''}</span>
+                            </div>
+                            <div class="detail-row detail-row-split">
+                                <div class="detail-row-half">
+                                    <span class="detail-row-label">Age</span>
+                                    <span class="detail-row-value">${citation.age || 'N/A'}</span>
+                                </div>
+                                <div class="detail-row-half">
+                                    <span class="detail-row-label">License Type</span>
+                                    <span class="detail-row-value">${citation.license_type || 'N/A'}</span>
+                                </div>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-row-label">License Number</span>
+                                <span class="detail-row-value">${citation.license_number || 'N/A'}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-row-label">Address</span>
+                                <span class="detail-row-value">${citation.zone ? 'Zone ' + citation.zone + ', ' : ''}${citation.barangay}, ${citation.municipality}, ${citation.province}</span>
+                            </div>
+                        </div>
                     </div>
-                ` : ''}
+
+                    <!-- Vehicle Section -->
+                    <div class="detail-section">
+                        <div class="detail-section-header">
+                            <i data-lucide="car" style="width: 18px; height: 18px;"></i>
+                            <h6>Vehicle Information</h6>
+                        </div>
+                        <div class="detail-rows">
+                            <div class="detail-row detail-row-split">
+                                <div class="detail-row-half">
+                                    <span class="detail-row-label">Plate/MV Number</span>
+                                    <span class="detail-row-value">${citation.plate_mv_engine_chassis_no}</span>
+                                </div>
+                                <div class="detail-row-half">
+                                    <span class="detail-row-label">Vehicle Type</span>
+                                    <span class="detail-row-value">${citation.vehicle_type || 'N/A'}</span>
+                                </div>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-row-label">Description</span>
+                                <span class="detail-row-value">${citation.vehicle_description || 'N/A'}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Apprehension Section -->
+                    <div class="detail-section">
+                        <div class="detail-section-header">
+                            <i data-lucide="map-pin" style="width: 18px; height: 18px;"></i>
+                            <h6>Apprehension Details</h6>
+                        </div>
+                        <div class="detail-rows">
+                            <div class="detail-row">
+                                <span class="detail-row-label">Location</span>
+                                <span class="detail-row-value">${citation.place_of_apprehension}</span>
+                            </div>
+                            <div class="detail-row">
+                                <span class="detail-row-label">Officer</span>
+                                <span class="detail-row-value">${citation.apprehension_officer || 'N/A'}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    ${citation.remarks ? `
+                        <div class="detail-section">
+                            <div class="detail-section-header">
+                                <i data-lucide="message-square" style="width: 18px; height: 18px;"></i>
+                                <h6>Remarks</h6>
+                            </div>
+                            <div class="detail-rows">
+                                <div class="detail-row">
+                                    <p class="remarks-text">${citation.remarks}</p>
+                                </div>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <!-- Right Column - Violations -->
+                <div class="citation-detail-col">
+                    <div class="violations-section">
+                        <div class="violations-header">
+                            <div class="violations-header-title">
+                                <i data-lucide="alert-triangle" style="width: 18px; height: 18px;"></i>
+                                <h6>Violations</h6>
+                            </div>
+                            <span class="violations-count">${citation.violations.length} ${citation.violations.length === 1 ? 'violation' : 'violations'}</span>
+                        </div>
+                        <div class="violations-list">
+                            ${violationsList}
+                        </div>
+                        <div class="violations-total">
+                            <span class="violations-total-label">Total Fine</span>
+                            <span class="violations-total-amount">₱${parseFloat(citation.total_fine).toFixed(2)}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     `;
@@ -468,58 +497,57 @@ function quickInfo(id) {
 
 function displayQuickInfo(citation) {
     const violationCards = citation.violations.map(v => `
-        <div class="violation-card" style="margin-bottom: 8px;">
-            <div class="violation-info">
-                <div class="violation-type" style="font-size: 0.9rem;">${v.violation_type}</div>
-                <div class="violation-offense" style="font-size: 0.75rem;">Offense #${v.offense_count}</div>
+        <div class="qsm-violation-item">
+            <div class="qsm-violation-content">
+                <div class="qsm-violation-name">${v.violation_type}</div>
+                <div class="qsm-violation-meta">Offense #${v.offense_count}</div>
             </div>
-            <div class="violation-fine" style="font-size: 1rem;">₱${parseFloat(v.fine_amount).toFixed(2)}</div>
+            <div class="qsm-violation-price">₱${parseFloat(v.fine_amount).toFixed(2)}</div>
         </div>
     `).join('');
 
     const html = `
-        <div style="background: #f8f9fa; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <h6 class="mb-0" style="color: #0f172a; font-weight: 600;">
-                    <i data-lucide="user" style="width: 18px; height: 18px; color: #3b82f6;"></i>
-                    ${citation.last_name}, ${citation.first_name} ${citation.middle_initial || ''}
-                </h6>
-                <span class="badge badge-${citation.status}">${citation.status.toUpperCase()}</span>
+        <div class="qsm-header">
+            <div class="qsm-driver-info">
+                <div class="qsm-driver-name">${citation.last_name}, ${citation.first_name} ${citation.middle_initial || ''}</div>
+                <div class="qsm-ticket-info">
+                    <span class="qsm-ticket-label">Ticket:</span>
+                    <span class="qsm-ticket-number">${citation.ticket_number}</span>
+                </div>
             </div>
-            <div style="font-size: 0.85rem; color: #6b7280;">
-                <i data-lucide="ticket" style="width: 16px; height: 16px;"></i> Ticket: <strong style="color: #0f172a;">${citation.ticket_number}</strong>
+            <span class="badge badge-${citation.status}">${citation.status.toUpperCase()}</span>
+        </div>
+
+        <div class="qsm-details-grid">
+            <div class="qsm-detail-item">
+                <div class="qsm-detail-label">AGE</div>
+                <div class="qsm-detail-value">${citation.age || 'N/A'}</div>
+            </div>
+            <div class="qsm-detail-item">
+                <div class="qsm-detail-label">LICENSE NUMBER</div>
+                <div class="qsm-detail-value">${citation.license_number || 'N/A'}</div>
+            </div>
+            <div class="qsm-detail-item">
+                <div class="qsm-detail-label">VEHICLE</div>
+                <div class="qsm-detail-value">${citation.plate_mv_engine_chassis_no}</div>
+            </div>
+            <div class="qsm-detail-item">
+                <div class="qsm-detail-label">DATE</div>
+                <div class="qsm-detail-value">${new Date(citation.apprehension_datetime).toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}</div>
             </div>
         </div>
 
-        <div class="detail-grid" style="margin-bottom: 16px;">
-            <div class="detail-item">
-                <span class="detail-label">Age</span>
-                <span class="detail-value">${citation.age || 'N/A'}</span>
-            </div>
-            <div class="detail-item">
-                <span class="detail-label">License #</span>
-                <span class="detail-value">${citation.license_number || 'N/A'}</span>
-            </div>
-            <div class="detail-item">
-                <span class="detail-label">Vehicle</span>
-                <span class="detail-value">${citation.plate_mv_engine_chassis_no}</span>
-            </div>
-            <div class="detail-item">
-                <span class="detail-label">Date</span>
-                <span class="detail-value">${new Date(citation.apprehension_datetime).toLocaleDateString()}</span>
-            </div>
-        </div>
-
-        <div style="margin-bottom: 16px;">
-            <div style="font-size: 0.85rem; color: #6b7280; margin-bottom: 10px; font-weight: 600;">
-                <i data-lucide="alert-triangle" style="width: 16px; height: 16px; color: #f59e0b;"></i> Violations (${citation.violations.length})
+        <div class="qsm-violations">
+            <div class="qsm-violations-title">
+                <i data-lucide="alert-triangle" style="width: 16px; height: 16px;"></i>
+                <span>Violations (${citation.violations.length})</span>
             </div>
             ${violationCards}
         </div>
 
-        <div class="total-fine-display" style="margin-bottom: 0;">
-            <span class="total-fine-label">Total Fine</span>
-            <span class="total-fine-amount">₱${parseFloat(citation.total_fine).toFixed(2)}</span>
+        <div class="qsm-total">
+            <span class="qsm-total-label">TOTAL FINE</span>
+            <span class="qsm-total-amount">₱${parseFloat(citation.total_fine).toFixed(2)}</span>
         </div>
     `;
 

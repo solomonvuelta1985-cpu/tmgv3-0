@@ -965,23 +965,23 @@ table td:nth-child(10) .btn-sm {
 /* Modal Styles - Clean & Flat */
 .modal-content {
     border: 1px solid #dee2e6;
-    border-radius: 6px;
+    border-radius: 8px;
 }
 
 .modal-header {
     background: #ffffff;
     color: #212529;
-    padding: 1rem 1.25rem;
-    border-bottom: 1px solid #dee2e6;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #e9ecef;
 }
 
 .modal-title {
-    font-size: 1rem;
+    font-size: 1.125rem;
     font-weight: 600;
-    color: #212529;
+    color: #1a1a1a;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
 }
 
 .modal-title i {
@@ -992,16 +992,15 @@ table td:nth-child(10) .btn-sm {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     background: #e7f3ff;
-    border-radius: 8px;
+    border-radius: 10px;
     color: #0d6efd;
-    margin-right: 0.75rem;
 }
 
 .modal-body {
-    padding: 1.25rem;
+    padding: 0;
     font-size: 0.875rem;
     background: #f8f9fa;
     max-height: calc(100vh - 200px);
@@ -1028,17 +1027,315 @@ table td:nth-child(10) .btn-sm {
 }
 
 .modal-footer {
-    padding: 1rem 1.25rem;
+    padding: 1rem 1.5rem;
     background: #ffffff;
-    border-top: 1px solid #dee2e6;
-    gap: 0.5rem;
+    border-top: 1px solid #e9ecef;
+    gap: 0.75rem;
+    display: flex;
+    flex-wrap: wrap;
 }
 
 .modal-footer .btn {
-    padding: 0.5rem 1rem;
+    padding: 0.625rem 1.25rem;
     font-weight: 500;
     font-size: 0.875rem;
 }
+
+/* ============================================
+   CITATION DETAIL MODAL - MODERN REDESIGN
+   ============================================ */
+
+/* Main Container */
+.citation-detail-container {
+    background: #f8f9fa;
+}
+
+/* Header Section - Prominent ticket info with status */
+.citation-detail-header {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    padding: 1.5rem 1.5rem 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.citation-header-main {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.citation-header-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    flex-shrink: 0;
+}
+
+.citation-ticket-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.375rem;
+}
+
+.citation-datetime {
+    font-size: 0.8125rem;
+    color: #64748b;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.citation-datetime i {
+    color: #adb5bd;
+}
+
+/* Larger status badge */
+.badge-lg {
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+/* Two Column Grid */
+.citation-detail-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 1.5rem;
+    padding: 1.5rem;
+}
+
+.citation-detail-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* Detail Sections - No heavy borders */
+.detail-section {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.detail-section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.detail-section-header i {
+    color: #3b82f6;
+    flex-shrink: 0;
+}
+
+.detail-section-header h6 {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #475569;
+    margin: 0;
+}
+
+/* Detail Rows - Clean list style */
+.detail-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+}
+
+.detail-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.detail-row-label {
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-row-value {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #0f172a;
+    line-height: 1.5;
+}
+
+/* Split row for side-by-side fields */
+.detail-row-split {
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.detail-row-half {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+/* Remarks text styling */
+.remarks-text {
+    font-size: 0.875rem;
+    color: #475569;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0.875rem 1rem;
+    background: #fef3c7;
+    border-left: 3px solid #f59e0b;
+    border-radius: 6px;
+}
+
+/* ============================================
+   VIOLATIONS SECTION - RIGHT COLUMN
+   ============================================ */
+
+.violations-section {
+    background: #ffffff;
+    border-radius: 8px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.violations-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.violations-header-title {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+}
+
+.violations-header-title i {
+    color: #f59e0b;
+}
+
+.violations-header-title h6 {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #475569;
+    margin: 0;
+}
+
+.violations-count {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: #f1f5f9;
+    padding: 0.375rem 0.75rem;
+    border-radius: 4px;
+}
+
+/* Violations List */
+.violations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    flex: 1;
+    margin-bottom: 1rem;
+}
+
+.violation-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.875rem 1rem;
+    background: #fffbf0;
+    border-left: 3px solid #f59e0b;
+    border-radius: 6px;
+    transition: all 0.15s ease;
+}
+
+.violation-item:hover {
+    background: #fef3c7;
+    transform: translateX(2px);
+}
+
+.violation-item-content {
+    flex: 1;
+}
+
+.violation-item-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 0.25rem;
+    line-height: 1.4;
+}
+
+.violation-item-meta {
+    font-size: 0.6875rem;
+    color: #92400e;
+    font-weight: 500;
+}
+
+.violation-item-amount {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: #92400e;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Violations Total */
+.violations-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.125rem 1.25rem;
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    border-radius: 8px;
+    margin-top: auto;
+}
+
+.violations-total-label {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #1e40af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.violations-total-amount {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #1e3a8a;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ============================================
+   LEGACY SUPPORT (for old code if any)
+   ============================================ */
 
 /* Modal Two-Column Layout */
 .modal-two-column {
@@ -1046,6 +1343,7 @@ table td:nth-child(10) .btn-sm {
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
     align-items: start;
+    padding: 1.25rem;
 }
 
 .modal-column-left,
@@ -1168,7 +1466,7 @@ table td:nth-child(10) .btn-sm {
     background: #f8f9fa;
 }
 
-/* Violation Cards - Clean Design */
+/* Legacy Violation Cards - Clean Design (for backward compatibility) */
 .violation-card {
     background: #fff3cd;
     border: 1px solid #ffe69c;
@@ -1203,7 +1501,7 @@ table td:nth-child(10) .btn-sm {
     color: #997404;
 }
 
-/* Total Fine Display - Clean Design */
+/* Legacy Total Fine Display - Clean Design */
 .total-fine-display {
     background: #ffffff;
     border: 1px solid #dee2e6;
@@ -1239,6 +1537,218 @@ table td:nth-child(10) .btn-sm {
     border-radius: 4px;
     font-size: 0.875rem;
     line-height: 1.5;
+}
+
+/* ============================================
+   QUICK SUMMARY MODAL - CLEAN MODERN REDESIGN
+   ============================================ */
+
+/* Modal Container */
+#quickInfoContent {
+    padding: 0;
+    background: #fff;
+}
+
+/* Header Section */
+.qsm-header {
+    background: #f8fafc;
+    padding: 1.75rem 2rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1.5rem;
+}
+
+.qsm-driver-info {
+    flex: 1;
+}
+
+.qsm-driver-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+}
+
+.qsm-ticket-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.qsm-ticket-label {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.qsm-ticket-number {
+    color: #0f172a;
+    font-weight: 600;
+}
+
+/* Details Grid */
+.qsm-details-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+    padding: 2rem;
+    background: #ffffff;
+}
+
+.qsm-detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.qsm-detail-label {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.qsm-detail-value {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: #0f172a;
+    line-height: 1.4;
+}
+
+/* Violations Section */
+.qsm-violations {
+    padding: 0 2rem 2rem;
+    background: #ffffff;
+}
+
+.qsm-violations-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.qsm-violations-title i {
+    color: #f59e0b;
+}
+
+.qsm-violation-item {
+    background: #fffbf5;
+    border: 1px solid #fde68a;
+    border-left: 3px solid #f59e0b;
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.qsm-violation-item:last-child {
+    margin-bottom: 0;
+}
+
+.qsm-violation-content {
+    flex: 1;
+}
+
+.qsm-violation-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 0.25rem;
+}
+
+.qsm-violation-meta {
+    font-size: 0.75rem;
+    color: #92400e;
+    font-weight: 500;
+}
+
+.qsm-violation-price {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #92400e;
+    white-space: nowrap;
+}
+
+/* Total Section */
+.qsm-total {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.qsm-total-label {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    color: #1e40af;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.qsm-total-amount {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #1e3a8a;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Modal Configuration */
+#quickInfoModal .modal-dialog {
+    max-width: 600px;
+}
+
+#quickInfoModal .modal-header {
+    padding: 1.25rem 1.5rem;
+    background: #fff;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+#quickInfoModal .modal-body {
+    padding: 0;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+}
+
+#quickInfoModal .modal-footer {
+    padding: 1rem 1.5rem;
+    background: #fff;
+    border-top: 1px solid #e2e8f0;
+    gap: 0.75rem;
+}
+
+#quickInfoModal .modal-footer .btn {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+}
+
+#quickInfoModal .modal-footer .btn-secondary {
+    background: #f1f5f9;
+    border-color: #e2e8f0;
+    color: #475569;
+}
+
+#quickInfoModal .modal-footer .btn-secondary:hover {
+    background: #e2e8f0;
+    border-color: #cbd5e1;
+    color: #334155;
+}
+
+#quickInfoModal .modal-footer .btn-info {
+    font-weight: 600;
 }
 
 /* Responsive Design */
@@ -1556,6 +2066,59 @@ table td:nth-child(10) .btn-sm {
         gap: 0;
     }
 
+    /* New Citation Detail Modal - Mobile */
+    .citation-detail-header {
+        flex-direction: column;
+        padding: 1rem;
+        align-items: flex-start;
+    }
+
+    .citation-header-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .citation-ticket-number {
+        font-size: 1.125rem;
+    }
+
+    .citation-datetime {
+        font-size: 0.8125rem;
+    }
+
+    .badge-lg {
+        padding: 0.375rem 0.75rem;
+        font-size: 0.75rem;
+        align-self: flex-start;
+    }
+
+    .citation-detail-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    .citation-detail-col {
+        gap: 1rem;
+    }
+
+    .detail-section {
+        padding: 1rem;
+    }
+
+    .detail-row-split {
+        flex-direction: column;
+        gap: 0.875rem;
+    }
+
+    .violations-section {
+        padding: 1rem;
+    }
+
+    .violations-total-amount {
+        font-size: 1.5rem;
+    }
+
     .modal-header {
         padding: 12px 16px;
     }
@@ -1579,6 +2142,36 @@ table td:nth-child(10) .btn-sm {
         flex: 1 1 calc(50% - 4px);
         min-width: 120px;
         font-size: 0.8125rem;
+    }
+
+    /* Quick Info Modal - Tablet */
+    .qsm-header {
+        padding: 1.5rem;
+    }
+
+    .qsm-driver-name {
+        font-size: 1.125rem;
+    }
+
+    .qsm-details-grid {
+        padding: 1.5rem;
+        gap: 1.25rem;
+    }
+
+    .qsm-violations {
+        padding: 0 1.5rem 1.5rem;
+    }
+
+    .qsm-violation-item {
+        padding: 0.875rem 1rem;
+    }
+
+    .qsm-total {
+        padding: 1.25rem 1.5rem;
+    }
+
+    .qsm-total-amount {
+        font-size: 1.625rem;
     }
 
     .modal-icon {
@@ -1772,6 +2365,52 @@ table td:nth-child(10) .btn-sm {
         min-width: 100%;
     }
 
+    /* Citation Detail Modal - Small Mobile */
+    .citation-header-icon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .citation-ticket-number {
+        font-size: 1rem;
+    }
+
+    .citation-datetime {
+        font-size: 0.75rem;
+    }
+
+    .detail-section {
+        padding: 0.875rem;
+    }
+
+    .detail-section-header h6 {
+        font-size: 0.875rem;
+    }
+
+    .detail-row-value {
+        font-size: 0.875rem;
+    }
+
+    .violations-section {
+        padding: 0.875rem;
+    }
+
+    .violations-total {
+        padding: 0.875rem;
+    }
+
+    .violations-total-amount {
+        font-size: 1.375rem;
+    }
+
+    .violation-item {
+        padding: 0.75rem 0.875rem;
+    }
+
+    .violation-item-name {
+        font-size: 0.8125rem;
+    }
+
     .detail-card {
         padding: 10px;
         margin-bottom: 10px;
@@ -1831,6 +2470,68 @@ table td:nth-child(10) .btn-sm {
 
     .remarks-box {
         padding: 10px 12px;
+        font-size: 0.8125rem;
+    }
+
+    /* Quick Info Modal - Small Mobile */
+    .qsm-header {
+        padding: 1.25rem 1.5rem;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .qsm-driver-name {
+        font-size: 1.125rem;
+    }
+
+    .qsm-details-grid {
+        grid-template-columns: 1fr;
+        padding: 1.5rem;
+        gap: 1.125rem;
+    }
+
+    .qsm-violations {
+        padding: 0 1.5rem 1.5rem;
+    }
+
+    .qsm-violations-title {
+        font-size: 0.8125rem;
+    }
+
+    .qsm-violation-item {
+        padding: 0.875rem 1rem;
+    }
+
+    .qsm-violation-name {
+        font-size: 0.8125rem;
+    }
+
+    .qsm-violation-price {
+        font-size: 0.9375rem;
+    }
+
+    .qsm-total {
+        padding: 1.25rem 1.5rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .qsm-total-amount {
+        font-size: 1.5rem;
+    }
+
+    #quickInfoModal .modal-header {
+        padding: 1rem 1.25rem;
+    }
+
+    #quickInfoModal .modal-footer {
+        padding: 1rem 1.25rem;
+        gap: 0.5rem;
+    }
+
+    #quickInfoModal .modal-footer .btn {
+        padding: 0.625rem 1rem;
         font-size: 0.8125rem;
     }
 }

@@ -417,15 +417,28 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i data-lucide="x" style="width: 16px; height: 16px;"></i> Close
+                <button type="button" class="btn btn-outline" data-bs-dismiss="modal">
+                    <i data-lucide="x" style="width: 16px; height: 16px;"></i>
+                    <span>Close</span>
                 </button>
+                <div style="flex: 1;"></div>
+                <button type="button" class="btn btn-outline" onclick="printCitation()">
+                    <i data-lucide="printer" style="width: 16px; height: 16px;"></i>
+                    <span>Print</span>
+                </button>
+                <?php if ($can_edit): ?>
+                <button type="button" class="btn btn-warning" id="editFromViewBtn">
+                    <i data-lucide="edit" style="width: 16px; height: 16px;"></i>
+                    <span>Edit</span>
+                </button>
+                <?php endif; ?>
                 <?php if ($can_change_status): ?>
                 <div class="dropdown" id="statusDropdownContainer">
                     <button class="btn btn-primary dropdown-toggle" type="button" id="statusDropdown" data-bs-toggle="dropdown">
-                        <i data-lucide="list-checks" style="width: 16px; height: 16px;"></i> Update Status
+                        <i data-lucide="list-checks" style="width: 16px; height: 16px;"></i>
+                        <span>Update Status</span>
                     </button>
-                    <ul class="dropdown-menu">
+                    <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="#" onclick="openStatusModal('contested')"><i data-lucide="shield-question" class="text-primary" style="width: 16px; height: 16px;"></i> Contest Citation</a></li>
                         <li><a class="dropdown-item" href="#" onclick="openStatusModal('dismissed')"><i data-lucide="x-circle" class="text-secondary" style="width: 16px; height: 16px;"></i> Dismiss Citation</a></li>
                         <li><a class="dropdown-item" href="#" onclick="openStatusModal('void')"><i data-lucide="ban" class="text-danger" style="width: 16px; height: 16px;"></i> Void Citation</a></li>
@@ -433,23 +446,7 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                         <li><a class="dropdown-item" href="#" onclick="openStatusModal('pending')"><i data-lucide="clock" class="text-warning" style="width: 16px; height: 16px;"></i> Reset to Pending</a></li>
                     </ul>
                 </div>
-                <?php else: ?>
-                <button type="button" class="btn btn-outline-secondary" disabled title="Enforcer/Admin access required to change citation status">
-                    <i data-lucide="lock" style="width: 16px; height: 16px;"></i> Update Status (Restricted)
-                </button>
                 <?php endif; ?>
-                <?php if ($can_edit): ?>
-                <button type="button" class="btn btn-warning" id="editFromViewBtn">
-                    <i data-lucide="edit" style="width: 16px; height: 16px;"></i> Edit
-                </button>
-                <?php else: ?>
-                <button type="button" class="btn btn-outline-warning" disabled title="Enforcer/Admin access required to edit citations">
-                    <i data-lucide="lock" style="width: 16px; height: 16px;"></i> Edit (Restricted)
-                </button>
-                <?php endif; ?>
-                <button type="button" class="btn btn-info" onclick="printCitation()">
-                    <i data-lucide="printer" style="width: 16px; height: 16px;"></i> Print
-                </button>
             </div>
         </div>
     </div>
