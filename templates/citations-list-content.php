@@ -23,85 +23,215 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
 <div class="main-card">
     <!-- Page Header -->
     <div class="page-header">
-        <h1 class="page-title"><i class="fas fa-list"></i> Traffic Citations</h1>
-        <p class="page-subtitle">View and manage all traffic violation citations</p>
+        <div class="header-content">
+            <div>
+                <h1 class="page-title">
+                    <i data-lucide="file-text" style="width: 28px; height: 28px;"></i>
+                    Traffic Citations
+                </h1>
+                <p class="page-subtitle">View and manage all traffic violation citations</p>
+            </div>
+            <div class="header-actions">
+                <?php if (can_create_citation()): ?>
+                <a href="index2.php" class="btn btn-primary">
+                    <i data-lucide="plus" style="width: 18px; height: 18px;"></i>
+                    <span>New Citation</span>
+                </a>
+                <?php else: ?>
+                <button type="button" class="btn btn-outline-primary" disabled title="Enforcer/Admin access required to create citations">
+                    <i data-lucide="lock" style="width: 18px; height: 18px;"></i>
+                    <span>New Citation</span>
+                </button>
+                <?php endif; ?>
+            </div>
+        </div>
     </div>
 
     <!-- Statistics Cards -->
     <div class="stats-grid">
         <div class="stat-card blue">
-            <div class="stat-number"><?php echo number_format($stats['total']); ?></div>
-            <div class="stat-label"><i class="fas fa-file-alt"></i> Total Citations</div>
+            <div class="stat-icon">
+                <i data-lucide="file-text" style="width: 24px; height: 24px;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number"><?php echo number_format($stats['total']); ?></div>
+                <div class="stat-label">Total Citations</div>
+            </div>
         </div>
         <div class="stat-card yellow">
-            <div class="stat-number"><?php echo number_format($stats['pending']); ?></div>
-            <div class="stat-label"><i class="fas fa-clock"></i> Pending</div>
+            <div class="stat-icon">
+                <i data-lucide="clock" style="width: 24px; height: 24px;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number"><?php echo number_format($stats['pending']); ?></div>
+                <div class="stat-label">Pending</div>
+            </div>
         </div>
         <div class="stat-card green">
-            <div class="stat-number"><?php echo number_format($stats['paid']); ?></div>
-            <div class="stat-label"><i class="fas fa-check-circle"></i> Paid</div>
+            <div class="stat-icon">
+                <i data-lucide="check-circle-2" style="width: 24px; height: 24px;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number"><?php echo number_format($stats['paid']); ?></div>
+                <div class="stat-label">Paid</div>
+            </div>
         </div>
         <div class="stat-card red">
-            <div class="stat-number"><?php echo number_format($stats['contested']); ?></div>
-            <div class="stat-label"><i class="fas fa-exclamation-circle"></i> Contested</div>
+            <div class="stat-icon">
+                <i data-lucide="alert-circle" style="width: 24px; height: 24px;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number"><?php echo number_format($stats['contested']); ?></div>
+                <div class="stat-label">Contested</div>
+            </div>
         </div>
         <div class="stat-card purple">
-            <div class="stat-number">P<?php echo number_format($stats['total_fines'], 2); ?></div>
-            <div class="stat-label"><i class="fas fa-peso-sign"></i> Total Fines</div>
+            <div class="stat-icon">
+                <i data-lucide="banknote" style="width: 24px; height: 24px;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number">₱<?php echo number_format($stats['total_fines'], 2); ?></div>
+                <div class="stat-label">Total Fines</div>
+            </div>
         </div>
     </div>
 
-    <!-- Action Section -->
-    <div class="action-section">
-        <div class="search-box">
-            <form method="GET" action="" id="searchForm">
-                <input type="text" name="search" placeholder="Search ticket #, name, license, plate..."
-                       value="<?php echo htmlspecialchars($search); ?>">
+    <!-- Search and Filter Section -->
+    <div class="controls-section">
+        <!-- Search Bar -->
+        <div class="search-container">
+            <form method="GET" action="" id="searchForm" class="search-form">
+                <div class="search-input-wrapper">
+                    <i data-lucide="search" class="search-icon" style="width: 20px; height: 20px;"></i>
+                    <input type="text" name="search" id="searchInput" class="search-input" placeholder="Search by ticket number, name, license, or plate number..." value="<?php echo htmlspecialchars($search); ?>">
+                    <button type="button" class="search-clear" id="searchClearBtn" onclick="clearSearch()" style="display: <?php echo !empty($search) ? 'flex' : 'none'; ?>">
+                        <i data-lucide="x" style="width: 18px; height: 18px;"></i>
+                    </button>
+                </div>
                 <input type="hidden" name="status" value="<?php echo htmlspecialchars($status_filter); ?>">
             </form>
         </div>
 
-        <div class="filter-box">
-            <select name="status" id="statusFilter" onchange="filterByStatus(this.value)">
-                <option value="">All Status</option>
-                <option value="pending" <?php echo $status_filter === 'pending' ? 'selected' : ''; ?>>Pending</option>
-                <option value="paid" <?php echo $status_filter === 'paid' ? 'selected' : ''; ?>>Paid</option>
-                <option value="contested" <?php echo $status_filter === 'contested' ? 'selected' : ''; ?>>Contested</option>
-                <option value="dismissed" <?php echo $status_filter === 'dismissed' ? 'selected' : ''; ?>>Dismissed</option>
-            </select>
-        </div>
+        <!-- Filters and Actions Row -->
+        <div class="filters-actions-row">
+            <!-- Filters -->
+            <div class="filters-group">
+                <div class="filter-item">
+                    <label class="filter-label">
+                        <i data-lucide="filter" style="width: 16px; height: 16px;"></i>
+                        Status
+                    </label>
+                    <select name="status" id="statusFilter" class="filter-select" onchange="filterByStatus(this.value)">
+                        <option value="">All Status</option>
+                        <option value="pending" <?php echo $status_filter === 'pending' ? 'selected' : ''; ?>>Pending</option>
+                        <option value="paid" <?php echo $status_filter === 'paid' ? 'selected' : ''; ?>>Paid</option>
+                        <option value="contested" <?php echo $status_filter === 'contested' ? 'selected' : ''; ?>>Contested</option>
+                        <option value="dismissed" <?php echo $status_filter === 'dismissed' ? 'selected' : ''; ?>>Dismissed</option>
+                    </select>
+                </div>
 
-        <div class="action-buttons">
-            <?php if (can_create_citation()): ?>
-            <a href="index2.php" class="btn btn-primary">
-                <i class="fas fa-plus"></i> New Citation
-            </a>
-            <?php else: ?>
-            <button type="button" class="btn btn-outline-primary" disabled title="Enforcer/Admin access required to create citations">
-                <i class="fas fa-lock"></i> New Citation (Restricted)
-            </button>
-            <?php endif; ?>
-            <button type="button" class="btn btn-success" onclick="exportCSV()">
-                <i class="fas fa-file-csv"></i> Export CSV
-            </button>
-            <button type="button" class="btn btn-info" onclick="window.print()">
-                <i class="fas fa-print"></i> Print
-            </button>
+                <div class="filter-item">
+                    <label class="filter-label">
+                        <i data-lucide="arrow-up-down" style="width: 16px; height: 16px;"></i>
+                        Sort By
+                    </label>
+                    <select id="sortBy" class="filter-select" onchange="sortCitations(this.value)">
+                        <option value="date_desc">Date (Newest First)</option>
+                        <option value="date_asc">Date (Oldest First)</option>
+                        <option value="ticket_asc">Ticket Number (A-Z)</option>
+                        <option value="ticket_desc">Ticket Number (Z-A)</option>
+                        <option value="fine_desc">Fine Amount (High to Low)</option>
+                        <option value="fine_asc">Fine Amount (Low to High)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons-group">
+                <button type="button" class="btn btn-outline" onclick="exportCSV()" title="Export to CSV">
+                    <i data-lucide="download" style="width: 18px; height: 18px;"></i>
+                    <span>Export</span>
+                </button>
+                <button type="button" class="btn btn-outline" onclick="window.print()" title="Print">
+                    <i data-lucide="printer" style="width: 18px; height: 18px;"></i>
+                    <span>Print</span>
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- Data Table -->
-    <div class="table-container">
-        <?php if (empty($citations)): ?>
-            <div class="empty-state">
-                <i class="fas fa-folder-open"></i>
-                <h5>No citations found</h5>
-                <p>No records match your search criteria.</p>
-                <a href="index2.php" class="btn btn-primary mt-3">
-                    <i class="fas fa-plus"></i> Create First Citation
-                </a>
-            </div>
-        <?php else: ?>
+    <!-- Citations Table Section -->
+    <div class="table-section">
+        <div class="table-section-header">
+            <h2 class="table-section-title">
+                <i data-lucide="list" style="width: 18px; height: 18px;"></i>
+                All Citations
+            </h2>
+            <span class="table-section-count"><?php echo number_format($total_records); ?> records</span>
+        </div>
+
+        <!-- Data Table -->
+        <div class="table-container">
+        <!-- Mobile Scroll Hint -->
+        <div class="mobile-scroll-hint d-md-none">
+            <i data-lucide="chevrons-right" style="width: 14px; height: 14px;"></i>
+            <span>Swipe to see more</span>
+        </div>
+
+        <!-- Skeleton Loader -->
+        <div id="skeletonLoader" class="skeleton-loader" style="display: none;">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">#</th>
+                        <th>Ticket #</th>
+                        <th>Date/Time</th>
+                        <th>Driver Name</th>
+                        <th>License #</th>
+                        <th>Plate/MV #</th>
+                        <th>Violations</th>
+                        <th>Fine</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php for ($i = 0; $i < 10; $i++): ?>
+                    <tr>
+                        <td><div class="skeleton skeleton-text skeleton-sm"></div></td>
+                        <td><div class="skeleton skeleton-text"></div></td>
+                        <td><div class="skeleton skeleton-text"></div></td>
+                        <td><div class="skeleton skeleton-text skeleton-lg"></div></td>
+                        <td><div class="skeleton skeleton-text"></div></td>
+                        <td><div class="skeleton skeleton-text"></div></td>
+                        <td><div class="skeleton skeleton-text skeleton-lg"></div></td>
+                        <td><div class="skeleton skeleton-text skeleton-sm"></div></td>
+                        <td><div class="skeleton skeleton-badge"></div></td>
+                        <td>
+                            <div class="d-flex gap-1">
+                                <div class="skeleton skeleton-btn"></div>
+                                <div class="skeleton skeleton-btn"></div>
+                                <div class="skeleton skeleton-btn"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <?php endfor; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Actual Content -->
+        <div id="tableContent">
+            <?php if (empty($citations)): ?>
+                <div class="empty-state">
+                    <i data-lucide="folder-open" style="width: 64px; height: 64px;"></i>
+                    <h5>No citations found</h5>
+                    <p>No records match your search criteria.</p>
+                    <a href="index2.php" class="btn btn-primary mt-3">
+                        <i data-lucide="plus" style="width: 18px; height: 18px;"></i> Create First Citation
+                    </a>
+                </div>
+            <?php else: ?>
             <table>
                 <thead>
                     <tr>
@@ -202,14 +332,16 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                     <?php endforeach; ?>
                 </tbody>
             </table>
-        <?php endif; ?>
+            <?php endif; ?>
+        </div>
+    </div>
     </div>
 
     <!-- Pagination -->
     <?php if ($total_pages > 1): ?>
         <div class="pagination-container">
             <?php if ($page > 1): ?>
-                <a href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>&status=<?php echo urlencode($status_filter); ?>">
+                <a href="?page=<?php echo $page - 1; ?>&search=<?php echo urlencode($search); ?>&status=<?php echo urlencode($status_filter); ?>" onclick="showSkeletonLoader()">
                     <i data-lucide="chevron-left"></i>
                 </a>
             <?php else: ?>
@@ -221,7 +353,7 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
             $end = min($total_pages, $page + 2);
 
             if ($start > 1): ?>
-                <a href="?page=1&search=<?php echo urlencode($search); ?>&status=<?php echo urlencode($status_filter); ?>">1</a>
+                <a href="?page=1&search=<?php echo urlencode($search); ?>&status=<?php echo urlencode($status_filter); ?>" onclick="showSkeletonLoader()">1</a>
                 <?php if ($start > 2): ?>
                     <span>...</span>
                 <?php endif; ?>
@@ -231,7 +363,7 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                 <?php if ($i == $page): ?>
                     <span class="active"><?php echo $i; ?></span>
                 <?php else: ?>
-                    <a href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&status=<?php echo urlencode($status_filter); ?>">
+                    <a href="?page=<?php echo $i; ?>&search=<?php echo urlencode($search); ?>&status=<?php echo urlencode($status_filter); ?>" onclick="showSkeletonLoader()">
                         <?php echo $i; ?>
                     </a>
                 <?php endif; ?>
@@ -241,13 +373,13 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                 <?php if ($end < $total_pages - 1): ?>
                     <span>...</span>
                 <?php endif; ?>
-                <a href="?page=<?php echo $total_pages; ?>&search=<?php echo urlencode($search); ?>&status=<?php echo urlencode($status_filter); ?>">
+                <a href="?page=<?php echo $total_pages; ?>&search=<?php echo urlencode($search); ?>&status=<?php echo urlencode($status_filter); ?>" onclick="showSkeletonLoader()">
                     <?php echo $total_pages; ?>
                 </a>
             <?php endif; ?>
 
             <?php if ($page < $total_pages): ?>
-                <a href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>&status=<?php echo urlencode($status_filter); ?>">
+                <a href="?page=<?php echo $page + 1; ?>&search=<?php echo urlencode($search); ?>&status=<?php echo urlencode($status_filter); ?>" onclick="showSkeletonLoader()">
                     <i data-lucide="chevron-right"></i>
                 </a>
             <?php else: ?>
@@ -271,7 +403,7 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
             <div class="modal-header">
                 <h5 class="modal-title">
                     <div class="modal-icon">
-                        <i class="fas fa-file-alt"></i>
+                        <i data-lucide="file-text" style="width: 20px; height: 20px;"></i>
                     </div>
                     <span>Citation Details</span>
                 </h5>
@@ -285,7 +417,9 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i data-lucide="x" style="width: 16px; height: 16px;"></i> Close
+                </button>
                 <?php if ($can_change_status): ?>
                 <div class="dropdown" id="statusDropdownContainer">
                     <button class="btn btn-primary dropdown-toggle" type="button" id="statusDropdown" data-bs-toggle="dropdown">
@@ -306,15 +440,15 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                 <?php endif; ?>
                 <?php if ($can_edit): ?>
                 <button type="button" class="btn btn-warning" id="editFromViewBtn">
-                    <i class="fas fa-edit"></i> Edit
+                    <i data-lucide="edit" style="width: 16px; height: 16px;"></i> Edit
                 </button>
                 <?php else: ?>
                 <button type="button" class="btn btn-outline-warning" disabled title="Enforcer/Admin access required to edit citations">
-                    <i class="fas fa-lock"></i> Edit (Restricted)
+                    <i data-lucide="lock" style="width: 16px; height: 16px;"></i> Edit (Restricted)
                 </button>
                 <?php endif; ?>
                 <button type="button" class="btn btn-info" onclick="printCitation()">
-                    <i class="fas fa-print"></i> Print
+                    <i data-lucide="printer" style="width: 16px; height: 16px;"></i> Print
                 </button>
             </div>
         </div>
@@ -328,7 +462,7 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
             <div class="modal-header">
                 <h5 class="modal-title">
                     <div class="modal-icon">
-                        <i class="fas fa-info-circle"></i>
+                        <i data-lucide="info" style="width: 20px; height: 20px;"></i>
                     </div>
                     <span>Quick Summary</span>
                 </h5>
@@ -342,9 +476,11 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i data-lucide="x" style="width: 16px; height: 16px;"></i> Close
+                </button>
                 <button type="button" class="btn btn-info" id="viewFullDetailsBtn">
-                    <i class="fas fa-eye"></i> View Full Details
+                    <i data-lucide="eye" style="width: 16px; height: 16px;"></i> View Full Details
                 </button>
             </div>
         </div>
@@ -358,7 +494,7 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
             <div class="modal-header">
                 <h5 class="modal-title">
                     <div class="modal-icon">
-                        <i class="fas fa-tasks"></i>
+                        <i data-lucide="list-checks" style="width: 20px; height: 20px;"></i>
                     </div>
                     <span>Update Citation Status</span>
                 </h5>
@@ -371,7 +507,7 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                     <input type="hidden" name="csrf_token" value="<?php echo generate_token(); ?>">
 
                     <div class="alert alert-info" id="statusAlertInfo">
-                        <i class="fas fa-info-circle"></i>
+                        <i data-lucide="info" style="width: 18px; height: 18px;"></i>
                         <span id="statusMessage"></span>
                     </div>
 
@@ -383,9 +519,11 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i data-lucide="x" style="width: 16px; height: 16px;"></i> Cancel
+                </button>
                 <button type="button" class="btn btn-primary" id="confirmStatusBtn">
-                    <i class="fas fa-check"></i> Confirm
+                    <i data-lucide="check" style="width: 16px; height: 16px;"></i> Confirm
                 </button>
             </div>
         </div>

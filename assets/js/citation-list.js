@@ -3,20 +3,122 @@
  * Handles all client-side logic for the citations listing page
  */
 
-// Search on enter
-document.querySelector('#searchForm input').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        this.form.submit();
+// Search input handling
+const searchInput = document.getElementById('searchInput');
+const searchClearBtn = document.getElementById('searchClearBtn');
+
+// Show/hide clear button based on input
+if (searchInput) {
+    searchInput.addEventListener('input', function() {
+        if (this.value.trim().length > 0) {
+            searchClearBtn.style.display = 'flex';
+            // Re-initialize Lucide icons
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        } else {
+            searchClearBtn.style.display = 'none';
+        }
+    });
+
+    // Search on enter
+    searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            showSkeletonLoader();
+            this.form.submit();
+        }
+    });
+}
+
+// Clear search
+function clearSearch() {
+    if (searchInput) {
+        searchInput.value = '';
+        searchClearBtn.style.display = 'none';
     }
-});
+
+    const url = new URL(window.location);
+    url.searchParams.delete('search');
+    url.searchParams.set('page', '1');
+
+    showSkeletonLoader();
+    window.location = url;
+}
 
 // Filter by status
 function filterByStatus(status) {
+    showSkeletonLoader();
     const url = new URL(window.location);
     url.searchParams.set('status', status);
     url.searchParams.set('page', '1');
     window.location = url;
 }
+
+// Sort citations
+function sortCitations(sortBy) {
+    showSkeletonLoader();
+    const url = new URL(window.location);
+    url.searchParams.set('sort', sortBy);
+    url.searchParams.set('page', '1');
+    window.location = url;
+}
+
+// Show skeleton loader
+function showSkeletonLoader() {
+    const skeleton = document.getElementById('skeletonLoader');
+    const content = document.getElementById('tableContent');
+    if (skeleton && content) {
+        skeleton.style.display = 'block';
+        content.style.display = 'none';
+    }
+}
+
+// Hide skeleton loader
+function hideSkeletonLoader() {
+    const skeleton = document.getElementById('skeletonLoader');
+    const content = document.getElementById('tableContent');
+    if (skeleton && content) {
+        skeleton.style.display = 'none';
+        content.style.display = 'block';
+    }
+}
+
+// Sticky column scroll hint for mobile
+document.addEventListener('DOMContentLoaded', function() {
+    const tableContainer = document.querySelector('.table-container');
+    const scrollHint = document.querySelector('.mobile-scroll-hint');
+
+    if (tableContainer) {
+        // Hide hint on scroll
+        tableContainer.addEventListener('scroll', function() {
+            if (this.scrollLeft > 10) {
+                this.classList.add('scrolled');
+            } else {
+                this.classList.remove('scrolled');
+            }
+        });
+
+        // Auto-hide hint after 5 seconds
+        if (scrollHint) {
+            setTimeout(function() {
+                if (scrollHint && tableContainer) {
+                    tableContainer.classList.add('scrolled');
+                }
+            }, 5000);
+        }
+
+        // Hide hint on touch/click
+        tableContainer.addEventListener('touchstart', function() {
+            this.classList.add('scrolled');
+        }, { once: true });
+    }
+
+    // Re-initialize Lucide icons for the hint
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+});
 
 // Current citation ID for status updates
 let currentCitationId = null;
@@ -41,14 +143,22 @@ function viewCitation(id) {
                         editBtn.classList.remove('btn-warning');
                         editBtn.classList.add('btn-secondary');
                         editBtn.title = 'Paid citations cannot be edited';
-                        editBtn.innerHTML = '<i class="fas fa-lock"></i> Edit (Paid)';
+                        editBtn.innerHTML = '<i data-lucide="lock" style="width: 16px; height: 16px;"></i> Edit (Paid)';
                         editBtn.onclick = null;
+                        // Re-initialize Lucide icons
+                        if (typeof lucide !== 'undefined') {
+                            lucide.createIcons();
+                        }
                     } else {
                         editBtn.disabled = false;
                         editBtn.classList.remove('btn-secondary');
                         editBtn.classList.add('btn-warning');
                         editBtn.title = 'Edit Citation';
-                        editBtn.innerHTML = '<i class="fas fa-edit"></i> Edit';
+                        editBtn.innerHTML = '<i data-lucide="edit" style="width: 16px; height: 16px;"></i> Edit';
+                        // Re-initialize Lucide icons
+                        if (typeof lucide !== 'undefined') {
+                            lucide.createIcons();
+                        }
                         editBtn.onclick = () => editCitation(id);
                     }
                 }
@@ -81,17 +191,23 @@ function viewCitation(id) {
             } else {
                 document.getElementById('viewModalContent').innerHTML = `
                     <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-circle"></i> ${data.message}
+                        <i data-lucide="alert-circle" style="width: 18px; height: 18px;"></i> ${data.message}
                     </div>
                 `;
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
             }
         })
         .catch(error => {
             document.getElementById('viewModalContent').innerHTML = `
                 <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-circle"></i> Failed to load citation details.
+                    <i data-lucide="alert-circle" style="width: 18px; height: 18px;"></i> Failed to load citation details.
                 </div>
             `;
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
         });
 }
 
@@ -112,7 +228,7 @@ function displayCitationDetails(citation) {
             <div class="modal-column-left">
                 <div class="detail-card">
                     <div class="detail-card-header">
-                        <i class="fas fa-ticket-alt"></i>
+                        <i data-lucide="ticket" style="width: 18px; height: 18px;"></i>
                         <h6 class="detail-card-title">Citation Information</h6>
                     </div>
                     <div class="detail-grid">
@@ -137,7 +253,7 @@ function displayCitationDetails(citation) {
 
                 <div class="detail-card">
                     <div class="detail-card-header">
-                        <i class="fas fa-user"></i>
+                        <i data-lucide="user" style="width: 18px; height: 18px;"></i>
                         <h6 class="detail-card-title">Driver Information</h6>
                     </div>
                     <div class="detail-grid">
@@ -166,7 +282,7 @@ function displayCitationDetails(citation) {
 
                 <div class="detail-card">
                     <div class="detail-card-header">
-                        <i class="fas fa-car"></i>
+                        <i data-lucide="car" style="width: 18px; height: 18px;"></i>
                         <h6 class="detail-card-title">Vehicle Information</h6>
                     </div>
                     <div class="detail-grid">
@@ -190,7 +306,7 @@ function displayCitationDetails(citation) {
             <div class="modal-column-right">
                 <div class="detail-card">
                     <div class="detail-card-header">
-                        <i class="fas fa-exclamation-triangle"></i>
+                        <i data-lucide="alert-triangle" style="width: 18px; height: 18px;"></i>
                         <h6 class="detail-card-title">Violations (${citation.violations.length})</h6>
                     </div>
                     ${violationCards}
@@ -202,7 +318,7 @@ function displayCitationDetails(citation) {
 
                 <div class="detail-card">
                     <div class="detail-card-header">
-                        <i class="fas fa-user-shield"></i>
+                        <i data-lucide="shield-check" style="width: 18px; height: 18px;"></i>
                         <h6 class="detail-card-title">Apprehension Officer</h6>
                     </div>
                     <div class="detail-value">${citation.apprehension_officer || 'N/A'}</div>
@@ -211,7 +327,7 @@ function displayCitationDetails(citation) {
                 ${citation.remarks ? `
                     <div class="detail-card">
                         <div class="detail-card-header">
-                            <i class="fas fa-comment"></i>
+                            <i data-lucide="message-square" style="width: 18px; height: 18px;"></i>
                             <h6 class="detail-card-title">Remarks</h6>
                         </div>
                         <div class="remarks-box">${citation.remarks}</div>
@@ -330,17 +446,23 @@ function quickInfo(id) {
             } else {
                 document.getElementById('quickInfoContent').innerHTML = `
                     <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-circle"></i> ${data.message}
+                        <i data-lucide="alert-circle" style="width: 18px; height: 18px;"></i> ${data.message}
                     </div>
                 `;
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
             }
         })
         .catch(error => {
             document.getElementById('quickInfoContent').innerHTML = `
                 <div class="alert alert-danger">
-                    <i class="fas fa-exclamation-circle"></i> Failed to load citation info.
+                    <i data-lucide="alert-circle" style="width: 18px; height: 18px;"></i> Failed to load citation info.
                 </div>
             `;
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
         });
 }
 
@@ -359,13 +481,13 @@ function displayQuickInfo(citation) {
         <div style="background: #f8f9fa; padding: 16px; border-radius: 8px; margin-bottom: 16px;">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <h6 class="mb-0" style="color: #0f172a; font-weight: 600;">
-                    <i class="fas fa-user" style="color: #3b82f6;"></i>
+                    <i data-lucide="user" style="width: 18px; height: 18px; color: #3b82f6;"></i>
                     ${citation.last_name}, ${citation.first_name} ${citation.middle_initial || ''}
                 </h6>
                 <span class="badge badge-${citation.status}">${citation.status.toUpperCase()}</span>
             </div>
             <div style="font-size: 0.85rem; color: #6b7280;">
-                <i class="fas fa-ticket-alt"></i> Ticket: <strong style="color: #0f172a;">${citation.ticket_number}</strong>
+                <i data-lucide="ticket" style="width: 16px; height: 16px;"></i> Ticket: <strong style="color: #0f172a;">${citation.ticket_number}</strong>
             </div>
         </div>
 
@@ -390,7 +512,7 @@ function displayQuickInfo(citation) {
 
         <div style="margin-bottom: 16px;">
             <div style="font-size: 0.85rem; color: #6b7280; margin-bottom: 10px; font-weight: 600;">
-                <i class="fas fa-exclamation-triangle" style="color: #f59e0b;"></i> Violations (${citation.violations.length})
+                <i data-lucide="alert-triangle" style="width: 16px; height: 16px; color: #f59e0b;"></i> Violations (${citation.violations.length})
             </div>
             ${violationCards}
         </div>
@@ -417,7 +539,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData(document.getElementById('statusForm'));
 
             this.disabled = true;
-            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            this.innerHTML = '<i data-lucide="loader" style="width: 16px; height: 16px;"></i> Processing...';
 
             fetch('../api/citation_status.php', {
                 method: 'POST',
@@ -452,7 +574,10 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .finally(() => {
                 this.disabled = false;
-                this.innerHTML = '<i class="fas fa-check"></i> Confirm';
+                this.innerHTML = '<i data-lucide="check" style="width: 16px; height: 16px;"></i> Confirm';
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
             });
         });
     }
