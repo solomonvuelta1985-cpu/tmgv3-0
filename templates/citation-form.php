@@ -79,11 +79,12 @@
         <div class="section">
             <h5><i data-lucide="user" style="width: 20px; height: 20px; margin-right: 8px;"></i>Driver Information</h5>
             <div class="row g-3">
-                <div class="col-md-3">
+                <!-- Row 1: Name Fields -->
+                <div class="col-md-4">
                     <label class="form-label">Last Name *</label>
                     <input type="text" name="last_name" class="form-control" placeholder="Enter last name" value="<?php echo htmlspecialchars($driver_data['last_name'] ?? ''); ?>" required>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <label class="form-label">First Name *</label>
                     <input type="text" name="first_name" class="form-control" placeholder="Enter first name" value="<?php echo htmlspecialchars($driver_data['first_name'] ?? ''); ?>" required>
                 </div>
@@ -95,6 +96,8 @@
                     <label class="form-label">Suffix</label>
                     <input type="text" name="suffix" class="form-control" placeholder="e.g., Jr." value="<?php echo htmlspecialchars($driver_data['suffix'] ?? ''); ?>">
                 </div>
+
+                <!-- Row 2: Birth Info & Location -->
                 <div class="col-md-3">
                     <label class="form-label">Date of Birth</label>
                     <input type="date" name="date_of_birth" class="form-control" id="dateOfBirth" value="<?php echo htmlspecialchars($driver_data['date_of_birth'] ?? ''); ?>" max="<?php echo date('Y-m-d'); ?>">
@@ -107,7 +110,7 @@
                     <label class="form-label">Zone</label>
                     <input type="text" name="zone" class="form-control" placeholder="Enter zone" value="<?php echo htmlspecialchars($driver_data['zone'] ?? ''); ?>">
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-4">
                     <label class="form-label">Barangay *</label>
                     <select name="barangay" class="form-select" id="barangaySelect" required>
                         <option value="" disabled <?php echo (!isset($driver_data['barangay']) || $driver_data['barangay'] == '') ? 'selected' : ''; ?>>Select Barangay</option>
@@ -130,40 +133,47 @@
                         ?>
                     </select>
                 </div>
-                <div class="col-md-3" id="otherBarangayDiv" style="display: none;">
+
+                <!-- Row 3: Other Barangay / Municipality / Province -->
+                <div class="col-md-4" id="otherBarangayDiv" style="display: none;">
                     <label class="form-label">Specify Other Barangay *</label>
                     <input type="text" name="other_barangay" class="form-control" id="otherBarangayInput" placeholder="Enter other barangay" value="<?php echo (isset($driver_data['barangay']) && $driver_data['barangay'] == 'Other') ? htmlspecialchars($driver_data['barangay']) : ''; ?>">
                 </div>
-                <div class="col-md-3" id="municipalityDiv" style="display: <?php echo (isset($driver_data['barangay']) && $driver_data['barangay'] != 'Other' && $driver_data['barangay'] != '') ? 'block' : 'none'; ?>;">
+                <div class="col-md-4" id="municipalityDiv" style="display: <?php echo (isset($driver_data['barangay']) && $driver_data['barangay'] != 'Other' && $driver_data['barangay'] != '') ? 'block' : 'none'; ?>;">
                     <label class="form-label">Municipality</label>
                     <input type="text" name="municipality" class="form-control" id="municipalityInput" value="<?php echo htmlspecialchars($driver_data['municipality'] ?? 'Baggao'); ?>" readonly>
                 </div>
-                <div class="col-md-3" id="provinceDiv" style="display: <?php echo (isset($driver_data['barangay']) && $driver_data['barangay'] != 'Other' && $driver_data['barangay'] != '') ? 'block' : 'none'; ?>;">
+                <div class="col-md-4" id="provinceDiv" style="display: <?php echo (isset($driver_data['barangay']) && $driver_data['barangay'] != 'Other' && $driver_data['barangay'] != '') ? 'block' : 'none'; ?>;">
                     <label class="form-label">Province</label>
                     <input type="text" name="province" class="form-control" id="provinceInput" value="<?php echo htmlspecialchars($driver_data['province'] ?? 'Cagayan'); ?>" readonly>
                 </div>
-                <div class="col-12">
+
+                <!-- Row 4: License Checkbox integrated in grid -->
+                <div class="col-md-4">
+                    <label class="form-label d-block" style="visibility: hidden;">License</label>
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" name="has_license" id="hasLicense" <?php echo (isset($driver_data['license_number']) && !empty($driver_data['license_number'])) ? 'checked' : ''; ?>>
-                        <label class="form-check-label" for="hasLicense">Has License</label>
+                        <label class="form-check-label" for="hasLicense">
+                            <i data-lucide="credit-card" style="width: 16px; height: 16px; margin-right: 4px; vertical-align: text-bottom;"></i>
+                            Driver has a valid license
+                        </label>
                     </div>
                 </div>
-                <div class="col-md-4 license-field" style="display: <?php echo (isset($driver_data['license_number']) && !empty($driver_data['license_number'])) ? 'block' : 'none'; ?>;">
+                <div class="col-md-5 license-field" style="display: <?php echo (isset($driver_data['license_number']) && !empty($driver_data['license_number'])) ? 'block' : 'none'; ?>;">
                     <label class="form-label">License Number *</label>
                     <input type="text" name="license_number" class="form-control" placeholder="Enter license number" value="<?php echo htmlspecialchars($driver_data['license_number'] ?? ''); ?>" <?php echo (isset($driver_data['license_number']) && !empty($driver_data['license_number'])) ? 'required' : ''; ?>>
                 </div>
-                <div class="col-md-2 license-field" style="display: <?php echo (isset($driver_data['license_number']) && !empty($driver_data['license_number'])) ? 'block' : 'none'; ?>;">
+                <div class="col-md-3 license-field" style="display: <?php echo (isset($driver_data['license_number']) && !empty($driver_data['license_number'])) ? 'block' : 'none'; ?>;">
                     <label class="form-label d-block">License Type *</label>
-                    <div class="form-check">
-                        <input type="radio" class="form-check-input" name="license_type" value="nonProf" id="nonProf" <?php echo (!isset($driver_data['license_type']) || $driver_data['license_type'] == 'Non-Professional') ? 'checked' : ''; ?> <?php echo (isset($driver_data['license_number']) && !empty($driver_data['license_number'])) ? 'required' : ''; ?>>
-                        <label class="form-check-label" for="nonProf">Non-Prof</label>
-                    </div>
-                </div>
-                <div class="col-md-2 license-field" style="display: <?php echo (isset($driver_data['license_number']) && !empty($driver_data['license_number'])) ? 'block' : 'none'; ?>;">
-                    <label class="form-label d-block"> </label>
-                    <div class="form-check">
-                        <input type="radio" class="form-check-input" name="license_type" value="prof" id="prof" <?php echo (isset($driver_data['license_type']) && $driver_data['license_type'] == 'Professional') ? 'checked' : ''; ?> <?php echo (isset($driver_data['license_number']) && !empty($driver_data['license_number'])) ? 'required' : ''; ?>>
-                        <label class="form-check-label" for="prof">Prof</label>
+                    <div class="d-flex gap-3 align-items-center" style="height: calc(100% - 28px);">
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" name="license_type" value="nonProf" id="nonProf" <?php echo (!isset($driver_data['license_type']) || $driver_data['license_type'] == 'Non-Professional') ? 'checked' : ''; ?> <?php echo (isset($driver_data['license_number']) && !empty($driver_data['license_number'])) ? 'required' : ''; ?>>
+                            <label class="form-check-label" for="nonProf">Non-Prof</label>
+                        </div>
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" name="license_type" value="prof" id="prof" <?php echo (isset($driver_data['license_type']) && $driver_data['license_type'] == 'Professional') ? 'checked' : ''; ?> <?php echo (isset($driver_data['license_number']) && !empty($driver_data['license_number'])) ? 'required' : ''; ?>>
+                            <label class="form-check-label" for="prof">Prof</label>
+                        </div>
                     </div>
                 </div>
             </div>
