@@ -96,6 +96,7 @@ $page_title = "User Management";
                                         <option value="admin">Admin - Full Access</option>
                                         <option value="enforcer">Enforcer - Creates Citations</option>
                                         <option value="cashier">Cashier - Processes Payments</option>
+                                        <option value="lto_staff">LTO Staff - Read-Only LTO Search</option>
                                         <option value="user">User - View Only</option>
                                     </select>
                                 </div>
@@ -139,6 +140,7 @@ $page_title = "User Management";
                                     <option value="admin">Admin</option>
                                     <option value="enforcer">Enforcer</option>
                                     <option value="cashier">Cashier</option>
+                                    <option value="lto_staff">LTO Staff</option>
                                     <option value="user">User</option>
                                 </select>
                             </div>

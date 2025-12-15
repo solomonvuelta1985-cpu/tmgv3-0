@@ -49,7 +49,7 @@ try {
         throw new Exception('Invalid email format');
     }
 
-    if (!in_array($role, ['user', 'admin', 'enforcer', 'cashier'])) {
+    if (!in_array($role, ['user', 'admin', 'enforcer', 'cashier', 'lto_staff'])) {
         throw new Exception('Invalid role');
     }
 

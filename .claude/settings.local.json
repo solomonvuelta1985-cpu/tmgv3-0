@@ -14,7 +14,8 @@
       "Bash(xargs ls:*)",
       "Bash(del \"c:\\xampp\\htdocs\\tmg\\public\\or_usage_report.php\")",
       "Bash(del \"c:\\xampp\\htdocs\\tmg\\assets\\js\\or_usage_report.js\")",
-      "Bash(cmd /c \"del c:\\xampp\\htdocs\\tmg\\public\\cashier_reports.php\")"
+      "Bash(cmd /c \"del c:\\xampp\\htdocs\\tmg\\public\\cashier_reports.php\")",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

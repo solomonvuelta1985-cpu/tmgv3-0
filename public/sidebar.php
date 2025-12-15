@@ -93,6 +93,17 @@
             </a>
         </li>
 
+        <!-- LTO Gattaran Section -->
+        <?php if (function_exists('can_access_lto') && can_access_lto()): ?>
+        <li class="sidebar-divider"></li>
+        <li class="sidebar-heading">LTO Gattaran</li>
+        <li>
+            <a href="/tmg/public/lto_search.php" class="<?php echo (basename($_SERVER['PHP_SELF']) === 'lto_search.php') ? 'active' : ''; ?>" title="Driver Search">
+                <i data-lucide="search"></i> <span>Driver Search</span>
+            </a>
+        </li>
+        <?php endif; ?>
+
         <!-- Payments Section -->
         <?php if (function_exists('can_process_payment') && can_process_payment()): ?>
         <li class="sidebar-divider"></li>

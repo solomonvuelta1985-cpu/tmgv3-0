@@ -2,3 +2,71 @@
 [11-Dec-2025 09:55:01 Asia/Manila] Citation 56 status changed from 'void' to 'pending' by admin
 [11-Dec-2025 10:19:54 Asia/Manila] No valid pending payments found
 [11-Dec-2025 11:03:34 Asia/Manila] No valid pending payments found
+[11-Dec-2025 14:13:05 Asia/Manila] Finalizing payment ID=61, OR=23458988, Citation=06112
+[11-Dec-2025 14:13:05 Asia/Manila] Payment finalized successfully: ID=61, OR=23458988, Citation=06112, User=1
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
+[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
+[11-Dec-2025 14:58:22 Asia/Manila] No valid pending payments found
+[12-Dec-2025 08:15:11 Asia/Manila] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\tmg\services\BackupService.php on line 362

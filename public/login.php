@@ -6,7 +6,11 @@ require_once '../includes/auth.php';
 
 // Redirect if already logged in
 if (is_logged_in()) {
-    header('Location: index.php');
+    if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'lto_staff') {
+        header('Location: lto_search.php');
+    } else {
+        header('Location: index.php');
+    }
     exit;
 }
 
@@ -29,7 +33,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($user) {
                 create_session($user);
                 set_flash('Welcome back, ' . $user['full_name'] . '!', 'success');
-                header('Location: index.php');
+
+                // Redirect based on user role
+                if ($user['role'] === 'lto_staff') {
+                    header('Location: lto_search.php');
+                } else {
+                    header('Location: index.php');
+                }
                 exit;
             } else {
                 $error = 'Invalid username or password.';

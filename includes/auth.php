@@ -105,6 +105,37 @@ function is_cashier() {
 }
 
 /**
+ * Check if current user is LTO staff
+ * @return bool
+ */
+function is_lto_staff() {
+    return is_logged_in() && isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'lto_staff';
+}
+
+/**
+ * Require LTO staff or admin privileges
+ * Redirects if user is not LTO staff or admin
+ */
+function require_lto_staff() {
+    require_login();
+    if (!is_lto_staff() && !is_admin()) {
+        $basePath = defined('BASE_PATH') ? BASE_PATH : '/tmg';
+        set_flash('Access denied. LTO staff privileges required.', 'danger');
+        header('Location: ' . $basePath . '/public/index.php');
+        exit;
+    }
+}
+
+/**
+ * Check if user can access LTO features
+ * LTO staff and admins have access
+ * @return bool
+ */
+function can_access_lto() {
+    return is_lto_staff() || is_admin();
+}
+
+/**
  * Check if user has any of the specified roles
  * @param array|string $roles Array of role names or single role name
  * @return bool

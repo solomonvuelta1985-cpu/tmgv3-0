@@ -110,7 +110,7 @@ if (empty($_SESSION['csrf_token'])) {
         /* Force proper content positioning - NO GAPS */
         .content {
             margin-left: 260px !important;
-            padding: 0 20px 20px 20px !important;
+            padding: 0 !important; /* ZERO padding - flush to sidebar */
             padding-top: 64px !important; /* Only top navbar height */
             min-height: 100vh;
             background: #f5f7fa !important;
@@ -124,17 +124,19 @@ if (empty($_SESSION['csrf_token'])) {
         @media (max-width: 768px) {
             .content {
                 margin-left: 0 !important;
-                padding: 0 10px 10px 10px !important;
+                padding: 0 !important;
                 padding-top: 64px !important;
             }
         }
 
         /* Add padding inside the ticket container instead */
         .ticket-container {
-            border-radius: 8px !important;
+            border-radius: 0 !important; /* Flush fit - no rounded corners on left */
             min-height: calc(100vh - 120px);
             background: #ffffff;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            box-shadow: none; /* Remove shadow for seamless blend */
+            margin: 0 20px 20px 0; /* Only right and bottom spacing */
+            padding: 24px; /* Internal padding for content */
         }
 
         .swal-wide {
@@ -339,13 +341,17 @@ if (empty($_SESSION['csrf_token'])) {
         /* Page Header Styles */
         .page-header {
             background: #ffffff;
-            padding: 24px 32px;
+            padding: 24px 32px 24px 0; /* NO left padding - flush to sidebar */
             border-bottom: 2px solid #e2e8f0;
             margin-bottom: 0;
             position: sticky;
             top: 64px;
             z-index: 10;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .page-header > div {
+            padding-left: 24px; /* Internal content padding */
         }
 
         .page-header h1 {
@@ -450,9 +456,13 @@ if (empty($_SESSION['csrf_token'])) {
         /* Mobile Improvements */
         @media (max-width: 768px) {
             .page-header {
-                padding: 15px 20px;
+                padding: 15px 20px 15px 10px; /* Minimal left padding on mobile */
                 top: 64px;
                 margin-top: 32px;
+            }
+
+            .ticket-container {
+                margin: 0 10px 10px 0; /* Flush left on mobile */
             }
 
             .page-header h1 {
@@ -482,8 +492,12 @@ if (empty($_SESSION['csrf_token'])) {
         /* Additional mobile spacing for smaller devices */
         @media (max-width: 480px) {
             .page-header {
-                padding: 12px 16px;
+                padding: 12px 16px 12px 8px; /* Flush left */
                 margin-top: 24px;
+            }
+
+            .ticket-container {
+                margin: 0 8px 8px 0; /* Flush left */
             }
 
             .page-header h1 {
@@ -503,8 +517,12 @@ if (empty($_SESSION['csrf_token'])) {
         /* Extra small devices */
         @media (max-width: 375px) {
             .page-header {
-                padding: 10px 12px;
+                padding: 10px 12px 10px 6px; /* Flush left */
                 margin-top: 20px;
+            }
+
+            .ticket-container {
+                margin: 0 6px 6px 0; /* Flush left */
             }
 
             .page-header h1 {

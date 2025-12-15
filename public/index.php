@@ -7,6 +7,12 @@ require_once '../includes/auth.php';
 require_login();
 check_session_timeout();
 
+// Redirect LTO staff to their dedicated page
+if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'lto_staff') {
+    header('Location: lto_search.php');
+    exit;
+}
+
 // Get dashboard statistics
 $stats = [
     'today_citations' => 0,

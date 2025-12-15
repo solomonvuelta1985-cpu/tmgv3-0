@@ -198,3 +198,370 @@ Security Rating: 9.5/10 ⭐⭐⭐⭐⭐⭐⭐⭐⭐⚡
 Implementation Date: December 4, 2025
 Status: COMPLETE ✅
 ================================================================================
+
+
+
+
+LTO Gattaran Branch - Implementation Plan
+Overview
+Create a dedicated page for LTO Gattaran Branch staff to search driver records, view pending citations, and submit feedback that notifies all system administrators.
+Requirements Summary
+User Access
+New user role: lto_staff (read-only access)
+LTO staff can search and view citations, submit feedback
+Cannot create/edit citations or process payments
+Search & Display
+Search by: license number, driver name, plate number, or all combined
+Display two sections:
+Unpaid Citations: Only citations with status = 'pending'
+Complete History: All citations regardless of status
+Show driver info, citation count, total amount owed
+Feedback System
+Dropdown options: License Suspended, License Revoked, License Restrictions, Under Investigation, Referred to National Office, Warning Issued, Cleared, Other (custom text)
+When LTO staff submits feedback → ALL admins receive notifications
+Notification includes: driver name, license number, unpaid count, total owed, feedback type
+Notification Delivery
+Real-time toast notifications for admins (polling every 3 minutes)
+Dedicated page to view/manage all LTO feedback
+Admin can acknowledge and resolve feedback
+Implementation Tasks
+1. Database Changes
+Migration 1: Add LTO Staff Role
+File: c:\xampp\htdocs\tmg\database\migrations\add_lto_staff_role.sql
+USE traffic_system;
+
+ALTER TABLE users
+MODIFY COLUMN role ENUM('user', 'admin', 'enforcer', 'cashier', 'lto_staff')
+NOT NULL DEFAULT 'user';
+Migration 2: Create LTO Feedback Tables
+File: c:\xampp\htdocs\tmg\database\migrations\create_lto_feedback_table.sql Create two tables: Table 1: lto_feedback
+feedback_id (PK)
+driver_license_number, driver_name
+citation_count, unpaid_citation_count, total_amount_owed
+feedback_type (ENUM: license_suspended, license_revoked, license_restrictions, under_investigation, referred_to_national, warning_issued, cleared, other)
+feedback_text (additional notes)
+status (ENUM: pending, acknowledged, resolved)
+priority (ENUM: low, normal, high, urgent)
+submitted_by (FK to users), submitted_at
+acknowledged_by, acknowledged_at, admin_notes
+resolved_by, resolved_at
+related_citations (JSON array of citation_ids)
+Table 2: admin_notifications
+notification_id (PK)
+user_id (FK to users - which admin to notify)
+notification_type (ENUM: lto_feedback, system_alert, payment_issue, other)
+title, message
+related_table, related_id (link to lto_feedback)
+is_read (BOOLEAN), read_at
+priority (ENUM: low, normal, high, urgent)
+created_at, expires_at
+Indexes: Add indexes on driver_license_number, status, priority, submitted_at, user_id, is_read
+2. Authentication Updates
+File: c:\xampp\htdocs\tmg\includes\auth.php Add three functions after line 105 (after is_cashier()):
+function is_lto_staff() {
+    return is_logged_in() && isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'lto_staff';
+}
+
+function require_lto_staff() {
+    require_login();
+    if (!is_lto_staff() && !is_admin()) {
+        $basePath = defined('BASE_PATH') ? BASE_PATH : '/tmg';
+        set_flash('Access denied. LTO staff privileges required.', 'danger');
+        header('Location: ' . $basePath . '/public/index.php');
+        exit;
+    }
+}
+
+function can_access_lto() {
+    return is_lto_staff() || is_admin();
+}
+3. LTO Search Page
+File: c:\xampp\htdocs\tmg\public\lto_search.php Features:
+Search form with fields: search_term, search_type (license/name/plate/all)
+GET method for bookmarkable URLs
+Two result cards:
+Unpaid Citations Card: Table showing only status = 'pending' citations
+Complete History Card: Table showing all citations
+Summary box: Total citations, unpaid count, total amount owed
+Feedback submission form:
+Dropdown with predefined feedback types
+Textarea for additional notes
+CSRF token protected
+AJAX submission
+Structure (following pattern from search.php):
+<?php
+require_once '../includes/config.php';
+require_once '../includes/functions.php';
+require_once '../includes/auth.php';
+
+require_lto_staff();
+check_session_timeout();
+$pdo = getPDO();
+
+// Search logic here
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Bootstrap, Font Awesome, Lucide icons -->
+</head>
+<body>
+    <?php include 'sidebar.php'; ?>
+
+    <div class="content">
+        <!-- Search form -->
+        <!-- Results display -->
+        <!-- Feedback form -->
+    </div>
+
+    <script>
+        // AJAX search and feedback submission
+    </script>
+</body>
+</html>
+Key SQL Query for Unpaid Citations:
+SELECT c.*, GROUP_CONCAT(vt.violation_type SEPARATOR ', ') as violations
+FROM citations c
+LEFT JOIN violations v ON c.citation_id = v.citation_id
+LEFT JOIN violation_types vt ON v.violation_type_id = vt.violation_type_id
+WHERE c.status = 'pending' AND [search conditions]
+GROUP BY c.citation_id
+ORDER BY c.apprehension_datetime DESC
+4. API Endpoints
+Endpoint 1: Search Driver
+File: c:\xampp\htdocs\tmg\api\lto\search_driver.php Pattern (following citation_get.php):
+<?php
+session_start();
+require_once '../../includes/config.php';
+require_once '../../includes/functions.php';
+require_once '../../includes/auth.php';
+
+header('Content-Type: application/json');
+
+if (!can_access_lto()) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Access denied']);
+    exit;
+}
+
+try {
+    // Search logic
+    // Return: unpaid_citations, all_citations, driver_info, summary
+} catch (Exception $e) {
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
+}
+Response Format:
+{
+  "success": true,
+  "driver_info": { "name": "...", "license_number": "...", "address": "..." },
+  "unpaid_citations": [...],
+  "all_citations": [...],
+  "summary": {
+    "total_citations": 10,
+    "unpaid_count": 3,
+    "total_amount_owed": 1500.00
+  }
+}
+Endpoint 2: Submit Feedback
+File: c:\xampp\htdocs\tmg\api\lto\submit_feedback.php Flow:
+Verify can_access_lto() permission
+Validate CSRF token
+Validate required fields and feedback_type
+Calculate priority based on unpaid_count and total_owed:
+urgent: unpaid >= 10 OR total_owed >= 10000
+high: unpaid >= 5 OR total_owed >= 5000
+normal: otherwise
+Insert into lto_feedback table
+Get all active admins from users table
+Insert notification for EACH admin into admin_notifications
+Return success with admins_notified count
+Required POST fields:
+driver_name, driver_license (optional), citation_count, unpaid_count, total_owed
+feedback_type, feedback_text (optional), citation_ids (comma-separated)
+csrf_token
+Endpoint 3: Check Notifications
+File: c:\xampp\htdocs\tmg\api\lto\check_notifications.php Purpose: Return unread LTO notification count for current admin Query:
+SELECT COUNT(*) as unread_count
+FROM admin_notifications
+WHERE user_id = ?
+  AND notification_type = 'lto_feedback'
+  AND is_read = FALSE
+Response: { "success": true, "unread_count": 5 }
+5. Admin Notifications Page
+File: c:\xampp\htdocs\tmg\public\lto_notifications.php Access: Admin only (require_admin()) Features:
+Table listing all LTO feedback notifications
+Columns: Date, Driver Name, License, Feedback Type, Unpaid Count, Total Owed, Priority, Status, Actions
+Filters: Unread only, Priority, Date range
+Actions per row:
+Mark as Read/Unread
+Acknowledge (opens modal to add admin notes)
+Resolve (marks feedback as resolved)
+View Details (shows full feedback info)
+Main Query:
+SELECT
+    n.*,
+    lf.driver_name, lf.driver_license_number, lf.feedback_type,
+    lf.unpaid_citation_count, lf.total_amount_owed, lf.status as feedback_status,
+    u.full_name as submitted_by_name
+FROM admin_notifications n
+LEFT JOIN lto_feedback lf ON n.related_id = lf.feedback_id
+LEFT JOIN users u ON lf.submitted_by = u.user_id
+WHERE n.user_id = ? AND n.notification_type = 'lto_feedback'
+ORDER BY n.created_at DESC
+6. Sidebar Updates
+File: c:\xampp\htdocs\tmg\public\sidebar.php
+Add LTO Section (after line 94, before Payments section):
+<!-- LTO Section -->
+<?php if (function_exists('can_access_lto') && can_access_lto()): ?>
+<li class="sidebar-divider"></li>
+<li class="sidebar-heading">LTO Gattaran</li>
+<li>
+    <a href="/tmg/public/lto_search.php" class="<?php echo (basename($_SERVER['PHP_SELF']) === 'lto_search.php') ? 'active' : ''; ?>">
+        <i data-lucide="search"></i> <span>Driver Search</span>
+    </a>
+</li>
+<?php endif; ?>
+Add Admin Notification Link (inside admin section, after line 176):
+<li>
+    <a href="/tmg/public/lto_notifications.php" class="<?php echo (basename($_SERVER['PHP_SELF']) === 'lto_notifications.php') ? 'active' : ''; ?>">
+        <i data-lucide="bell"></i> <span>LTO Notifications</span>
+        <?php
+        try {
+            $notif_stmt = db_query(
+                "SELECT COUNT(*) as unread FROM admin_notifications
+                 WHERE user_id = ? AND notification_type = 'lto_feedback' AND is_read = FALSE",
+                [$_SESSION['user_id']]
+            );
+            $unread = $notif_stmt->fetch()['unread'] ?? 0;
+            if ($unread > 0) {
+                echo '<span class="badge bg-danger ms-2">' . $unread . '</span>';
+            }
+        } catch (Exception $e) { }
+        ?>
+    </a>
+</li>
+Add Toast Notification Polling (after line 1246, after pending print payments script):
+// LTO Feedback Notification System for Admins
+<?php if (is_admin()): ?>
+(function() {
+    function checkLTONotifications() {
+        fetch('/tmg/api/lto/check_notifications.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.unread_count > 0) {
+                    Toastify({
+                        text: `📋 ${data.unread_count} new LTO feedback notification${data.unread_count > 1 ? 's' : ''}!`,
+                        duration: 10000,
+                        gravity: "top",
+                        position: "right",
+                        style: {
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            borderRadius: "8px"
+                        },
+                        onClick: function() {
+                            window.location.href = '/tmg/public/lto_notifications.php';
+                        }
+                    }).showToast();
+                }
+            });
+    }
+
+    checkLTONotifications();
+    setInterval(checkLTONotifications, 180000); // Every 3 minutes
+})();
+<?php endif; ?>
+Security Measures
+Access Control:
+LTO staff: READ-ONLY (enforced in API and page level)
+CSRF token validation on all POST requests
+Role checks: can_access_lto(), is_admin()
+Input Validation:
+Sanitize all user inputs via sanitize() function
+Whitelist validation for feedback_type enum
+Prepared statements for all SQL queries
+Audit Logging:
+Log all feedback submissions to audit_log
+Record: user_id, action, timestamp, IP address
+Rate Limiting:
+Apply rate limiting to feedback submission endpoint (prevent spam)
+Implementation Sequence
+Phase 1: Database (Day 1)
+✅ Run add_lto_staff_role.sql migration
+✅ Run create_lto_feedback_table.sql migration
+✅ Verify tables created with proper indexes
+✅ Create test LTO staff user account
+Phase 2: Authentication (Day 1)
+✅ Add 3 functions to auth.php
+✅ Test role-based access control
+Phase 3: API Layer (Day 2)
+✅ Create /api/lto/ directory
+✅ Build search_driver.php endpoint
+✅ Build submit_feedback.php endpoint
+✅ Build check_notifications.php endpoint
+✅ Test all endpoints with Postman
+Phase 4: LTO Search Page (Day 3-4)
+✅ Create lto_search.php with search form
+✅ Implement unpaid citations display
+✅ Implement complete history display
+✅ Add feedback submission form
+✅ Implement AJAX handlers
+✅ Test end-to-end search and feedback flow
+Phase 5: Admin Interface (Day 4-5)
+✅ Create lto_notifications.php page
+✅ Implement notification table with filters
+✅ Add acknowledge/resolve functionality
+✅ Test notification workflow
+Phase 6: Integration (Day 5-6)
+✅ Update sidebar with LTO menu items
+✅ Add notification badge counter
+✅ Implement toast notification polling
+✅ Style all components consistently
+✅ End-to-end testing
+Phase 7: Testing & Deployment (Day 6-7)
+✅ Create test data
+✅ Test with LTO staff and admin accounts
+✅ Verify all admins receive notifications
+✅ Security testing (XSS, CSRF, SQL injection)
+✅ Performance testing with large datasets
+✅ Deploy to production
+Critical Files Summary
+New Files to Create:
+c:\xampp\htdocs\tmg\
+├── database\migrations\
+│   ├── add_lto_staff_role.sql
+│   └── create_lto_feedback_table.sql
+├── api\lto\
+│   ├── search_driver.php
+│   ├── submit_feedback.php
+│   └── check_notifications.php
+└── public\
+    ├── lto_search.php
+    └── lto_notifications.php
+Files to Modify:
+c:\xampp\htdocs\tmg\
+├── includes\auth.php (add 3 functions)
+└── public\sidebar.php (add menu items, badge, polling script)
+Testing Checklist
+Functional Tests:
+ LTO staff can login and access search page
+ Search by license/name/plate works correctly
+ Unpaid citations show only pending status
+ Complete history shows all statuses
+ Feedback submission creates records
+ All admins receive notifications
+ Toast notifications appear for admins
+ Mark as read/acknowledged/resolved works
+ Export functionality works
+Security Tests:
+ Non-LTO users blocked from LTO search
+ Non-admins blocked from notifications page
+ CSRF protection works
+ SQL injection attempts blocked
+ XSS attempts sanitized
+Performance Tests:
+ Search returns results < 2 seconds
+ Works with 1000+ citations
+ Notification polling doesn't impact performance
+Success Criteria
+✅ LTO Gattaran staff can search drivers by license/name/plate ✅ System displays unpaid citations separately from complete history ✅ LTO staff can submit feedback with predefined dropdown options ✅ ALL admins receive real-time notifications when feedback submitted ✅ Admins can view, acknowledge, and resolve LTO feedback ✅ Notification badge shows unread count in sidebar ✅ Toast notifications alert admins every 3 minutes if unread ✅ Complete audit trail of all LTO interactions
