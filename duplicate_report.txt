@@ -1,0 +1,933 @@
+========================================================================================================================
+DUPLICATE TICKET NUMBER DETAILED ANALYSIS
+========================================================================================================================
+
+SUMMARY:
+------------------------------------------------------------------------------------------------------------------------
+Total records with ticket numbers: 10,213
+Unique ticket numbers: 10,027
+Empty ticket numbers: 5 (rows: 1266, 1450, 2048, 5824, 10219)
+Duplicate ticket numbers: 184
+
+DUPLICATE ANALYSIS:
+------------------------------------------------------------------------------------------------------------------------
+Exact duplicates (same person, date, violation): 65 tickets
+Same ticket but different people: 104 tickets
+Same ticket but different dates: 46 tickets
+Same ticket but different violations: 32 tickets
+
+========================================================================================================================
+DETAILED DUPLICATE REPORT
+========================================================================================================================
+
+[1] TICKET #02290 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 13: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: DELA CRUZ, MARCELO A
+      Barangay: MOCAG | Plate: NA 65874 | License: NONE
+      Date: 2023-09-10 | Place: SAN JOSE
+      Violation: DISREGARDING TRAFFIC SIGN
+      Officer: C. OMNES
+
+  [2] Row 4756: ⚠ DIFFERENT PERSON ⚠ DIFFERENT DATE ⚠ DIFFERENT VIOLATION 
+      Name: LORETO, MAYCEL C
+      Barangay: SAN ISIDRO | Plate: 842 BEB | License: NONE
+      Date: 2023-07-14 | Place: SAN JOSE
+      Violation: NO HELMET (Driver)
+      Officer: F. AGUSTIN
+
+
+[2] TICKET #02995 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 17: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: LAGO, CELSO S
+      Barangay: MOCAG | Plate: 0201-0960143 | License: NONE
+      Date: 2023-09-10 | Place: SAN JOSE
+      Violation: DISREGARDING TRAFFIC SIGN
+      Officer: C. OMNES
+
+  [2] Row 28: ⚠ DIFFERENT PERSON 
+      Name: VILANUEVA, ROGER D
+      Barangay: MOCAG | Plate: ROGSC10FHCN11587 | License: NONE
+      Date: 2023-09-10 | Place: SAN JOSE
+      Violation: DISREGARDING TRAFFIC SIGN
+      Officer: C. OMNES
+
+
+[3] TICKET #018313 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 184: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: BALANAY, DEXTER I
+      Barangay: SAN FRANCISCO | Plate: BF 37 214 | License: B04-37-214
+      Date: 2025-07-16 | Place: ANNAYATAN
+      Violation: NO / DEFECTIVE PARTS & ACCESSORIES
+      Officer: CJ OMNES
+
+  [2] Row 8490: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: BALANAY, DEXTER I
+      Barangay: SAN FRANCISCO | Plate: BF 37 214 | License: BO4-14-002627
+      Date: 2025-07-16 | Place: ANNAYATAN
+      Violation: NO / DEFECTIVE PARTS & ACCESSORIES
+      Officer: CJ OMNES
+
+
+[4] TICKET #018261 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 190: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: AGRA, LITO S
+      Barangay: TAYTAY | Plate: 172 BFN | License: B03-96-013987
+      Date: 2025-07-11 | Place: TALLANG
+      Violation: NO / DEFECTIVE PARTS & ACCESSORIES
+      Officer: CO TUMANENG
+
+  [2] Row 8539: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: AGRA, LITO S
+      Barangay: TAYTAY | Plate: 172 BFN | License: B03-96-013987
+      Date: 2025-07-11 | Place: TALLANG
+      Violation: NO / DEFECTIVE PARTS & ACCESSORIES
+      Officer: CO TUMANENG
+
+
+[5] TICKET #009853 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 278: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: ORTIZ, MELGAR O
+      Barangay: NANGALINAN | Plate: B502IG | License: NONE
+      Date: 2025-02-05 | Place: SAN ISIDRO
+      Violation: NO DRIVERS LICENSE
+      Officer: PNP SAN JOSE
+
+  [2] Row 2875: ⚠ DIFFERENT PERSON ⚠ DIFFERENT DATE ⚠ DIFFERENT VIOLATION 
+      Name: BLANDO, FERNAN C
+      Barangay: NANGALINAN | Plate: 958 B0M | License: NONE
+      Date: 2025-02-08 | Place: SAN ISIDRO
+      Violation: NO HELMET (Driver)
+      Officer: PNP SAN JOSE
+
+
+[6] TICKET #04265 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 297: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: REBOREDO, MELVIN J
+      Barangay: REMUS | Plate: N/A | License: NONE
+      Date: 2023-11-01 | Place: REMUS
+      Violation: NO DRIVERS LICENSE
+      Officer: PNP TALLANG
+
+  [2] Row 6458: ⚠ DIFFERENT PERSON ⚠ DIFFERENT VIOLATION 
+      Name: TABAO, MARK DAVE N/A
+      Barangay: REMUS | Plate: B788IP | License: NONE
+      Date: 2023-11-01 | Place: REMUS
+      Violation: NO HELMET (Driver)
+      Officer: PNP TALLANG
+
+
+[7] TICKET #05685 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 311: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: TUMANGUIL, JAYLORD B
+      Barangay: MOCAG | Plate: K2VJ0268403 | License: NONE
+      Date: 2024-02-06 | Place: SAN JOSE
+      Violation: NO DRIVERS LICENSE
+      Officer: K. SALVADOR
+
+  [2] Row 1590: ⚠ DIFFERENT PERSON ⚠ DIFFERENT VIOLATION 
+      Name: PICAR, RONNEL G
+      Barangay: SAN FRANCISCO | Plate: K81P1034885 | License: NONE
+      Date: 2024-02-06 | Place: TUNGEL
+      Violation: NO HELMET ( Backride)
+      Officer: K. SALVADOR
+
+
+[8] TICKET #011006 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 333: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: Belo, Jaymark O
+      Barangay: Santa margarita | Plate: B493 no | License: None
+      Date: 2025-06-02 | Place: Tallang
+      Violation: NO DRIVERS LICENSE
+      Officer: E. Martinez
+
+  [2] Row 344: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: Belo, Jaymark O.
+      Barangay: Sta. Margarita | Plate: B493NO | License: N/A
+      Date: 2025-06-02 | Place: Tallang
+      Violation: NO DRIVERS LICENSE
+      Officer: PNP TALLANG
+
+
+[9] TICKET #010175 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 338: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: Battaring, Jaime N/A
+      Barangay: N/A | Plate: Xrm13096432 | License: N/A
+      Date: 2025-06-09 | Place: San jose
+      Violation: NO DRIVERS LICENSE
+      Officer: CO TUMANENG
+
+  [2] Row 574: ⚠ DIFFERENT PERSON ⚠ DIFFERENT VIOLATION 
+      Name: BATARRING, JAIME S
+      Barangay: BITAG GRANDE | Plate: XRM15096432 | License: N/A
+      Date: 2025-06-09 | Place: SAN JOSE
+      Violation: NO DRIVERS LICENSE MINOR
+      Officer: CO TUMANENG
+
+
+[10] TICKET #008026 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 342: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: Gumbam, Dave T.
+      Barangay: Taytay | Plate: 0240-059661 | License: N/A
+      Date: 2025-06-16 | Place: San isidro
+      Violation: NO DRIVERS LICENSE
+      Officer: PNP SAN JOSE
+
+  [2] Row 8289: ⚠ DIFFERENT PERSON ⚠ DIFFERENT VIOLATION 
+      Name: GUMBAN, DAVE T
+      Barangay: TAYTAY | Plate: 0240-059661 | License: NONE
+      Date: 2025-06-16 | Place: SAN ISIDRO
+      Violation: NO HELMET (Driver), NO HELMET ( Backride), NO DRIVERS LICENSE
+      Officer: JA. CRUZ
+
+
+[11] TICKET #008029 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 343: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: Palad, Hanna M.
+      Barangay: San isidro | Plate: B592NG | License: N/A
+      Date: 2025-06-16 | Place: San isidro
+      Violation: NO DRIVERS LICENSE
+      Officer: G. ROMERO
+
+  [2] Row 595: ⚠ DIFFERENT PERSON ⚠ DIFFERENT VIOLATION 
+      Name: PALAD, HANNA M
+      Barangay: SAN ISIDRO | Plate: B592NG | License: NONE
+      Date: 2025-06-16 | Place: SAN ISIDRO
+      Violation: NO DRIVERS LICENSE MINOR
+      Officer: L. MACAHILOS
+
+
+[12] TICKET #010192 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 355: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: GUBIA, ROWEL M
+      Barangay: ASASSI | Plate: 0201-0866991 | License: NONE
+      Date: 2025-06-19 | Place: SAN JOSE
+      Violation: NO DRIVERS LICENSE
+      Officer: CO TUMANENG
+
+  [2] Row 565: ⚠ DIFFERENT PERSON ⚠ DIFFERENT VIOLATION 
+      Name: Gubia, Rowel M
+      Barangay: Assasi | Plate: 0202-0866991 | License: N/A
+      Date: 2025-06-19 | Place: San jose
+      Violation: NO DRIVERS LICENSE MINOR
+      Officer: CO TUMANENG
+
+
+[13] TICKET #010237 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 359: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: Alberto, Angelo B
+      Barangay: Annayatan | Plate: B752lu | License: None
+      Date: 2025-06-18 | Place: San isidro
+      Violation: NO DRIVERS LICENSE
+      Officer: CJ OMNES
+
+  [2] Row 8093: ⚠ DIFFERENT PERSON ⚠ DIFFERENT DATE ⚠ DIFFERENT VIOLATION 
+      Name: LAXAMANA, JAY-AR D
+      Barangay: AGAMAN NORTE | Plate: NONE | License: NONE
+      Date: 2025-06-30 | Place: AGAMAN PROPER
+      Violation: NO HELMET (Driver), NO DRIVERS LICENSE MINOR, NO / EXPIRED VEHICLE REGISTRATION,
+      Officer: CJ OMNES
+
+
+[14] TICKET #009007 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 372: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: Sagon, Jessiebel S
+      Barangay: Bitag Grande | Plate: None | License: None
+      Date: 2025-06-19 | Place: San Jose
+      Violation: NO DRIVERS LICENSE
+      Officer: JC LAGUEN
+
+  [2] Row 564: ⚠ DIFFERENT PERSON ⚠ DIFFERENT VIOLATION 
+      Name: Sagon, Jessieber S
+      Barangay: Bitag | Plate: N/A | License: N/A
+      Date: 2025-06-19 | Place: San jose
+      Violation: NO DRIVERS LICENSE MINOR
+      Officer: JC LAGUEN
+
+
+[15] TICKET #009833 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 378: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: EGIPTO, JOMARI N
+      Barangay: MOCAG | Plate: BA43653 | License: NONE
+      Date: 2025-06-20 | Place: TALLANG
+      Violation: NO DRIVERS LICENSE
+      Officer: PNP TALLANG
+
+  [2] Row 605: ⚠ DIFFERENT VIOLATION 
+      Name: EGIPTO, JOMARI N
+      Barangay: MOCAG | Plate: BA 43653 | License: NONE
+      Date: 2025-06-20 | Place: TALLANG
+      Violation: NO DRIVERS LICENSE MINOR
+      Officer: PNP TALLANG
+
+
+[16] TICKET #011181 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 400: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: SALADINO, CAROLIN NONE
+      Barangay: REMUS | Plate: 468BVE | License: NONE
+      Date: 2025-07-10 | Place: SANTA MARGARITA
+      Violation: NO DRIVERS LICENSE
+      Officer: W. MACAPULAY
+
+  [2] Row 499: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: SALADINO, CAROLIN NONE
+      Barangay: REMUS | Plate: 486 BVE | License: NONE
+      Date: 2025-07-10 | Place: SANTA MARGARITA
+      Violation: NO DRIVERS LICENSE
+      Officer: W. MACAPULAY
+
+
+[17] TICKET #013720 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 451: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: JOSE, MAYNARD NONE
+      Barangay: AGAMAN PROPER | Plate: NONE | License: NONE
+      Date: 2025-07-15 | Place: AGAMAN PROPER
+      Violation: NO DRIVERS LICENSE
+      Officer: W. ANDRES
+
+  [2] Row 7905: ⚠ DIFFERENT PERSON ⚠ DIFFERENT VIOLATION 
+      Name: DURWIN, JOSEPH D
+      Barangay: C. VERSOZA | Plate: NONE | License: NONE
+      Date: 2025-07-15 | Place: AGAMAN PROPER
+      Violation: NO HELMET (Driver)
+      Officer: W. ANDRES
+
+
+[18] TICKET #018307 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 462: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: VERSON, RIZAL R
+      Barangay: NANGALINAN | Plate: 84 93 QV | License: NONE
+      Date: 2025-07-09 | Place: ANNAYATAN
+      Violation: NO DRIVERS LICENSE
+      Officer: CJ OMNES
+
+  [2] Row 498: ⚠ DIFFERENT PERSON 
+      Name: VERSON JR, RIZAL R
+      Barangay: NANGALINAN | Plate: 84 93 QV | License: NONE
+      Date: 2025-07-09 | Place: ANNAYATAN
+      Violation: NO DRIVERS LICENSE
+      Officer: CJ OMNES
+
+
+[19] TICKET #008028 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 562: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: Espinosa, Harence G
+      Barangay: Tallang | Plate: B362LV | License: N/A
+      Date: 2025-06-16 | Place: San isidro
+      Violation: NO DRIVERS LICENSE MINOR
+      Officer: G. ROMERO
+
+  [2] Row 594: ⚠ DIFFERENT PERSON 
+      Name: ESPINOSA, HARENCE G
+      Barangay: TALLANG | Plate: B362LV | License: NONE
+      Date: 2025-06-16 | Place: SAN ISIDRO
+      Violation: NO DRIVERS LICENSE MINOR
+      Officer: L. MACAHILOS
+
+
+[20] TICKET #008030 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 563: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: Tagiam, Manolito D
+      Barangay: Tallang | Plate: B71515 | License: N/A
+      Date: 2025-06-16 | Place: San isidro
+      Violation: NO DRIVERS LICENSE MINOR
+      Officer: G. ROMERO
+
+  [2] Row 596: ⚠ DIFFERENT PERSON 
+      Name: TAGUIAM, MANOLITO D
+      Barangay: TALLANG | Plate: B715IS | License: NONE
+      Date: 2025-06-16 | Place: SAN ISIDRO
+      Violation: NO DRIVERS LICENSE MINOR
+      Officer: G. ROMERO
+
+
+[21] TICKET #010172 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 573: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: TAMBIAO, JAYSON B
+      Barangay: SAN JOSE | Plate: B613LT | License: N/A
+      Date: 2025-06-02 | Place: BITAG GRANDE
+      Violation: NO DRIVERS LICENSE MINOR
+      Officer: CO TUMANENG
+
+  [2] Row 7053: ⚠ DIFFERENT PERSON ⚠ DIFFERENT DATE ⚠ DIFFERENT VIOLATION 
+      Name: BAUTISTA, EDWIN B
+      Barangay: REMUS | Plate: NONE | License: NONE
+      Date: 2025-03-29 | Place: TALLANG
+      Violation: NO HELMET (Driver)
+      Officer: PNP SAN JOSE
+
+
+[22] TICKET #009669 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 663: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: ESPEJIO, RASTY A
+      Barangay: TUMAUINI | Plate: B888QI | License: NONE
+      Date: 2025-03-17 | Place: SAN JOSE
+      Violation: NO DRIVERS LICENSE MINOR, DISREGARDING TRAFFIC SIGN, NOISY MUFFLER
+      Officer: JA. CRUZ
+
+  [2] Row 664: ⚠ DIFFERENT PERSON 
+      Name: ESPEJO, RUSTY A.
+      Barangay: TUMAUINI | Plate: B888QL | License: NONE
+      Date: 2025-03-17 | Place: SAN JOSE
+      Violation: NO DRIVERS LICENSE MINOR, DISREGARDING TRAFFIC SIGN, NOISY MUFFLER
+      Officer: JA. CRUZ
+
+
+[23] TICKET #008485 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 670: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: BARTOLOME, ZALDY B
+      Barangay: IMURUNG | Plate: KBL11E001552 | License: NONE
+      Date: 2024-12-02 | Place: SAN JOSE
+      Violation: NO DRIVERS LICENSE MINOR, NOISY MUFFLER
+      Officer: J.A CRUZ
+
+  [2] Row 2492: ⚠ DIFFERENT PERSON ⚠ DIFFERENT DATE ⚠ DIFFERENT VIOLATION 
+      Name: ASUNCION, MANOLO P
+      Barangay: PUSSIAN ALCALA | Plate: 766 BCD | License: B14-19-002214
+      Date: 2025-01-22 | Place: POBLACION
+      Violation: NO HELMET (Driver)
+      Officer: J.A CRUZ
+
+
+[24] TICKET #008757 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 671: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: MANUEL, CHRIS JERICHO L
+      Barangay: HACIENDA | Plate: RFKXCJL45HA116834 | License: NONE
+      Date: 2025-01-13 | Place: ANNAYATAN
+      Violation: NO DRIVERS LICENSE MINOR, NOISY MUFFLER
+      Officer: J.A CRUZ
+
+  [2] Row 672: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: MANUEL, CHRIS JERICHO E
+      Barangay: HACIENDA | Plate: RFKXCJL45HA116834 | License: NONE
+      Date: 2025-01-13 | Place: ANNAYATAN
+      Violation: NO DRIVERS LICENSE MINOR, NOISY MUFFLER
+      Officer: N. BURGOS
+
+
+[25] TICKET #007137 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 719: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: ADAYANG, ALFIE A
+      Barangay: TAYTAY | Plate: 1326 CT | License: B14-24-009532
+      Date: 2024-01-08 | Place: SAN ISIDRO
+      Violation: NO HELMET ( Backride)
+      Officer: N. BURGOS
+
+  [2] Row 817: ⚠ DIFFERENT PERSON ⚠ DIFFERENT DATE 
+      Name: AUAYANG, ALFIE A
+      Barangay: TAYTAY | Plate: 1326 CT | License: M-14-24-004532
+      Date: 2025-01-08 | Place: SAN ISIDRO
+      Violation: NO HELMET ( Backride)
+      Officer: N. BURGOS
+
+
+[26] TICKET #06201 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 859: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: BANIAGA, REDENTO P
+      Barangay: STA MARGARITA | Plate: 668 BSK | License: NONE
+      Date: 2024-03-17 | Place: TALLANG
+      Violation: NO HELMET ( Backride)
+      Officer: N. BUCO
+
+  [2] Row 2191: ⚠ DIFFERENT PERSON ⚠ DIFFERENT VIOLATION 
+      Name: AGUSTIN, ALJO M
+      Barangay: REMUS | Plate: B617 DL | License: NONE
+      Date: 2024-03-17 | Place: TALLANG
+      Violation: NO HELMET (Driver)
+      Officer: N. BUCO
+
+
+[27] TICKET #03600 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1007: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: CANCEJO, ROY C
+      Barangay: TALANG | Plate: BC 37846 | License: B04-08-008308
+      Date: 2023-10-03 | Place: TALLANG
+      Violation: NO HELMET ( Backride)
+      Officer: R. DE LEON
+
+  [2] Row 1008: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: CANCEJO, ROY C
+      Barangay: TALLANG | Plate: BC 37846 | License: B04-08-000308
+      Date: 2023-10-03 | Place: TALLANG
+      Violation: NO HELMET ( Backride)
+      Officer: R. DE LEON
+
+
+[28] TICKET #06264 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1087: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: DARILAG, JERRY Q
+      Barangay: BITAG GRANDE | Plate: 171 BZM | License: NONE
+      Date: 2024-03-19 | Place: SAN JOSE
+      Violation: NO HELMET ( Backride)
+      Officer: PNP SAN JOSE
+
+  [2] Row 3649: ⚠ DIFFERENT PERSON ⚠ DIFFERENT DATE ⚠ DIFFERENT VIOLATION 
+      Name: DARILAO, JERRY Q
+      Barangay: BITAG GRANDE | Plate: 368 BIC | License: NONE
+      Date: 2024-03-21 | Place: SAN JOSE
+      Violation: NO HELMET (Driver)
+      Officer: PNP SAN JOSE
+
+
+[29] TICKET #01465 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1194: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: ESTIPULAR, JEROME O
+      Barangay: NANGALINAN | Plate: 0201-1020511 | License: NONE
+      Date: 2023-07-10 | Place: TALLANG
+      Violation: NO HELMET ( Backride)
+      Officer: PNP TALLANG
+
+  [2] Row 2020: ⚠ DIFFERENT PERSON ⚠ DIFFERENT DATE ⚠ DIFFERENT VIOLATION 
+      Name: CADIO, NELSON N/A
+      Barangay: MANSARONG | Plate: KPY00218779 | License: NONE
+      Date: 2023-07-04 | Place: TALLANG
+      Violation: NO HELMET ( Backride), NO DRIVERS LICENSE
+      Officer: PNP TALLANG
+
+
+[30] TICKET #06488 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1234: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: GAMMAD, RANDY B
+      Barangay: MASICAL | Plate: N/A | License: NONE
+      Date: 2024-04-11 | Place: SAN JOSE
+      Violation: NO HELMET ( Backride)
+      Officer: PNP SAN JOSE
+
+  [2] Row 4884: ⚠ DIFFERENT PERSON ⚠ DIFFERENT VIOLATION 
+      Name: MACASADDU, JOEL C
+      Barangay: SAN FRANCISCO | Plate: N/A | License: NONE
+      Date: 2024-04-11 | Place: SAN JOSE
+      Violation: NO HELMET (Driver)
+      Officer: PNP SAN JOSE
+
+
+[31] TICKET #05856 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1298: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: JAVIER, CLIFORD I
+      Barangay: SAN FRANCISCO | Plate: 1598 PG | License: NONE
+      Date: 2024-02-16 | Place: SAN JOSE
+      Violation: NO HELMET ( Backride)
+      Officer: L. MACAHILOS
+
+  [2] Row 3299: ⚠ DIFFERENT PERSON ⚠ DIFFERENT DATE ⚠ DIFFERENT VIOLATION 
+      Name: CARAG, JOHN C
+      Barangay: BITAG | Plate: 654B12 | License: NONE
+      Date: 2024-03-10 | Place: SAN JOSE
+      Violation: NO HELMET (Driver)
+      Officer: PNP SAN JOSE
+
+
+[32] TICKET #03591 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1306: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: JIRADO, JHONA R
+      Barangay: TALLANG | Plate: 475 BJV | License: 23-010709-8290152
+      Date: 2023-09-28 | Place: TALLANG
+      Violation: NO HELMET ( Backride)
+      Officer: R. DE LEON
+
+  [2] Row 1760: ⚠ DIFFERENT PERSON 
+      Name: TIRADO, JHONA R
+      Barangay: TALLANG | Plate: 475 BJV | License: 23-01070Q-8290152
+      Date: 2023-09-28 | Place: TALLANG
+      Violation: NO HELMET ( Backride)
+      Officer: R. DE LEON
+
+
+[33] TICKET #01522 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1484: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: OMAR, ABDULA C
+      Barangay: LASILAT | Plate: MHIJA4578NK671456 | License: NONE
+      Date: 2023-07-01 | Place: ANNAYATAN
+      Violation: NO HELMET ( Backride)
+      Officer: F. AGUSTIN
+
+  [2] Row 3858: ⚠ DIFFERENT PERSON ⚠ DIFFERENT DATE ⚠ DIFFERENT VIOLATION 
+      Name: DOCTOLERO, ROVIE U
+      Barangay: MABINI | Plate: B49FI | License: NONE
+      Date: 2023-07-10 | Place: ANNAYATAN
+      Violation: NO HELMET (Driver)
+      Officer: F. AGUSTIN
+
+
+[34] TICKET #04045 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1678: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: SAMBO, VANESSA R
+      Barangay: ASASSI | Plate: B21JEN | License: B04-23-501564
+      Date: 2023-11-08 | Place: SAN JOSE
+      Violation: NO HELMET ( Backride)
+      Officer: F. AGUSTIN
+
+  [2] Row 4880: ⚠ DIFFERENT PERSON ⚠ DIFFERENT VIOLATION 
+      Name: MACASADDU, SIMEON M
+      Barangay: BITAG PEQUEÑO | Plate: N/A | License: NONE
+      Date: 2023-11-08 | Place: SAN JOSE
+      Violation: NO HELMET (Driver)
+      Officer: F. AGUSTIN
+
+
+[35] TICKET #04681 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1693: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: SANTUA, JULIT C
+      Barangay: MASICAL | Plate: XRM16132644 | License: NONE
+      Date: 2023-12-09 | Place: POBLACION
+      Violation: NO HELMET ( Backride)
+      Officer: CO TUMANENG
+
+  [2] Row 6690: ⚠ DIFFERENT PERSON ⚠ DIFFERENT VIOLATION 
+      Name: UANANG, JASMINE A
+      Barangay: MASICAL | Plate: 440 TAF | License: NONE
+      Date: 2023-12-09 | Place: POBLACION
+      Violation: NO HELMET (Driver)
+      Officer: CO TUMANENG
+
+
+[36] TICKET #010109 - 3 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1847: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: MABBORANG, RICHARD V
+      Barangay: LASILAT | Plate: LPOKLRSY3026782 | License: NONE
+      Date: 2025-02-11 | Place: SAN JOSE
+      Violation: NO HELMET ( Backride)
+      Officer: N. FLORES
+
+  [2] Row 1870: ⚠ DIFFERENT DATE 
+      Name: MABBORANG, RICHARD X
+      Barangay: LASILAT | Plate: LPOKL2SY3026782 | License: NONE
+      Date: 2025-03-11 | Place: SAN JOSE
+      Violation: NO HELMET ( Backride)
+      Officer: N. FLORES
+
+  [3] Row 1900: ⚠ DIFFERENT DATE 
+      Name: MABBORANG, RICHARD V.
+      Barangay: LASILAT | Plate: LP0KL25N3026382 | License: NONE
+      Date: 2025-03-11 | Place: SAN JOSE
+      Violation: NO HELMET ( Backride)
+      Officer: F. AGUSTIN
+
+
+[37] TICKET #009703 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1852: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: ESPEDIDO, NORIEL S
+      Barangay: CATUGAY | Plate: K2VL0192343 | License: B04-09-003193
+      Date: 2025-03-06 | Place: ANNAYATAN
+      Violation: NO HELMET ( Backride)
+      Officer: J.A CRUZ
+
+  [2] Row 1869: ⚠ DIFFERENT PERSON 
+      Name: CATUGAY, NORIEL S
+      Barangay: CATUGAY | Plate: K2VL0192343 | License: B04-09-003193
+      Date: 2025-03-06 | Place: ANNAYATAN
+      Violation: NO HELMET ( Backride)
+      Officer: JA. CRUZ
+
+
+[38] TICKET #008159 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1866: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: SORIANO, ROHELO P
+      Barangay: HACIENDA | Plate: LBBXEJED8N8NB767949 | License: NONE
+      Date: 2025-03-20 | Place: JCL
+      Violation: NO HELMET ( Backride)
+      Officer: CO TUMANENG
+
+  [2] Row 1901: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: SORIANO, ROHELO P.
+      Barangay: HACIENDA | Plate: LBBXEJEDD8NB767949 | License: NONE
+      Date: 2025-03-20 | Place: JCL
+      Violation: NO HELMET ( Backride)
+      Officer: CO TUMANENG
+
+
+[39] TICKET #009634 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1892: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: MADRIAGA, ARNEL C
+      Barangay: NANGALINAN | Plate: BD30261 | License: B03 22 302266
+      Date: 2025-03-28 | Place: ANNAYATAN
+      Violation: NO HELMET ( Backride)
+      Officer: F. SILVA
+
+  [2] Row 2017: ⚠ DIFFERENT PERSON ⚠ DIFFERENT VIOLATION 
+      Name: RAMER, ROBERTO V
+      Barangay: LASILAT | Plate: GMIPJCLTC150001699 | License: BO4 01 050409
+      Date: 2025-03-28 | Place: ANNAYATAN
+      Violation: NO HELMET ( Backride), NO / DEFECTIVE PARTS & ACCESSORIES, RECKLESS / ARROGANT D
+      Officer: F. SILVA
+
+
+[40] TICKET #009590 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1915: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: Antonio, Elisha James M
+      Barangay: Baculud | Plate: RWRICJLAXRL432210 | License: None
+      Date: 2025-05-26 | Place: San jose
+      Violation: NO HELMET ( Backride)
+      Officer: N. BUCO
+
+  [2] Row 1937: ⚠ DIFFERENT PERSON 
+      Name: Antonio, Elisha james M
+      Barangay: Baculud amulung | Plate: Rwrjcjlaxrl432210 | License: None
+      Date: 2025-05-26 | Place: San jose
+      Violation: NO HELMET ( Backride)
+      Officer: N. BUCO
+
+
+[41] TICKET #010154 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1921: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: Tamayao, Rowel S
+      Barangay: Assasi | Plate: 134BNF | License: B14-23-001066
+      Date: 2025-05-27 | Place: San jose
+      Violation: NO HELMET ( Backride)
+      Officer: CO TUMANENG
+
+  [2] Row 1946: ⚠ DIFFERENT PERSON 
+      Name: Tamayao, Romel S
+      Barangay: Asassi | Plate: 134BNF | License: B14-23-001066
+      Date: 2025-05-27 | Place: San Jose
+      Violation: NO HELMET ( Backride)
+      Officer: CO TUMANENG
+
+
+[42] TICKET #010176 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1925: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: Guzman, Bobby N/A
+      Barangay: Assasi | Plate: 1514 BC | License: B04-24-004842
+      Date: 2025-06-09 | Place: San jose
+      Violation: NO HELMET ( Backride)
+      Officer: CO TUMANENG
+
+  [2] Row 1949: ⚠ DIFFERENT PERSON 
+      Name: GUZMAN, BOBBY A
+      Barangay: ASASSI | Plate: 1514BC | License: B04-24-004842
+      Date: 2025-06-09 | Place: SAN JOSE
+      Violation: NO HELMET ( Backride)
+      Officer: CO TUMANENG
+
+
+[43] TICKET #009595 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1928: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: Lagaza, Leody N/A
+      Barangay: Agaman norte | Plate: 13-66-0279802 | License: B03-07-0000111
+      Date: 2025-06-02 | Place: Tallang
+      Violation: NO HELMET ( Backride)
+      Officer: PNP TALLANG
+
+  [2] Row 1939: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: Lagaza, Leody C
+      Barangay: Agaman norte | Plate: 13-66-0279802 | License: B03-07-000411
+      Date: 2025-06-02 | Place: Tallang
+      Violation: NO HELMET ( Backride)
+      Officer: N. BUCO
+
+
+[44] TICKET #011102 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1934: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: Anciado, Virginia G
+      Barangay: Remus | Plate: BF21617 | License: B04 13 001296
+      Date: 2025-06-02 | Place: Tallang
+      Violation: NO HELMET ( Backride)
+      Officer: F. SILVA
+
+  [2] Row 1935: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: Anciado, Virginia G
+      Barangay: Remus | Plate: BF21617 | License: B0413001296
+      Date: 2025-06-02 | Place: Tallang
+      Violation: NO HELMET ( Backride)
+      Officer: F. SILVA
+
+
+[45] TICKET #011106 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1936: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: Clemente, Defin O.
+      Barangay: Sta. Margarita | Plate: B436QA | License: B14-23-001159
+      Date: 2025-06-17 | Place: Catugay
+      Violation: NO HELMET ( Backride)
+      Officer: F. SILVA
+
+  [2] Row 1958: ⚠ DIFFERENT PERSON 
+      Name: Clemente, Delfin O
+      Barangay: Sta. margarita | Plate: B436QA | License: B1423001159
+      Date: 2025-06-17 | Place: Catugay
+      Violation: NO HELMET ( Backride)
+      Officer: F. SILVA
+
+
+[46] TICKET #008025 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1940: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: Dela cruz, Jupiter M
+      Barangay: Lasam | Plate: N/A | License: B04-09-000949
+      Date: 2025-06-09 | Place: Bitag grande
+      Violation: NO HELMET ( Backride)
+      Officer: L. MACAHILOS
+
+  [2] Row 1960: ⚠ DIFFERENT PERSON 
+      Name: DELA CRUZ, JUPITER M
+      Barangay: LASAM | Plate: NONE | License: B04-09-000949
+      Date: 2025-06-09 | Place: BITAG GRANDE
+      Violation: NO HELMET ( Backride)
+      Officer: L. MACAHILOS
+
+
+[47] TICKET #010191 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1942: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: Mendoza, Marlon D
+      Barangay: Buntun | Plate: BC 66703 | License: BO4-16-00230
+      Date: 2025-06-19 | Place: San jose
+      Violation: NO HELMET ( Backride)
+      Officer: CO TUMANENG
+
+  [2] Row 1951: ⚠ DIFFERENT PERSON 
+      Name: MENDOZA, MARLON D
+      Barangay: BUNTUN TUGUEGARAO | Plate: BC 66703 | License: B04-16-00230
+      Date: 2025-06-19 | Place: SAN JOSE
+      Violation: NO HELMET ( Backride)
+      Officer: CO TUMANENG
+
+
+[48] TICKET #018405 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1981: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: Celeste, Leonor P
+      Barangay: Remus | Plate: 303BOL | License: B03-23-002423
+      Date: 2025-07-09 | Place: Remus
+      Violation: NO HELMET ( Backride)
+      Officer: JA. CRUZ
+
+  [2] Row 2015: ⚠ DIFFERENT PERSON 
+      Name: CELESTE, LEONOR P
+      Barangay: REMUS | Plate: 303 BOL | License: B03-23-002423
+      Date: 2025-07-09 | Place: REMUS
+      Violation: NO HELMET ( Backride)
+      Officer: JA. CRUZ
+
+
+[49] TICKET #013316 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 1992: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: DORILAG, JAMES BRIAN D
+      Barangay: TUNGEL | Plate: 953BRS | License: B04-15-006471
+      Date: 2025-07-09 | Place: ANNAYATAN
+      Violation: NO HELMET ( Backride)
+      Officer: G. ROMERO
+
+  [2] Row 8460: ⚠ DIFFERENT PERSON ⚠ DIFFERENT VIOLATION 
+      Name: DELA ROSA, AJAY T
+      Barangay: REMUS | Plate: K2VJ0071632 | License: NONE
+      Date: 2025-07-09 | Place: ANNAYATAN
+      Violation: NO DRIVERS LICENSE
+      Officer: G. ROMERO
+
+
+[50] TICKET #04751 - 2 occurrences
+------------------------------------------------------------------------------------------------------------------------
+  [1] Row 2118: ✓ EXACT DUPLICATE (can auto-delete)
+      Name: ADVIENTO, JOHN MARK N
+      Barangay: SAN ISIDRO | Plate: N/A | License: NONE
+      Date: 2023-02-19 | Place: SAN JOSE
+      Violation: NO HELMET (Driver)
+      Officer: PNP SAN JOSE
+
+  [2] Row 5771: ⚠ DIFFERENT PERSON ⚠ DIFFERENT DATE 
+      Name: PILARIZA, JOMAR E
+      Barangay: SAN ISIDRO | Plate: N/A | License: B12-2203332
+      Date: 2023-12-20 | Place: SAN ISIDRO
+      Violation: NO HELMET (Driver)
+      Officer: PNP SAN JOSE
+
+
+
+... (Showing first 50 duplicate groups. See full report in output file)
+
+========================================================================================================================
+RECOMMENDATIONS
+========================================================================================================================
+
+STRATEGY FOR HANDLING DUPLICATES:
+
+1. EXACT DUPLICATES (65 tickets):
+   - These are likely data entry errors (double submission)
+   - SAFE TO AUTO-DELETE: Keep first occurrence, remove duplicates
+
+2. DIFFERENT PEOPLE WITH SAME TICKET (104 tickets):
+   - CRITICAL ERROR: One ticket number used for multiple different people!
+   - ACTION REQUIRED: Generate new ticket numbers for duplicates
+   - Suggested format: Original number + suffix (e.g., 010109-A, 010109-B)
+
+3. DIFFERENT DATES (46 tickets):
+   - Could be legitimate (same person cited multiple times)
+   - OR could be data entry error
+   - MANUAL REVIEW RECOMMENDED
+
+4. DIFFERENT VIOLATIONS (32 tickets):
+   - Could be multiple violations on same ticket
+   - OR data entry error
+   - MANUAL REVIEW RECOMMENDED
+
+========================================================================================================================
+IMPORT STRATEGIES
+========================================================================================================================
+
+OPTION 1: CONSERVATIVE (Safest)
+  - Skip ALL duplicate tickets
+  - Manually fix duplicates in Excel first
+  - Re-import cleaned data
+  - Records imported: ~9,843
+
+OPTION 2: AUTO-CLEAN EXACT DUPLICATES (Recommended)
+  - Auto-remove exact duplicates (keep first)
+  - Skip problematic duplicates (different people/dates)
+  - Generate report of skipped records for manual review
+  - Records imported: ~9,923
+
+OPTION 3: AUTO-FIX WITH NEW TICKET NUMBERS
+  - Keep first occurrence with original ticket number
+  - Generate new ticket numbers for duplicates (add -A, -B suffix)
+  - Import all records with modifications
+  - Records imported: ~10,213
+
+Which option would you like to use?
+========================================================================================================================
+
+✓ Full report saved to: duplicate_analysis_report.txt

@@ -1,0 +1,553 @@
+<?php
+/**
+ * Excel Citation Importer
+ *
+ * Comprehensive import system for Excel citation data
+ * Implements smart grouping, deduplication, and data cleaning
+ */
+
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../includes/config.php';
+
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
+
+class ExcelImporter {
+    private $db;
+    private $batchId;
+    private $excelFile;
+    private $userId;
+
+    // Statistics
+    private $stats = [
+        'total_rows' => 0,
+        'processed_rows' => 0,
+        'skipped_rows' => 0,
+        'error_rows' => 0,
+        'citations_created' => 0,
+        'drivers_created' => 0,
+        'drivers_matched' => 0,
+        'violations_created' => 0,
+        'duplicates_removed' => 0,
+        'tickets_generated' => 0
+    ];
+
+    // Configuration
+    private $config = [
+        'default_municipality' => 'Baggao',
+        'default_province' => 'Cagayan',
+        'fuzzy_match_threshold' => 3,
+        'batch_size' => 500
+    ];
+
+    /**
+     * Constructor
+     */
+    public function __construct($excelFile, $userId = null) {
+        $this->db = db_connect();
+        $this->excelFile = $excelFile;
+        $this->userId = $userId;
+        $this->batchId = 'BATCH-' . date('YmdHis');
+    }
+
+    /**
+     * Main import method
+     */
+    public function import($dryRun = false) {
+        try {
+            $this->log('info', 'import_started', 'Starting Excel import process');
+
+            // Phase 1: Initialize
+            $this->initializeBatch();
+
+            // Phase 2: Extract and stage data
+            $this->extractAndStageData();
+
+            // Phase 3: Identify duplicates
+            $this->identifyDuplicates();
+
+            // Phase 4: Group multi-violations
+            $this->groupMultiViolations();
+
+            // Phase 5: Resolve ticket conflicts
+            $this->resolveTicketConflicts();
+
+            // Phase 6: Generate missing tickets
+            $this->generateMissingTickets();
+
+            if (!$dryRun) {
+                // Phase 7: Import to database
+                $this->db->beginTransaction();
+
+                try {
+                    $this->importDrivers();
+                    $this->importCitations();
+                    $this->importViolations();
+
+                    $this->db->commit();
+                    $this->completeBatch('completed');
+
+                } catch (Exception $e) {
+                    $this->db->rollBack();
+                    $this->log('error', 'import_failed', 'Database import failed: ' . $e->getMessage());
+                    $this->completeBatch('failed');
+                    throw $e;
+                }
+            } else {
+                $this->log('info', 'dry_run', 'Dry run completed - no data imported');
+                $this->completeBatch('completed');
+            }
+
+            // Phase 8: Generate reports
+            $report = $this->generateReport();
+
+            return [
+                'success' => true,
+                'batch_id' => $this->batchId,
+                'stats' => $this->stats,
+                'report' => $report
+            ];
+
+        } catch (Exception $e) {
+            $this->log('error', 'import_exception', 'Import failed with exception: ' . $e->getMessage());
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage(),
+                'batch_id' => $this->batchId
+            ];
+        }
+    }
+
+    /**
+     * Initialize import batch
+     */
+    private function initializeBatch() {
+        $stmt = $this->db->prepare("
+            INSERT INTO import_batches (
+                batch_id, excel_file, started_at, imported_by, status
+            ) VALUES (?, ?, NOW(), ?, 'running')
+        ");
+
+        $stmt->execute([
+            $this->batchId,
+            basename($this->excelFile),
+            $this->userId
+        ]);
+
+        $this->log('info', 'batch_initialized', 'Import batch initialized');
+    }
+
+    /**
+     * Extract data from Excel and load into staging
+     */
+    private function extractAndStageData() {
+        $this->log('info', 'extraction_started', 'Starting Excel data extraction');
+
+        $spreadsheet = IOFactory::load($this->excelFile);
+        $worksheet = $spreadsheet->getActiveSheet();
+        $highestRow = $worksheet->getHighestRow();
+
+        $this->stats['total_rows'] = $highestRow - 1; // Exclude header
+
+        // Prepare insert statement
+        $stmt = $this->db->prepare("
+            INSERT INTO import_staging (
+                batch_id, excel_row, original_ticket, final_ticket,
+                last_name, first_name, middle_initial, suffix,
+                date_of_birth, age, zone, barangay, municipality, province,
+                license_number, license_type,
+                plate_mv_engine_chassis_no, vehicle_type, vehicle_description,
+                apprehension_date, apprehension_time, apprehension_datetime,
+                place_of_apprehension, apprehending_officer,
+                violations_raw, remarks,
+                driver_key, grouping_key, ticket_date_key
+            ) VALUES (
+                ?, ?, ?, ?,
+                ?, ?, ?, ?,
+                ?, ?, ?, ?, ?, ?,
+                ?, ?,
+                ?, ?, ?,
+                ?, ?, ?,
+                ?, ?,
+                ?, ?,
+                ?, ?, ?
+            )
+        ");
+
+        $processedCount = 0;
+
+        for ($row = 2; $row <= $highestRow; $row++) {
+            try {
+                $data = $this->extractRowData($worksheet, $row);
+
+                if ($data) {
+                    $stmt->execute([
+                        $this->batchId,
+                        $row,
+                        $data['original_ticket'],
+                        $data['final_ticket'],
+                        $data['last_name'],
+                        $data['first_name'],
+                        $data['middle_initial'],
+                        $data['suffix'],
+                        $data['date_of_birth'],
+                        $data['age'],
+                        $data['zone'],
+                        $data['barangay'],
+                        $data['municipality'],
+                        $data['province'],
+                        $data['license_number'],
+                        $data['license_type'],
+                        $data['plate_mv_engine_chassis_no'],
+                        $data['vehicle_type'],
+                        $data['vehicle_description'],
+                        $data['apprehension_date'],
+                        $data['apprehension_time'],
+                        $data['apprehension_datetime'],
+                        $data['place_of_apprehension'],
+                        $data['apprehending_officer'],
+                        $data['violations_raw'],
+                        $data['remarks'],
+                        $data['driver_key'],
+                        $data['grouping_key'],
+                        $data['ticket_date_key']
+                    ]);
+
+                    $processedCount++;
+                }
+
+                if ($row % 1000 == 0) {
+                    $this->log('debug', 'extraction_progress', "Processed $row of $highestRow rows");
+                }
+
+            } catch (Exception $e) {
+                $this->log('error', 'row_extraction_failed', "Row $row failed: " . $e->getMessage(), $row);
+                $this->stats['error_rows']++;
+            }
+        }
+
+        $this->log('success', 'extraction_complete', "Extracted $processedCount rows into staging");
+    }
+
+    /**
+     * Extract and normalize single row data
+     */
+    private function extractRowData($worksheet, $rowNumber) {
+        // Extract raw values
+        $ticketNumber = $this->getCellValue($worksheet, 'B', $rowNumber);
+        $lastName = $this->getCellValue($worksheet, 'C', $rowNumber);
+        $firstName = $this->getCellValue($worksheet, 'D', $rowNumber);
+        $middleInitial = $this->getCellValue($worksheet, 'E', $rowNumber);
+        $barangay = $this->getCellValue($worksheet, 'F', $rowNumber);
+        $zone = $this->getCellValue($worksheet, 'G', $rowNumber);
+        $licenseNumber = $this->getCellValue($worksheet, 'H', $rowNumber);
+        $plate = $this->getCellValue($worksheet, 'I', $rowNumber);
+        $vehicleType = $this->getCellValue($worksheet, 'J', $rowNumber);
+        $vehicleDesc = $this->getCellValue($worksheet, 'K', $rowNumber);
+        $dateRaw = $worksheet->getCell('L' . $rowNumber)->getValue();
+        $timeRaw = $worksheet->getCell('M' . $rowNumber)->getValue();
+        $place = $this->getCellValue($worksheet, 'N', $rowNumber);
+        $violations = $this->getCellValue($worksheet, 'O', $rowNumber);
+        $officer = $this->getCellValue($worksheet, 'P', $rowNumber);
+        $remarks = $this->getCellValue($worksheet, 'Q', $rowNumber);
+
+        // Normalize data
+        $ticketNumber = $this->normalizeTicketNumber($ticketNumber);
+        $lastName = $this->normalizeName($lastName);
+        $firstName = $this->normalizeName($firstName);
+        $middleInitial = $this->normalizeName($middleInitial);
+        $licenseNumber = $this->normalizeLicense($licenseNumber);
+        $plate = $this->normalizePlate($plate);
+
+        // Parse dates
+        $apprehensionDate = $this->parseExcelDate($dateRaw);
+        $apprehensionTime = $this->parseExcelTime($timeRaw);
+        $apprehensionDatetime = null;
+
+        if ($apprehensionDate && $apprehensionTime) {
+            $apprehensionDatetime = $apprehensionDate . ' ' . $apprehensionTime;
+        } elseif ($apprehensionDate) {
+            $apprehensionDatetime = $apprehensionDate . ' 00:00:00';
+        }
+
+        // Generate keys
+        $driverKey = $this->generateDriverKey($lastName, $firstName, $licenseNumber);
+        $groupingKey = $this->generateGroupingKey($ticketNumber, $lastName, $firstName, $apprehensionDate, $place);
+        $ticketDateKey = $ticketNumber . '|' . $apprehensionDate;
+
+        return [
+            'original_ticket' => $ticketNumber,
+            'final_ticket' => $ticketNumber,
+            'last_name' => $lastName,
+            'first_name' => $firstName,
+            'middle_initial' => $middleInitial,
+            'suffix' => null,
+            'date_of_birth' => null,
+            'age' => null,
+            'zone' => $zone,
+            'barangay' => $barangay,
+            'municipality' => $this->config['default_municipality'],
+            'province' => $this->config['default_province'],
+            'license_number' => $licenseNumber,
+            'license_type' => null,
+            'plate_mv_engine_chassis_no' => $plate,
+            'vehicle_type' => $vehicleType,
+            'vehicle_description' => $vehicleDesc,
+            'apprehension_date' => $apprehensionDate,
+            'apprehension_time' => $apprehensionTime,
+            'apprehension_datetime' => $apprehensionDatetime,
+            'place_of_apprehension' => $place,
+            'apprehending_officer' => $officer,
+            'violations_raw' => $violations,
+            'remarks' => $remarks,
+            'driver_key' => $driverKey,
+            'grouping_key' => $groupingKey,
+            'ticket_date_key' => $ticketDateKey
+        ];
+    }
+
+    /**
+     * Identify and mark exact duplicates
+     */
+    private function identifyDuplicates() {
+        $this->log('info', 'duplicate_detection', 'Identifying exact duplicates');
+
+        // Find exact duplicates (same grouping key + violations)
+        $stmt = $this->db->query("
+            SELECT
+                grouping_key,
+                violations_raw,
+                MIN(staging_id) as keep_id,
+                GROUP_CONCAT(staging_id ORDER BY staging_id) as all_ids,
+                GROUP_CONCAT(excel_row ORDER BY excel_row) as all_rows,
+                COUNT(*) as duplicate_count
+            FROM import_staging
+            WHERE batch_id = '{$this->batchId}'
+            AND violations_raw IS NOT NULL
+            GROUP BY grouping_key, violations_raw
+            HAVING COUNT(*) > 1
+        ");
+
+        $duplicates = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($duplicates as $dup) {
+            $ids = explode(',', $dup['all_ids']);
+            $rows = explode(',', $dup['all_rows']);
+            $keepId = $dup['keep_id'];
+
+            $removedIds = array_diff($ids, [$keepId]);
+            $removedRows = array_diff($rows, [$rows[0]]);
+
+            // Mark as duplicates
+            if (!empty($removedIds)) {
+                $this->db->prepare("
+                    UPDATE import_staging
+                    SET is_exact_duplicate = 1,
+                        process_status = 'skipped'
+                    WHERE staging_id IN (" . implode(',', $removedIds) . ")
+                ")->execute();
+
+                // Log duplicate group
+                $this->db->prepare("
+                    INSERT INTO import_duplicates (
+                        batch_id, grouping_key, excel_rows, kept_row, removed_rows, duplicate_type
+                    ) VALUES (?, ?, ?, ?, ?, 'exact')
+                ")->execute([
+                    $this->batchId,
+                    $dup['grouping_key'],
+                    $dup['all_rows'],
+                    $rows[0],
+                    implode(',', $removedRows)
+                ]);
+
+                $this->stats['duplicates_removed'] += count($removedIds);
+            }
+        }
+
+        $this->log('success', 'duplicates_identified', "Removed {$this->stats['duplicates_removed']} exact duplicates");
+    }
+
+    /**
+     * Group multi-violation citations
+     */
+    private function groupMultiViolations() {
+        $this->log('info', 'grouping_started', 'Grouping multi-violation citations');
+
+        // Assign group IDs to records with same grouping key
+        $stmt = $this->db->query("
+            SELECT
+                grouping_key,
+                MIN(staging_id) as group_id,
+                GROUP_CONCAT(staging_id ORDER BY staging_id) as member_ids,
+                GROUP_CONCAT(excel_row ORDER BY excel_row) as excel_rows,
+                GROUP_CONCAT(violations_raw SEPARATOR '|||') as all_violations,
+                COUNT(*) as member_count
+            FROM import_staging
+            WHERE batch_id = '{$this->batchId}'
+            AND is_exact_duplicate = 0
+            GROUP BY grouping_key
+        ");
+
+        $groups = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $multiViolationGroups = 0;
+
+        foreach ($groups as $group) {
+            $groupId = $group['group_id'];
+            $memberIds = explode(',', $group['member_ids']);
+
+            // Update all members with group ID
+            $this->db->prepare("
+                UPDATE import_staging
+                SET citation_group_id = ?,
+                    is_grouped = 1
+                WHERE staging_id IN (" . implode(',', $memberIds) . ")
+            ")->execute([$groupId]);
+
+            // Log groups with multiple members
+            if ($group['member_count'] > 1) {
+                $this->db->prepare("
+                    INSERT INTO import_citation_groups (
+                        batch_id, grouping_key, final_ticket, excel_rows, row_count, violations_combined
+                    ) VALUES (?, ?, (
+                        SELECT final_ticket FROM import_staging WHERE staging_id = ? LIMIT 1
+                    ), ?, ?, ?)
+                ")->execute([
+                    $this->batchId,
+                    $group['grouping_key'],
+                    $groupId,
+                    $group['excel_rows'],
+                    $group['member_count'],
+                    $group['all_violations']
+                ]);
+
+                $multiViolationGroups++;
+            }
+        }
+
+        $this->log('success', 'grouping_complete', "Created $multiViolationGroups multi-violation citation groups");
+    }
+
+    /**
+     * Resolve ticket number conflicts
+     */
+    private function resolveTicketConflicts() {
+        $this->log('info', 'conflict_resolution', 'Resolving ticket number conflicts');
+
+        // Find tickets with different dates or people
+        $stmt = $this->db->query("
+            SELECT
+                final_ticket,
+                GROUP_CONCAT(DISTINCT apprehension_date) as dates,
+                GROUP_CONCAT(DISTINCT driver_key) as driver_keys,
+                GROUP_CONCAT(staging_id ORDER BY staging_id) as all_ids,
+                GROUP_CONCAT(excel_row ORDER BY excel_row) as all_rows,
+                COUNT(DISTINCT citation_group_id) as group_count
+            FROM import_staging
+            WHERE batch_id = '{$this->batchId}'
+            AND is_exact_duplicate = 0
+            AND final_ticket IS NOT NULL
+            AND final_ticket != ''
+            GROUP BY final_ticket
+            HAVING COUNT(DISTINCT apprehension_date) > 1
+               OR COUNT(DISTINCT driver_key) > 1
+        ");
+
+        $conflicts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($conflicts as $conflict) {
+            $ids = explode(',', $conflict['all_ids']);
+            $rows = explode(',', $conflict['all_rows']);
+            $dates = explode(',', $conflict['dates']);
+            $driverKeys = explode(',', $conflict['driver_keys']);
+
+            $conflictType = 'both';
+            if (count($dates) > 1 && count($driverKeys) == 1) {
+                $conflictType = 'different_date';
+            } elseif (count($dates) == 1 && count($driverKeys) > 1) {
+                $conflictType = 'different_person';
+            }
+
+            // Keep first occurrence, generate new tickets for rest
+            $generatedTickets = [];
+            $suffix = 'A';
+
+            for ($i = 1; $i < count($ids); $i++) {
+                $newTicket = $conflict['final_ticket'] . '-' . $suffix;
+                $generatedTickets[] = $newTicket;
+
+                $this->db->prepare("
+                    UPDATE import_staging
+                    SET final_ticket = ?,
+                        ticket_generated = 1,
+                        generation_reason = ?,
+                        is_conflict = 1
+                    WHERE staging_id = ?
+                ")->execute([
+                    $newTicket,
+                    "Conflict: $conflictType",
+                    $ids[$i]
+                ]);
+
+                $suffix++;
+                $this->stats['tickets_generated']++;
+            }
+
+            // Log conflict
+            $this->db->prepare("
+                INSERT INTO import_ticket_conflicts (
+                    batch_id, original_ticket, conflicting_rows, conflict_type,
+                    resolution, tickets_generated
+                ) VALUES (?, ?, ?, ?, ?, ?)
+            ")->execute([
+                $this->batchId,
+                $conflict['final_ticket'],
+                implode(',', $rows),
+                $conflictType,
+                'Generated suffixed tickets',
+                implode(',', $generatedTickets)
+            ]);
+        }
+
+        $this->log('success', 'conflicts_resolved', "Resolved " . count($conflicts) . " ticket conflicts");
+    }
+
+    /**
+     * Generate missing ticket numbers
+     */
+    private function generateMissingTickets() {
+        $this->log('info', 'generating_tickets', 'Generating missing ticket numbers');
+
+        $stmt = $this->db->query("
+            SELECT staging_id, excel_row
+            FROM import_staging
+            WHERE batch_id = '{$this->batchId}'
+            AND (final_ticket IS NULL OR final_ticket = '')
+            AND is_exact_duplicate = 0
+        ");
+
+        $missing = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $sequence = 19001;
+
+        foreach ($missing as $row) {
+            $newTicket = 'AUT-' . str_pad($sequence, 6, '0', STR_PAD_LEFT);
+
+            $this->db->prepare("
+                UPDATE import_staging
+                SET final_ticket = ?,
+                    ticket_generated = 1,
+                    generation_reason = 'Missing ticket number'
+                WHERE staging_id = ?
+            ")->execute([$newTicket, $row['staging_id']]);
+
+            $this->log('warning', 'ticket_generated', "Generated ticket $newTicket for row {$row['excel_row']}", $row['excel_row'], $newTicket);
+
+            $sequence++;
+            $this->stats['tickets_generated']++;
+        }
+
+        $this->log('success', 'tickets_generated', "Generated " . count($missing) . " missing ticket numbers");
+    }
+
+    // Continued in next part...
+

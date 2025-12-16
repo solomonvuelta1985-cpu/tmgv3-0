@@ -1,72 +1,50 @@
-[11-Dec-2025 09:54:36 Asia/Manila] Citation 56 status changed from 'pending' to 'void' by admin
-[11-Dec-2025 09:55:01 Asia/Manila] Citation 56 status changed from 'void' to 'pending' by admin
-[11-Dec-2025 10:19:54 Asia/Manila] No valid pending payments found
-[11-Dec-2025 11:03:34 Asia/Manila] No valid pending payments found
-[11-Dec-2025 14:13:05 Asia/Manila] Finalizing payment ID=61, OR=23458988, Citation=06112
-[11-Dec-2025 14:13:05 Asia/Manila] Payment finalized successfully: ID=61, OR=23458988, Citation=06112, User=1
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:17:43 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  json_decode(): Passing null to parameter #1 ($json) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 374
-[11-Dec-2025 14:18:20 Asia/Manila] PHP Deprecated:  htmlspecialchars(): Passing null to parameter #1 ($string) of type string is deprecated in C:\xampp\htdocs\tmg\public\audit_log.php on line 390
-[11-Dec-2025 14:58:22 Asia/Manila] No valid pending payments found
-[12-Dec-2025 08:15:11 Asia/Manila] PHP Warning:  mail(): Failed to connect to mailserver at &quot;localhost&quot; port 25, verify your &quot;SMTP&quot; and &quot;smtp_port&quot; setting in php.ini or use ini_set() in C:\xampp\htdocs\tmg\services\BackupService.php on line 362
+[16-Dec-2025 09:08:24 Asia/Manila] Pending payments loaded: 1 valid records
+[16-Dec-2025 09:13:42 Asia/Manila] Pending payments loaded: 1 valid records
+[16-Dec-2025 06:54:31 Europe/Berlin] PHP Parse error:  syntax error, unexpected token "<", expecting "function" or "const" in C:\xampp\htdocs\tmg\services\ExcelImporter.php on line 555
+[16-Dec-2025 06:54:34 Europe/Berlin] PHP Parse error:  syntax error, unexpected token "<", expecting "function" or "const" in C:\xampp\htdocs\tmg\services\ExcelImporter.php on line 555
+[16-Dec-2025 06:55:24 Europe/Berlin] PHP Parse error:  syntax error, unexpected token "<", expecting "function" or "const" in C:\xampp\htdocs\tmg\services\ExcelImporter.php on line 555
+[16-Dec-2025 13:55:49 Asia/Manila] PHP Fatal error:  Uncaught Error: Undefined constant "STDIN" in C:\xampp\htdocs\tmg\import_excel.php:38
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\tmg\import_excel.php on line 38
+[16-Dec-2025 13:56:05 Asia/Manila] PHP Fatal error:  Uncaught Error: Undefined constant "STDIN" in C:\xampp\htdocs\tmg\import_excel.php:38
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\tmg\import_excel.php on line 38
+[16-Dec-2025 13:56:19 Asia/Manila] PHP Fatal error:  Uncaught Error: Undefined constant "STDIN" in C:\xampp\htdocs\tmg\import_excel.php:38
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\tmg\import_excel.php on line 38
+[16-Dec-2025 13:56:20 Asia/Manila] PHP Fatal error:  Uncaught Error: Undefined constant "STDIN" in C:\xampp\htdocs\tmg\import_excel.php:38
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\tmg\import_excel.php on line 38
+[16-Dec-2025 13:56:20 Asia/Manila] PHP Fatal error:  Uncaught Error: Undefined constant "STDIN" in C:\xampp\htdocs\tmg\import_excel.php:38
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\tmg\import_excel.php on line 38
+[16-Dec-2025 13:56:20 Asia/Manila] PHP Fatal error:  Uncaught Error: Undefined constant "STDIN" in C:\xampp\htdocs\tmg\import_excel.php:38
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\tmg\import_excel.php on line 38
+[16-Dec-2025 14:00:04 Asia/Manila] PHP Fatal error:  Uncaught Error: Undefined constant "STDIN" in C:\xampp\htdocs\tmg\import_excel.php:38
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\tmg\import_excel.php on line 38
+[16-Dec-2025 14:00:04 Asia/Manila] PHP Fatal error:  Uncaught Error: Undefined constant "STDIN" in C:\xampp\htdocs\tmg\import_excel.php:38
+Stack trace:
+#0 {main}
+  thrown in C:\xampp\htdocs\tmg\import_excel.php on line 38
+[16-Dec-2025 14:09:51 Asia/Manila] PHP Fatal error:  Uncaught Error: Call to undefined function db_connect() in C:\xampp\htdocs\tmg\services\ExcelImporter.php:47
+Stack trace:
+#0 C:\xampp\htdocs\tmg\web_import.php(35): ExcelImporter->__construct('C:\\xampp\\htdocs...')
+#1 {main}
+  thrown in C:\xampp\htdocs\tmg\services\ExcelImporter.php on line 47
+[16-Dec-2025 14:10:05 Asia/Manila] PHP Fatal error:  Uncaught Error: Call to undefined function db_connect() in C:\xampp\htdocs\tmg\services\ExcelImporter.php:47
+Stack trace:
+#0 C:\xampp\htdocs\tmg\web_import.php(35): ExcelImporter->__construct('C:\\xampp\\htdocs...')
+#1 {main}
+  thrown in C:\xampp\htdocs\tmg\services\ExcelImporter.php on line 47
+[16-Dec-2025 14:40:46 Asia/Manila] Pending payments loaded: 1 valid records
+[16-Dec-2025 14:40:52 Asia/Manila] Payment CANCELLED (not voided) by user 1. Payment ID: 62, OR: 23458989, Citation: 061115, Amount: 150.00. Reason: Receipt was never printed, OR number freed for reuse.
+[16-Dec-2025 14:40:53 Asia/Manila] No valid pending payments found
