@@ -24,9 +24,8 @@ try {
 
     // Get citation
     $stmt = db_query(
-        "SELECT c.*, cv.vehicle_type
+        "SELECT c.*
          FROM citations c
-         LEFT JOIN citation_vehicles cv ON c.citation_id = cv.citation_id
          WHERE c.citation_id = ?",
         [$citation_id]
     );

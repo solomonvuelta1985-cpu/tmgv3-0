@@ -211,35 +211,30 @@ try {
         $driver_id = $pdo->lastInsertId();
     }
 
-    // Insert citation
-    db_query(
-        "INSERT INTO citations (ticket_number, driver_id, last_name, first_name,
-        middle_initial, suffix, date_of_birth, age, zone, barangay, municipality, province, license_number,
-        license_type, plate_mv_engine_chassis_no, vehicle_description,
-        apprehension_datetime, place_of_apprehension, apprehension_officer, remarks, created_by, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())",
-        [
-            $data['ticket_number'], $driver_id, $data['last_name'], $data['first_name'],
-            $data['middle_initial'], $data['suffix'], $dob, $age, $data['zone'], $data['barangay'],
-            $data['municipality'] ?? 'Baggao', $data['province'] ?? 'Cagayan',
-            $data['license_number'] ?? null, $data['license_type'] ?? null,
-            $data['plate_mv_engine_chassis_no'], $data['vehicle_description'],
-            $data['apprehension_datetime'], $data['place_of_apprehension'],
-            $data['apprehension_officer'], $data['remarks'], $_SESSION['user_id']
-        ]
-    );
-    $citation_id = $pdo->lastInsertId();
-
     // Handle vehicle type (single selection)
     $vehicle_type_value = $data['vehicle_type'];
     if ($vehicle_type_value === 'Other' && !empty($data['other_vehicle_input'])) {
         $vehicle_type_value = $data['other_vehicle_input'];
     }
 
+    // Insert citation
     db_query(
-        "INSERT INTO citation_vehicles (citation_id, vehicle_type) VALUES (?, ?)",
-        [$citation_id, $vehicle_type_value]
+        "INSERT INTO citations (ticket_number, driver_id, last_name, first_name,
+        middle_initial, suffix, date_of_birth, age, zone, barangay, municipality, province, license_number,
+        license_type, plate_mv_engine_chassis_no, vehicle_type, vehicle_description,
+        apprehension_datetime, place_of_apprehension, apprehension_officer, remarks, created_by, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())",
+        [
+            $data['ticket_number'], $driver_id, $data['last_name'], $data['first_name'],
+            $data['middle_initial'], $data['suffix'], $dob, $age, $data['zone'], $data['barangay'],
+            $data['municipality'] ?? 'Baggao', $data['province'] ?? 'Cagayan',
+            $data['license_number'] ?? null, $data['license_type'] ?? null,
+            $data['plate_mv_engine_chassis_no'], $vehicle_type_value, $data['vehicle_description'],
+            $data['apprehension_datetime'], $data['place_of_apprehension'],
+            $data['apprehension_officer'], $data['remarks'], $_SESSION['user_id']
+        ]
     );
+    $citation_id = $pdo->lastInsertId();
     
     // Handle violations (now receives violation_type_id integers)
     $violation_ids = [];

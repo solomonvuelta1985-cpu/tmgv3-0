@@ -135,12 +135,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && !empty($_GET)) {
 
     // Get citations
     $sql = "SELECT c.*,
-            GROUP_CONCAT(DISTINCT vt.violation_type SEPARATOR ', ') as violations,
-            cv.vehicle_type
+            GROUP_CONCAT(DISTINCT vt.violation_type SEPARATOR ', ') as violations
             FROM citations c
             LEFT JOIN violations v ON c.citation_id = v.citation_id
             LEFT JOIN violation_types vt ON v.violation_type_id = vt.violation_type_id
-            LEFT JOIN citation_vehicles cv ON c.citation_id = cv.citation_id
             $where_sql
             GROUP BY c.citation_id
             ORDER BY c.created_at DESC

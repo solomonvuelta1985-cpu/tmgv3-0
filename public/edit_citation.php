@@ -30,9 +30,8 @@ try {
 
     // Get citation data
     $stmt = $conn->prepare("
-        SELECT c.*, cv.vehicle_type
+        SELECT c.*
         FROM citations c
-        LEFT JOIN citation_vehicles cv ON c.citation_id = cv.citation_id
         WHERE c.citation_id = ?
     ");
     $stmt->execute([$citation_id]);
@@ -745,12 +744,16 @@ if (empty($_SESSION['csrf_token'])) {
                             <?php
                             $vehicle_type = $citation['vehicle_type'] ?? '';
                             $standard_types = ['Motorcycle', 'Tricycle', 'SUV', 'Van', 'Jeep', 'Truck', 'Kulong Kulong'];
-                            $is_other = !in_array($vehicle_type, $standard_types) && !empty($vehicle_type);
+
+                            // Case-insensitive matching
+                            $vehicle_type_upper = strtoupper($vehicle_type);
+                            $standard_types_upper = array_map('strtoupper', $standard_types);
+                            $is_other = !in_array($vehicle_type_upper, $standard_types_upper) && !empty($vehicle_type);
                             ?>
                             <div class="d-flex flex-wrap gap-3">
                                 <?php foreach ($standard_types as $type): ?>
                                 <div class="form-check">
-                                    <input type="radio" class="form-check-input" name="vehicle_type" value="<?php echo $type; ?>" id="<?php echo strtolower(str_replace(' ', '', $type)); ?>" <?php echo $vehicle_type === $type ? 'checked' : ''; ?> required onchange="toggleOtherVehicle(this.value)">
+                                    <input type="radio" class="form-check-input" name="vehicle_type" value="<?php echo $type; ?>" id="<?php echo strtolower(str_replace(' ', '', $type)); ?>" <?php echo strcasecmp($vehicle_type, $type) === 0 ? 'checked' : ''; ?> required onchange="toggleOtherVehicle(this.value)">
                                     <label class="form-check-label" for="<?php echo strtolower(str_replace(' ', '', $type)); ?>"><?php echo $type; ?></label>
                                 </div>
                                 <?php endforeach; ?>

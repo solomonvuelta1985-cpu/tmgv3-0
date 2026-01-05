@@ -25,6 +25,7 @@ class ExcelImporter {
         'skipped_rows' => 0,
         'error_rows' => 0,
         'citations_created' => 0,
+        'citations_paid' => 0,
         'drivers_created' => 0,
         'drivers_matched' => 0,
         'violations_created' => 0,
@@ -691,7 +692,13 @@ class ExcelImporter {
                 last_name,
                 first_name,
                 middle_initial,
+                zone,
+                barangay,
+                license_number,
+                license_type,
                 plate_mv_engine_chassis_no,
+                vehicle_type,
+                vehicle_description,
                 apprehension_datetime,
                 place_of_apprehension,
                 apprehending_officer,
@@ -707,6 +714,16 @@ class ExcelImporter {
 
         foreach ($citations as $citation) {
             try {
+                // Determine payment status from REMARKS column
+                $status = 'pending'; // Default status
+                if (!empty($citation['remarks'])) {
+                    $remarksUpper = strtoupper(trim($citation['remarks']));
+                    // Check if REMARKS contains 'PAID'
+                    if (strpos($remarksUpper, 'PAID') !== false) {
+                        $status = 'paid';
+                    }
+                }
+
                 $insertStmt = $this->db->prepare("
                     INSERT INTO citations (
                         ticket_number,
@@ -714,16 +731,23 @@ class ExcelImporter {
                         last_name,
                         first_name,
                         middle_initial,
-                        plate_mv_engine_chassis_no,
-                        apprehension_datetime,
-                        place_of_apprehension,
-                        remarks,
-                        status,
+                        zone,
+                        barangay,
                         municipality,
                         province,
+                        license_number,
+                        license_type,
+                        plate_mv_engine_chassis_no,
+                        vehicle_type,
+                        vehicle_description,
+                        apprehension_datetime,
+                        place_of_apprehension,
+                        apprehension_officer,
+                        remarks,
+                        status,
                         import_batch_id,
                         created_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?, NOW())
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
                 ");
 
                 $insertStmt->execute([
@@ -732,17 +756,30 @@ class ExcelImporter {
                     $citation['last_name'],
                     $citation['first_name'],
                     $citation['middle_initial'],
-                    $citation['plate_mv_engine_chassis_no'],
-                    $citation['apprehension_datetime'],
-                    $citation['place_of_apprehension'],
-                    $citation['remarks'],
+                    $citation['zone'],
+                    $citation['barangay'],
                     $this->config['default_municipality'],
                     $this->config['default_province'],
+                    $citation['license_number'],
+                    $citation['license_type'],
+                    $citation['plate_mv_engine_chassis_no'],
+                    $citation['vehicle_type'],
+                    $citation['vehicle_description'],
+                    $citation['apprehension_datetime'],
+                    $citation['place_of_apprehension'],
+                    $citation['apprehending_officer'],
+                    $citation['remarks'],
+                    $status,
                     $this->batchId
                 ]);
 
                 $citationId = $this->db->lastInsertId();
                 $this->stats['citations_created']++;
+
+                // Track paid citations
+                if ($status === 'paid') {
+                    $this->stats['citations_paid']++;
+                }
 
                 // Update staging with citation ID
                 $this->db->prepare("
@@ -752,7 +789,8 @@ class ExcelImporter {
                     WHERE citation_group_id = ?
                 ")->execute([$citationId, $citation['citation_group_id']]);
 
-                $this->log('debug', 'citation_created', "Created citation {$citation['final_ticket']} (ID: $citationId)");
+                $statusLabel = $status === 'paid' ? ' [PAID]' : '';
+                $this->log('debug', 'citation_created', "Created citation {$citation['final_ticket']} (ID: $citationId)$statusLabel");
 
             } catch (Exception $e) {
                 $this->log('error', 'citation_import_failed', "Failed to import citation {$citation['final_ticket']}: " . $e->getMessage());
@@ -803,27 +841,32 @@ class ExcelImporter {
                         // Get offense count for this driver
                         $offenseCount = $this->getOffenseCount($record['driver_id'], $violationType['violation_type_id']);
 
+                        // Get the correct fine amount based on offense count
+                        $fineAmount = $this->getFineAmount($violationType['violation_type_id'], $offenseCount);
+
                         // Insert violation
                         $insertStmt = $this->db->prepare("
                             INSERT INTO violations (
                                 citation_id,
                                 violation_type_id,
                                 offense_count,
+                                fine_amount,
                                 import_batch_id,
                                 created_at
-                            ) VALUES (?, ?, ?, ?, NOW())
+                            ) VALUES (?, ?, ?, ?, ?, NOW())
                         ");
 
                         $insertStmt->execute([
                             $record['citation_id'],
                             $violationType['violation_type_id'],
                             $offenseCount,
+                            $fineAmount,
                             $this->batchId
                         ]);
 
                         $this->stats['violations_created']++;
 
-                        $this->log('debug', 'violation_created', "Created violation: $violationText");
+                        $this->log('debug', 'violation_created', "Created violation: $violationText (Fine: $fineAmount)");
                     }
                 }
 
@@ -839,7 +882,13 @@ class ExcelImporter {
      * Match violation text to violation type
      */
     private function matchViolationType($violationText) {
-        // Check cache first
+        // Original text for caching
+        $originalText = $violationText;
+
+        // Normalize the violation text
+        $normalizedText = $this->normalizeViolationText($violationText);
+
+        // Check cache first (using original text)
         $cacheStmt = $this->db->prepare("
             SELECT violation_type_id, violation_type_name, match_type
             FROM import_violation_mappings
@@ -847,7 +896,7 @@ class ExcelImporter {
             AND excel_text = ?
         ");
 
-        $cacheStmt->execute([$this->batchId, $violationText]);
+        $cacheStmt->execute([$this->batchId, $originalText]);
         $cached = $cacheStmt->fetch(PDO::FETCH_ASSOC);
 
         if ($cached) {
@@ -857,7 +906,7 @@ class ExcelImporter {
             ];
         }
 
-        // Try exact match
+        // Try exact match with original text
         $exactStmt = $this->db->prepare("
             SELECT violation_type_id, violation_type
             FROM violation_types
@@ -865,12 +914,29 @@ class ExcelImporter {
             AND is_active = 1
         ");
 
-        $exactStmt->execute([$violationText]);
+        $exactStmt->execute([$originalText]);
         $exact = $exactStmt->fetch(PDO::FETCH_ASSOC);
 
         if ($exact) {
-            $this->cacheViolationMapping($violationText, $exact['violation_type_id'], $exact['violation_type'], 'exact', 100);
+            $this->cacheViolationMapping($originalText, $exact['violation_type_id'], $exact['violation_type'], 'exact', 100);
             return $exact;
+        }
+
+        // Try normalized match
+        $normalizedStmt = $this->db->prepare("
+            SELECT violation_type_id, violation_type
+            FROM violation_types
+            WHERE REPLACE(REPLACE(UPPER(violation_type), ' ', ''), '  ', '') = ?
+            AND is_active = 1
+            LIMIT 1
+        ");
+
+        $normalizedStmt->execute([$normalizedText]);
+        $normalized = $normalizedStmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($normalized) {
+            $this->cacheViolationMapping($originalText, $normalized['violation_type_id'], $normalized['violation_type'], 'normalized', 90);
+            return $normalized;
         }
 
         // Try case-insensitive match
@@ -881,11 +947,11 @@ class ExcelImporter {
             AND is_active = 1
         ");
 
-        $caseStmt->execute([$violationText]);
+        $caseStmt->execute([$originalText]);
         $caseMatch = $caseStmt->fetch(PDO::FETCH_ASSOC);
 
         if ($caseMatch) {
-            $this->cacheViolationMapping($violationText, $caseMatch['violation_type_id'], $caseMatch['violation_type'], 'case_insensitive', 95);
+            $this->cacheViolationMapping($originalText, $caseMatch['violation_type_id'], $caseMatch['violation_type'], 'case_insensitive', 95);
             return $caseMatch;
         }
 
@@ -899,17 +965,17 @@ class ExcelImporter {
             LIMIT 1
         ");
 
-        $partialStmt->execute(["%$violationText%", $violationText]);
+        $partialStmt->execute(["%$originalText%", $originalText]);
         $partial = $partialStmt->fetch(PDO::FETCH_ASSOC);
 
         if ($partial) {
-            $this->cacheViolationMapping($violationText, $partial['violation_type_id'], $partial['violation_type'], 'partial', 70);
-            $this->log('warning', 'fuzzy_match', "Partial match: '$violationText' → '{$partial['violation_type']}'");
+            $this->cacheViolationMapping($originalText, $partial['violation_type_id'], $partial['violation_type'], 'partial', 70);
+            $this->log('warning', 'fuzzy_match', "Partial match: '$originalText' → '{$partial['violation_type']}'");
             return $partial;
         }
 
         // Create new violation type
-        $this->log('warning', 'new_violation', "Creating new violation type: $violationText");
+        $this->log('warning', 'new_violation', "Creating new violation type: $originalText");
 
         $insertStmt = $this->db->prepare("
             INSERT INTO violation_types (
@@ -917,15 +983,31 @@ class ExcelImporter {
             ) VALUES (?, 1, NOW())
         ");
 
-        $insertStmt->execute([$violationText]);
+        $insertStmt->execute([$originalText]);
         $newId = $this->db->lastInsertId();
 
-        $this->cacheViolationMapping($violationText, $newId, $violationText, 'new', 100);
+        $this->cacheViolationMapping($originalText, $newId, $originalText, 'new', 100);
 
         return [
             'violation_type_id' => $newId,
-            'violation_type' => $violationText
+            'violation_type' => $originalText
         ];
+    }
+
+    /**
+     * Normalize violation text for matching
+     */
+    private function normalizeViolationText($text) {
+        // Convert to uppercase
+        $text = strtoupper(trim($text));
+
+        // Remove extra spaces (multiple spaces to single space)
+        $text = preg_replace('/\s+/', ' ', $text);
+
+        // Remove all spaces for comparison
+        $text = str_replace(' ', '', $text);
+
+        return $text;
     }
 
     /**
@@ -966,6 +1048,36 @@ class ExcelImporter {
     }
 
     /**
+     * Get fine amount based on offense count
+     */
+    private function getFineAmount($violationTypeId, $offenseCount) {
+        $stmt = $this->db->prepare("
+            SELECT
+                fine_amount_1,
+                fine_amount_2,
+                fine_amount_3
+            FROM violation_types
+            WHERE violation_type_id = ?
+        ");
+
+        $stmt->execute([$violationTypeId]);
+        $fines = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$fines) {
+            return 500.00; // Default fine if violation type not found
+        }
+
+        // Return appropriate fine based on offense count
+        if ($offenseCount == 1) {
+            return $fines['fine_amount_1'];
+        } elseif ($offenseCount == 2) {
+            return $fines['fine_amount_2'];
+        } else {
+            return $fines['fine_amount_3'];
+        }
+    }
+
+    /**
      * Complete batch
      */
     private function completeBatch($status) {
@@ -978,6 +1090,7 @@ class ExcelImporter {
                 skipped_rows = ?,
                 error_rows = ?,
                 citations_created = ?,
+                citations_paid = ?,
                 drivers_created = ?,
                 drivers_matched = ?,
                 violations_created = ?,
@@ -992,6 +1105,7 @@ class ExcelImporter {
             $this->stats['skipped_rows'],
             $this->stats['error_rows'],
             $this->stats['citations_created'],
+            $this->stats['citations_paid'],
             $this->stats['drivers_created'],
             $this->stats['drivers_matched'],
             $this->stats['violations_created'],

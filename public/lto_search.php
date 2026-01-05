@@ -1,6 +1,6 @@
 <?php
 /**
- * LTO Gattaran Branch - Driver Citation Search
+ * LTO Gattaran Branch - Driver Citation Search (ENHANCED)
  * Read-only search interface for LTO staff to view driver violation records
  */
 
@@ -20,13 +20,17 @@ $page_title = "LTO Gattaran - Driver Search";
 $searched = false;
 $search_term = '';
 $search_type = 'all';
+$status_filter = ''; // New: status filter
 $driver_info = null;
 $unpaid_citations = [];
 $all_citations = [];
 $summary = [
     'total_citations' => 0,
     'unpaid_count' => 0,
-    'total_amount_owed' => 0
+    'paid_count' => 0,
+    'contested_count' => 0,
+    'total_amount_owed' => 0,
+    'total_amount_paid' => 0
 ];
 
 // Process search if form submitted
@@ -34,25 +38,27 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
     $searched = true;
     $search_term = sanitize($_GET['search_term']);
     $search_type = sanitize($_GET['search_type'] ?? 'all');
+    $status_filter = sanitize($_GET['status_filter'] ?? '');
 
-    // Call API endpoint to get results
-    $api_url = BASE_PATH . '/api/lto/search_driver.php?' . http_build_query([
-        'search_term' => $search_term,
-        'search_type' => $search_type
-    ]);
-
-    // For server-side search, we'll do it directly here instead of API call
-    // Build WHERE clause
+    // Build WHERE clause with IMPROVED search logic
     $where_clauses = [];
     $params = [];
 
     switch ($search_type) {
+        case 'ticket':
+            $where_clauses[] = "c.ticket_number LIKE ?";
+            $params[] = "%{$search_term}%";
+            break;
         case 'license':
             $where_clauses[] = "c.license_number LIKE ?";
             $params[] = "%{$search_term}%";
             break;
         case 'name':
-            $where_clauses[] = "(c.first_name LIKE ? OR c.last_name LIKE ? OR CONCAT(c.first_name, ' ', c.last_name) LIKE ?)";
+            // IMPROVED: Include middle initial in CONCAT for better matching
+            $where_clauses[] = "(c.first_name LIKE ? OR c.last_name LIKE ?
+                OR CONCAT(c.first_name, ' ', COALESCE(CONCAT(c.middle_initial, ' '), ''), c.last_name) LIKE ?
+                OR CONCAT(c.first_name, ' ', c.last_name) LIKE ?)";
+            $params[] = "%{$search_term}%";
             $params[] = "%{$search_term}%";
             $params[] = "%{$search_term}%";
             $params[] = "%{$search_term}%";
@@ -63,7 +69,11 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
             break;
         case 'all':
         default:
-            $where_clauses[] = "(c.license_number LIKE ? OR c.first_name LIKE ? OR c.last_name LIKE ? OR c.plate_mv_engine_chassis_no LIKE ?)";
+            // IMPROVED: Include ticket number and middle initial in search
+            $where_clauses[] = "(c.ticket_number LIKE ? OR c.license_number LIKE ? OR c.first_name LIKE ? OR c.last_name LIKE ? OR c.plate_mv_engine_chassis_no LIKE ?
+                OR CONCAT(c.first_name, ' ', COALESCE(CONCAT(c.middle_initial, ' '), ''), c.last_name) LIKE ?)";
+            $params[] = "%{$search_term}%";
+            $params[] = "%{$search_term}%";
             $params[] = "%{$search_term}%";
             $params[] = "%{$search_term}%";
             $params[] = "%{$search_term}%";
@@ -73,39 +83,8 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
 
     $where_sql = implode(" AND ", $where_clauses);
 
-    // Get unpaid citations
+    // Get all citations first for statistics
     try {
-        $unpaid_sql = "
-            SELECT
-                c.citation_id,
-                c.ticket_number,
-                c.first_name,
-                c.last_name,
-                c.middle_initial,
-                c.license_number,
-                c.date_of_birth,
-                c.age,
-                c.barangay,
-                c.municipality,
-                c.province,
-                c.plate_mv_engine_chassis_no,
-                c.apprehension_datetime,
-                c.place_of_apprehension,
-                c.status,
-                c.total_fine,
-                GROUP_CONCAT(vt.violation_type ORDER BY vt.violation_type SEPARATOR ', ') as violations,
-                COUNT(v.violation_id) as violation_count
-            FROM citations c
-            LEFT JOIN violations v ON c.citation_id = v.citation_id
-            LEFT JOIN violation_types vt ON v.violation_type_id = vt.violation_type_id
-            WHERE c.status = 'pending' AND {$where_sql}
-            GROUP BY c.citation_id
-            ORDER BY c.apprehension_datetime DESC
-        ";
-        $stmt = db_query($unpaid_sql, $params);
-        $unpaid_citations = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        // Get all citations
         $all_sql = "
             SELECT
                 c.citation_id,
@@ -120,6 +99,7 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
                 c.municipality,
                 c.province,
                 c.plate_mv_engine_chassis_no,
+                c.vehicle_type,
                 c.apprehension_datetime,
                 c.place_of_apprehension,
                 c.status,
@@ -135,16 +115,32 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
             ORDER BY c.apprehension_datetime DESC
         ";
         $stmt = db_query($all_sql, $params);
-        $all_citations = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $all_results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Calculate summary
+        // Apply status filter if specified
+        if (!empty($status_filter)) {
+            $all_citations = array_filter($all_results, function($citation) use ($status_filter) {
+                return $citation['status'] === $status_filter;
+            });
+        } else {
+            $all_citations = $all_results;
+        }
+
+        // Calculate ENHANCED summary statistics
         $summary['total_citations'] = count($all_citations);
-        $summary['unpaid_count'] = count($unpaid_citations);
+        $summary['unpaid_count'] = count(array_filter($all_citations, fn($c) => $c['status'] === 'pending'));
+        $summary['paid_count'] = count(array_filter($all_citations, fn($c) => $c['status'] === 'paid'));
+        $summary['contested_count'] = count(array_filter($all_citations, fn($c) => $c['status'] === 'contested'));
+
+        $unpaid_citations = array_filter($all_citations, fn($c) => $c['status'] === 'pending');
+        $paid_citations = array_filter($all_citations, fn($c) => $c['status'] === 'paid');
+
         $summary['total_amount_owed'] = array_sum(array_column($unpaid_citations, 'total_fine'));
+        $summary['total_amount_paid'] = array_sum(array_column($paid_citations, 'total_fine'));
 
         // Get driver info
         if (!empty($all_citations)) {
-            $first = $all_citations[0];
+            $first = reset($all_citations);
             $driver_info = [
                 'first_name' => $first['first_name'] ?? '',
                 'last_name' => $first['last_name'] ?? '',
@@ -158,9 +154,11 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
                 'province' => $first['province'] ?? '',
                 'address' => trim(($first['barangay'] ?? '') . ', ' . ($first['municipality'] ?? '') . ', ' . ($first['province'] ?? '')),
                 'plate_number' => $first['plate_mv_engine_chassis_no'] ?? 'N/A',
-                'total_citations' => count($all_citations),
-                'unpaid_count' => count($unpaid_citations),
-                'total_amount_owed' => array_sum(array_column($unpaid_citations, 'total_fine'))
+                'total_citations' => $summary['total_citations'],
+                'unpaid_count' => $summary['unpaid_count'],
+                'paid_count' => $summary['paid_count'],
+                'total_amount_owed' => $summary['total_amount_owed'],
+                'total_amount_paid' => $summary['total_amount_paid']
             ];
         }
     } catch (Exception $e) {
@@ -185,13 +183,12 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
 
     <!-- Custom Styles -->
     <style>
-        /* ===== ENHANCED DESIGN SYSTEM: MODERN, FLAT, ELEVATED ===== */
+        /* ===== CLEAN DESIGN SYSTEM ===== */
 
         :root {
-            /* Color Palette - Vibrant & Professional */
+            /* Color Palette */
             --primary: #2563eb;
             --primary-dark: #1d4ed8;
-            --primary-light: #3b82f6;
             --success: #10b981;
             --success-dark: #059669;
             --info: #06b6d4;
@@ -213,11 +210,10 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
             --text-muted: #64748b;
             --text-label: #334155;
 
-            /* Shadows for depth */
+            /* Shadows */
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
 
         * {
@@ -235,7 +231,7 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
             min-height: 100vh;
         }
 
-        /* ===== HEADER WITH LOGOS ===== */
+        /* ===== HEADER ===== */
         .header-section {
             background: var(--white);
             padding: 20px 25px;
@@ -273,13 +269,6 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
             height: 52px;
             object-fit: contain;
             flex-shrink: 0;
-        }
-
-        .logo-text {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            font-weight: 500;
-            line-height: 1.3;
         }
 
         .header-title {
@@ -382,7 +371,7 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
             color: var(--text-muted);
         }
 
-        /* ===== BUTTONS - MODERN FLAT DESIGN ===== */
+        /* ===== BUTTONS ===== */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -431,7 +420,18 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
             border-color: var(--info-dark);
         }
 
-        /* ===== DRIVER INFO CARD - ENHANCED ===== */
+        .btn-success {
+            background: var(--success);
+            color: var(--white);
+            border-color: var(--success);
+        }
+
+        .btn-success:hover {
+            background: var(--success-dark);
+            border-color: var(--success-dark);
+        }
+
+        /* ===== DRIVER INFO CARD ===== */
         .driver-info-card {
             background: var(--white);
             border: 1px solid var(--border-gray);
@@ -452,20 +452,6 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
             gap: 10px;
             padding-bottom: 12px;
             border-bottom: 2px solid var(--light-gray);
-        }
-
-        .driver-info-card p {
-            font-size: clamp(0.88rem, 2.3vw, 0.95rem);
-            color: var(--text-dark);
-            margin: 10px 0;
-            line-height: 1.6;
-        }
-
-        .driver-info-card strong {
-            color: var(--text-label);
-            font-weight: 600;
-            min-width: 130px;
-            display: inline-block;
         }
 
         /* ===== DRIVER INFO GRID ===== */
@@ -527,9 +513,10 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
 
         .stat-value.primary { color: var(--primary); }
         .stat-value.danger { color: var(--danger); }
+        .stat-value.success { color: var(--success); }
         .stat-value.warning { color: var(--warning-dark); }
 
-        /* ===== RESULTS CARD - ENHANCED ===== */
+        /* ===== RESULTS CARD ===== */
         .results-card {
             background: var(--white);
             border: 1px solid var(--border-gray);
@@ -546,21 +533,20 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
             margin-bottom: 20px;
             display: flex;
             align-items: center;
+            justify-content: space-between;
             gap: 10px;
             padding-bottom: 12px;
             border-bottom: 2px solid var(--light-gray);
-        }
-
-        .results-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
             flex-wrap: wrap;
-            gap: 15px;
         }
 
-        /* ===== TABLE DESIGN - MODERN & CLEAN ===== */
+        .filter-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== TABLE DESIGN ===== */
         .table-container {
             overflow-x: auto;
             border: 1px solid var(--border-gray);
@@ -609,7 +595,7 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
             font-weight: 600;
         }
 
-        /* ===== BADGES - CLEAN FLAT DESIGN ===== */
+        /* ===== BADGES ===== */
         .badge {
             display: inline-block;
             padding: 5px 12px;
@@ -734,15 +720,6 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
                 align-items: center;
             }
 
-            .summary-cards {
-                grid-template-columns: 1fr;
-            }
-
-            .results-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
             .table {
                 font-size: 0.8rem;
             }
@@ -756,7 +733,8 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
         /* ===== PRINT STYLES ===== */
         @media print {
             .search-card,
-            .btn {
+            .btn,
+            .filter-controls {
                 display: none !important;
             }
 
@@ -766,39 +744,6 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
 
             .header-section {
                 border-bottom: 2px solid #000;
-            }
-        }
-
-        /* ===== UTILITY CLASSES ===== */
-        .mt-4 { margin-top: 1.5rem; }
-        .mb-3 { margin-bottom: 1rem; }
-        .me-2 { margin-right: 0.5rem; }
-        .gap-3 { gap: 1rem; }
-        .text-muted { color: var(--text-muted); }
-        .text-dark { color: var(--text-dark); }
-        .fw-bold { font-weight: 600; }
-        .d-flex { display: flex; }
-        .align-items-center { align-items: center; }
-        .justify-content-between { justify-content: space-between; }
-
-
-        /* ===== ROW UTILITY (GRID FORM LAYOUT) ===== */
-        .row {
-            display: grid;
-            gap: 15px;
-        }
-
-        .row.g-3 {
-            gap: 1rem;
-        }
-
-        .col-md-6 {
-            grid-column: span 1;
-        }
-
-        @media (min-width: 768px) {
-            .row:not(.single-col) {
-                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
@@ -811,13 +756,11 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
                 <!-- LTO Logo -->
                 <div class="logo-container">
                     <img src="../assets/img/LOGO1.png" alt="LTO Logo" class="logo">
-                    <!-- <div class="logo-text">Land Transportation Office<br>Gattaran Branch</div> -->
                 </div>
 
                 <!-- LGU Logo -->
                 <div class="logo-container">
                     <img src="../assets/img/TMG PNG.png" alt="LGU Logo" class="logo">
-                    <!-- <div class="logo-text">Local Government Unit<br>Municipality</div> -->
                 </div>
             </div>
 
@@ -849,26 +792,40 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
 
         <!-- Search Form -->
         <div class="search-card">
+            <h5>
+                <i data-lucide="search"></i>
+                Search Driver Records
+            </h5>
             <form method="GET" action="" id="searchForm">
-                <div style="display: grid; grid-template-columns: 1fr auto auto auto; gap: 12px; align-items: end;">
+                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto auto; gap: 12px; align-items: end;">
                     <div>
-                        <label for="search_term" class="form-label">Search Driver Records</label>
+                        <label for="search_term" class="form-label">Search Term</label>
                         <input
                             type="text"
                             class="form-control"
                             id="search_term"
                             name="search_term"
-                            placeholder="Enter license number, name, or plate number..."
+                            placeholder="Enter ticket #, name, license, or plate..."
                             value="<?php echo htmlspecialchars($search_term); ?>"
                             required>
                     </div>
                     <div>
-                        <label for="search_type" class="form-label">Filter By</label>
+                        <label for="search_type" class="form-label">Search By</label>
                         <select class="form-select" id="search_type" name="search_type">
                             <option value="all" <?php echo ($search_type === 'all') ? 'selected' : ''; ?>>All Fields</option>
+                            <option value="ticket" <?php echo ($search_type === 'ticket') ? 'selected' : ''; ?>>Ticket Number</option>
                             <option value="license" <?php echo ($search_type === 'license') ? 'selected' : ''; ?>>License Number</option>
                             <option value="name" <?php echo ($search_type === 'name') ? 'selected' : ''; ?>>Driver Name</option>
                             <option value="plate" <?php echo ($search_type === 'plate') ? 'selected' : ''; ?>>Plate Number</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="status_filter" class="form-label">Status</label>
+                        <select class="form-select" id="status_filter" name="status_filter">
+                            <option value="">All Status</option>
+                            <option value="pending" <?php echo ($status_filter === 'pending') ? 'selected' : ''; ?>>Pending</option>
+                            <option value="paid" <?php echo ($status_filter === 'paid') ? 'selected' : ''; ?>>Paid</option>
+                            <option value="contested" <?php echo ($status_filter === 'contested') ? 'selected' : ''; ?>>Contested</option>
                         </select>
                     </div>
                     <button type="submit" name="search" class="btn btn-primary">
@@ -923,18 +880,8 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
                         <?php endif; ?>
 
                         <div class="driver-info-item">
-                            <div class="driver-info-label">Barangay</div>
-                            <div class="driver-info-value"><?php echo htmlspecialchars($driver_info['barangay'] ?: 'N/A'); ?></div>
-                        </div>
-
-                        <div class="driver-info-item">
-                            <div class="driver-info-label">Municipality</div>
-                            <div class="driver-info-value"><?php echo htmlspecialchars($driver_info['municipality'] ?: 'N/A'); ?></div>
-                        </div>
-
-                        <div class="driver-info-item">
-                            <div class="driver-info-label">Province</div>
-                            <div class="driver-info-value"><?php echo htmlspecialchars($driver_info['province'] ?: 'N/A'); ?></div>
+                            <div class="driver-info-label">Address</div>
+                            <div class="driver-info-value"><?php echo htmlspecialchars($driver_info['address'] ?: 'N/A'); ?></div>
                         </div>
                     </div>
 
@@ -945,79 +892,55 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
                             <div class="stat-value primary"><?php echo number_format($driver_info['total_citations']); ?></div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-label">Unpaid Citations</div>
+                            <div class="stat-label">Unpaid</div>
                             <div class="stat-value danger"><?php echo number_format($driver_info['unpaid_count']); ?></div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-label">Total Amount Owed</div>
+                            <div class="stat-label">Paid</div>
+                            <div class="stat-value success"><?php echo number_format($driver_info['paid_count']); ?></div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Amount Owed</div>
                             <div class="stat-value warning">₱<?php echo number_format($driver_info['total_amount_owed'], 2); ?></div>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Unpaid Citations -->
-                <div class="results-card">
-                    <div class="results-header">
-                        <h5>
-                            <i data-lucide="alert-circle"></i>
-                            Unpaid Citations (<?php echo count($unpaid_citations); ?>)
-                        </h5>
-                        <?php if (!empty($unpaid_citations)): ?>
-                            <button onclick="window.print()" class="btn btn-info">
-                                <i data-lucide="printer"></i>
-                                Print
-                            </button>
-                        <?php endif; ?>
-                    </div>
-
-                    <?php if (!empty($unpaid_citations)): ?>
-                        <div class="table-container">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Ticket #</th>
-                                        <th>Date</th>
-                                        <th>Violations</th>
-                                        <th>Place</th>
-                                        <th>Amount</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($unpaid_citations as $citation): ?>
-                                        <tr>
-                                            <td><strong><?php echo htmlspecialchars($citation['ticket_number']); ?></strong></td>
-                                            <td><?php echo date('M d, Y', strtotime($citation['apprehension_datetime'])); ?></td>
-                                            <td><?php echo htmlspecialchars($citation['violations'] ?? 'N/A'); ?></td>
-                                            <td><?php echo htmlspecialchars($citation['place_of_apprehension']); ?></td>
-                                            <td><strong>₱<?php echo number_format($citation['total_fine'], 2); ?></strong></td>
-                                            <td><span class="badge bg-danger">Pending</span></td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
+                        <div class="stat-item">
+                            <div class="stat-label">Amount Paid</div>
+                            <div class="stat-value success">₱<?php echo number_format($driver_info['total_amount_paid'], 2); ?></div>
                         </div>
-                    <?php else: ?>
-                        <div class="alert alert-success">
-                            No unpaid citations found. Driver has no pending violations.
-                        </div>
-                    <?php endif; ?>
+                    </div>
                 </div>
 
                 <!-- Complete History -->
                 <div class="results-card">
                     <h5>
-                        <i data-lucide="history"></i>
-                        Complete Citation History (<?php echo count($all_citations); ?>)
+                        <span style="display: flex; align-items: center; gap: 10px;">
+                            <i data-lucide="history"></i>
+                            Complete Citation History (<?php echo count($all_citations); ?>)
+                        </span>
+                        <div class="filter-controls">
+                            <button onclick="exportTableToCSV()" class="btn btn-success" style="font-size: 0.8rem; padding: 8px 14px;">
+                                <i data-lucide="download"></i>
+                                Export CSV
+                            </button>
+                            <button onclick="window.print()" class="btn btn-info" style="font-size: 0.8rem; padding: 8px 14px;">
+                                <i data-lucide="printer"></i>
+                                Print
+                            </button>
+                        </div>
                     </h5>
 
+                    <?php if (!empty($all_citations)): ?>
                     <div class="table-container">
-                        <table class="table">
+                        <table class="table" id="citationsTable">
                             <thead>
                                 <tr>
                                     <th>Ticket #</th>
                                     <th>Date</th>
+                                    <th>First Name</th>
+                                    <th>Middle</th>
+                                    <th>Last Name</th>
                                     <th>Violations</th>
+                                    <th>Vehicle</th>
                                     <th>Place</th>
                                     <th>Amount</th>
                                     <th>Status</th>
@@ -1029,7 +952,11 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
                                     <tr>
                                         <td><strong><?php echo htmlspecialchars($citation['ticket_number']); ?></strong></td>
                                         <td><?php echo date('M d, Y', strtotime($citation['apprehension_datetime'])); ?></td>
+                                        <td><?php echo htmlspecialchars($citation['first_name']); ?></td>
+                                        <td><?php echo htmlspecialchars($citation['middle_initial'] ?? ''); ?></td>
+                                        <td><?php echo htmlspecialchars($citation['last_name']); ?></td>
                                         <td><?php echo htmlspecialchars($citation['violations'] ?? 'N/A'); ?></td>
+                                        <td><?php echo htmlspecialchars($citation['vehicle_type'] ?? 'N/A'); ?></td>
                                         <td><?php echo htmlspecialchars($citation['place_of_apprehension']); ?></td>
                                         <td><strong>₱<?php echo number_format($citation['total_fine'], 2); ?></strong></td>
                                         <td>
@@ -1049,7 +976,7 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
                                             if ($citation['payment_date']) {
                                                 echo date('M d, Y', strtotime($citation['payment_date']));
                                             } else {
-                                                echo '<span class="text-muted">-</span>';
+                                                echo '<span style="color: var(--text-muted);">—</span>';
                                             }
                                             ?>
                                         </td>
@@ -1058,6 +985,11 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
                             </tbody>
                         </table>
                     </div>
+                    <?php else: ?>
+                        <div class="alert alert-success">
+                            No citations found matching your filters.
+                        </div>
+                    <?php endif; ?>
                 </div>
 
             <?php else: ?>
@@ -1067,47 +999,68 @@ if (isset($_GET['search']) && !empty($_GET['search_term'])) {
                         <i data-lucide="search-x"></i>
                         <h4>No Results Found</h4>
                         <p>No citations found for "<?php echo htmlspecialchars($search_term); ?>"</p>
-                        <p class="text-muted">Try adjusting your search criteria or search type</p>
+                        <p style="margin-top: 8px; color: var(--text-muted);">Try adjusting your search criteria or search type</p>
                     </div>
                 </div>
             <?php endif; ?>
         <?php endif; ?>
     </div>
 
-    <!-- Initialize Lucide Icons -->
+    <!-- JavaScript -->
     <script>
+        // Initialize Lucide Icons
         document.addEventListener('DOMContentLoaded', function() {
             lucide.createIcons();
             updateDateTime();
-            setInterval(updateDateTime, 1000); // Update every second
+            setInterval(updateDateTime, 1000);
         });
 
+        // Update Date & Time
         function updateDateTime() {
             const now = new Date();
+            const dateOptions = { year: 'numeric', month: 'long', day: 'numeric' };
+            const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
 
-            // Format date: December 11, 2025
-            const dateOptions = {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            };
-            const dateString = now.toLocaleDateString('en-US', dateOptions);
-
-            // Format time: 02:30:45 PM
-            const timeOptions = {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: true
-            };
-            const timeString = now.toLocaleTimeString('en-US', timeOptions);
-
-            document.getElementById('currentDate').textContent = dateString;
-            document.getElementById('currentTime').textContent = timeString;
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', dateOptions);
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString('en-US', timeOptions);
         }
 
+        // Clear Form
         function clearForm() {
             window.location.href = window.location.pathname;
+        }
+
+        // Export to CSV
+        function exportTableToCSV() {
+            const table = document.getElementById('citationsTable');
+            const rows = table.querySelectorAll('tr');
+            let csv = [];
+
+            for (let i = 0; i < rows.length; i++) {
+                const row = [];
+                const cols = rows[i].querySelectorAll('td, th');
+
+                for (let j = 0; j < cols.length; j++) {
+                    let text = cols[j].textContent.replace(/"/g, '""');
+                    row.push('"' + text + '"');
+                }
+
+                csv.push(row.join(','));
+            }
+
+            // Download CSV
+            const csvContent = csv.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+
+            link.setAttribute('href', url);
+            link.setAttribute('download', 'lto_citations_' + new Date().toISOString().slice(0,10) + '.csv');
+            link.style.visibility = 'hidden';
+
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
     </script>
 </body>

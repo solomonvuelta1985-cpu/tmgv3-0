@@ -167,6 +167,12 @@ try {
     $dob = !empty($data['date_of_birth']) ? $data['date_of_birth'] : null;
     $age = !empty($data['age']) ? (int)$data['age'] : null;
 
+    // Prepare vehicle type value
+    $vehicle_type_value = $data['vehicle_type'];
+    if ($vehicle_type_value === 'Other' && !empty($data['other_vehicle_input'])) {
+        $vehicle_type_value = $data['other_vehicle_input'];
+    }
+
     // SECURITY FIX: Update citation (status field removed to prevent bypassing payment workflow)
     // Status changes should ONLY go through api/update_citation_status.php (admin-only)
     db_query(
@@ -185,6 +191,7 @@ try {
             license_number = ?,
             license_type = ?,
             plate_mv_engine_chassis_no = ?,
+            vehicle_type = ?,
             vehicle_description = ?,
             apprehension_datetime = ?,
             place_of_apprehension = ?,
@@ -207,6 +214,7 @@ try {
             $data['license_number'] ?? null,
             $data['license_type'] ?? null,
             $data['plate_mv_engine_chassis_no'],
+            $vehicle_type_value,
             $data['vehicle_description'] ?? null,
             $data['apprehension_datetime'],
             $data['place_of_apprehension'],
@@ -214,19 +222,6 @@ try {
             $data['remarks'] ?? null,
             $citation_id
         ]
-    );
-
-    // Update vehicle type
-    $vehicle_type_value = $data['vehicle_type'];
-    if ($vehicle_type_value === 'Other' && !empty($data['other_vehicle_input'])) {
-        $vehicle_type_value = $data['other_vehicle_input'];
-    }
-
-    // Delete existing vehicle and insert new one
-    db_query("DELETE FROM citation_vehicles WHERE citation_id = ?", [$citation_id]);
-    db_query(
-        "INSERT INTO citation_vehicles (citation_id, vehicle_type) VALUES (?, ?)",
-        [$citation_id, $vehicle_type_value]
     );
 
     // Update violations - delete existing and insert new ones

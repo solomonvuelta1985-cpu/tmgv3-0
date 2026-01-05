@@ -526,14 +526,13 @@ class ReportService {
             $where_clause = $this->buildDateWhereClause($start_date, $end_date, 'c.created_at');
 
             $sql = "SELECT
-                    cv.vehicle_type,
+                    COALESCE(c.vehicle_type, 'Unknown') as vehicle_type,
                     COUNT(*) as citation_count,
                     SUM(c.total_fine) as total_fines,
                     AVG(c.total_fine) as average_fine
-                    FROM citation_vehicles cv
-                    JOIN citations c ON cv.citation_id = c.citation_id
+                    FROM citations c
                     $where_clause
-                    GROUP BY cv.vehicle_type
+                    GROUP BY c.vehicle_type
                     ORDER BY citation_count DESC";
 
             $stmt = $this->conn->prepare($sql);

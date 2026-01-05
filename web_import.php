@@ -417,6 +417,10 @@ if ($showResults) {
                                     <div class="number"><?php echo number_format($stats['citations_created']); ?></div>
                                     <div class="label">Citations Created</div>
                                 </div>
+                                <div class="stat-card" style="border: 2px solid #28a745;">
+                                    <div class="number" style="color: #28a745;"><?php echo number_format($stats['citations_paid'] ?? 0); ?></div>
+                                    <div class="label">Citations Marked PAID</div>
+                                </div>
                                 <div class="stat-card">
                                     <div class="number"><?php echo number_format($stats['drivers_created']); ?></div>
                                     <div class="label">Drivers Created</div>
