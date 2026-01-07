@@ -41,9 +41,9 @@ if ($isLocalhost) {
     // DATABASE CREDENTIALS - Get these from your hosting cPanel
     // Go to: https://vawc-audit.online:2083 → MySQL® Databases
     define('DB_HOST', 'localhost');  // Usually 'localhost'
-    define('DB_NAME', 'YOUR_DATABASE_NAME_HERE');  // ⚠️ REPLACE with actual database name from cPanel
-    define('DB_USER', 'YOUR_DATABASE_USER_HERE');  // ⚠️ REPLACE with actual database username from cPanel
-    define('DB_PASS', 'YOUR_DATABASE_PASSWORD_HERE');  // ⚠️ REPLACE with actual database password
+    define('DB_NAME', 'btrahnqi_traffic_system');  // Database name from cPanel
+    define('DB_USER', 'btrahnqi_richmond');  // Database username from cPanel
+    define('DB_PASS', 'Almondmamon@17');  // Database password
 
     // BASE PATH - Already configured for /tmg/
     define('BASE_PATH', '/tmg');  // ✅ Correct for vawc-audit.online/tmg/

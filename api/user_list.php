@@ -14,17 +14,38 @@ header('Content-Type: application/json');
 require_admin();
 
 try {
-    $search = filter_input(INPUT_GET, 'search', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $role = filter_input(INPUT_GET, 'role', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $status = filter_input(INPUT_GET, 'status', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    // Check if requesting a specific user by ID
+    $user_id = filter_input(INPUT_GET, 'user_id', FILTER_VALIDATE_INT);
 
-    $users = get_all_users($search, $role, $status);
+    if ($user_id) {
+        // Get specific user by ID
+        $user = get_user_by_id($user_id);
+        if ($user) {
+            echo json_encode([
+                'success' => true,
+                'users' => [$user],
+                'count' => 1
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => 'User not found'
+            ]);
+        }
+    } else {
+        // Get all users with filters
+        $search = filter_input(INPUT_GET, 'search', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $role = filter_input(INPUT_GET, 'role', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+        $status = filter_input(INPUT_GET, 'status', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-    echo json_encode([
-        'success' => true,
-        'users' => $users,
-        'count' => count($users)
-    ]);
+        $users = get_all_users($search, $role, $status);
+
+        echo json_encode([
+            'success' => true,
+            'users' => $users,
+            'count' => count($users)
+        ]);
+    }
 
 } catch (Exception $e) {
     http_response_code(500);
