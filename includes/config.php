@@ -120,14 +120,12 @@ if (!headers_sent()) {
     // PRODUCTION ONLY: HTTPS Enforcement Headers
     // LOCALHOST: Commented out (no HTTPS)
     if (!$isLocalhost) {
-        // HSTS: Force HTTPS for 1 year (only enable when HTTPS is active)
-        // header("Strict-Transport-Security: max-age=31536000; includeSubDomains; preload");
+        // HSTS: Force HTTPS for 1 year (enabled for production)
+        header("Strict-Transport-Security: max-age=31536000; includeSubDomains; preload");
 
         // Upgrade insecure requests to HTTPS
-        // header("Content-Security-Policy: upgrade-insecure-requests");
+        header("Content-Security-Policy: upgrade-insecure-requests");
     }
-    // UNCOMMENT FOR PRODUCTION WITH HTTPS:
-    // header("Strict-Transport-Security: max-age=31536000; includeSubDomains; preload");
 
     // Permissions Policy (formerly Feature Policy)
     header("Permissions-Policy: geolocation=(), microphone=(), camera=()");

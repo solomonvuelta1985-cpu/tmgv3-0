@@ -8,7 +8,7 @@
 # ============================================================
 php_flag log_errors on
 php_flag display_errors off
-php_value error_log "c:/xampp/htdocs/tmg/php_errors.log"
+# php_value error_log "c:/xampp/htdocs/tmg/php_errors.log"  # Commented out - use relative path in php.ini or config.php
 php_value error_reporting -1
 php_flag expose_php off
 
@@ -63,13 +63,13 @@ Options -Indexes
 # ============================================================
 # 5. HTTPS ENFORCEMENT (Production Only)
 # LOCALHOST: Commented out (no HTTPS available)
-# PRODUCTION: Uncomment to force HTTPS
+# PRODUCTION: Enabled for production security
 # ============================================================
-# <IfModule mod_rewrite.c>
-#     RewriteEngine On
-#     RewriteCond %{HTTPS} off
-#     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-# </IfModule>
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
 
 # ============================================================
 # 6. REQUEST SIZE LIMITS (Prevent DoS)

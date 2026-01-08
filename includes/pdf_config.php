@@ -104,7 +104,7 @@ define('RECEIPT_DISCLAIMER', 'This is an official receipt. Keep for your records
 
 define('RECEIPT_SHOW_QR_CODE', true);
 define('RECEIPT_QR_CODE_SIZE', 100); // pixels
-define('RECEIPT_QR_CODE_VERIFY_URL', 'http://localhost/tmg/public/verify_receipt.php?or=');
+define('RECEIPT_QR_CODE_VERIFY_URL', 'https://btracs.online/tmg/public/verify_receipt.php?or=');
 
 // ============================================================================
 // SECURITY SETTINGS
