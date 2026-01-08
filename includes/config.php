@@ -34,19 +34,13 @@ if ($isLocalhost) {
 
 } else {
     // ========================================
-    // PRODUCTION SERVER CONFIGURATION (vawc-audit.online)
-    // ⚠️ UPDATE DATABASE CREDENTIALS BELOW!
+    // PRODUCTION SERVER CONFIGURATION (btracs.online)
     // ========================================
-
-    // DATABASE CREDENTIALS - Get these from your hosting cPanel
-    // Go to: https://vawc-audit.online:2083 → MySQL® Databases
-    define('DB_HOST', 'localhost');  // Usually 'localhost'
-    define('DB_NAME', 'btrahnqi_traffic_system');  // Database name from cPanel
-    define('DB_USER', 'btrahnqi_richmond');  // Database username from cPanel
-    define('DB_PASS', 'Almondmamon@17');  // Database password
-
-    // BASE PATH - Already configured for /tmg/
-    define('BASE_PATH', '/tmg');  // ✅ Correct for vawc-audit.online/tmg/
+    define('DB_HOST', 'localhost');
+    define('DB_NAME', 'btrahnqi_traffic_system');
+    define('DB_USER', 'btrahnqi_richmond');
+    define('DB_PASS', 'Almondmamon@17');
+    define('BASE_PATH', '/tmg');
 }
 
 // Common configuration for both environments
