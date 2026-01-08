@@ -16,9 +16,9 @@ check_session_timeout();
 $reportService = new ReportService(getPDO());
 
 // Get filter parameters
-// Default to a wide range to ensure data is shown
-$start_date = isset($_GET['start_date']) ? sanitize($_GET['start_date']) : date('Y-01-01'); // First day of current year
-$end_date = isset($_GET['end_date']) ? sanitize($_GET['end_date']) : date('Y-m-d'); // Today
+// If no dates provided, show records from the beginning of time to today
+$start_date = isset($_GET['start_date']) && $_GET['start_date'] !== '' ? sanitize($_GET['start_date']) : '2000-01-01'; // Far back start date
+$end_date = isset($_GET['end_date']) && $_GET['end_date'] !== '' ? sanitize($_GET['end_date']) : date('Y-m-d'); // Today
 $report_type = isset($_GET['report_type']) ? sanitize($_GET['report_type']) : 'financial';
 $interval = isset($_GET['interval']) ? sanitize($_GET['interval']) : 'day';
 
@@ -103,6 +103,10 @@ switch ($report_type) {
 
 // Close connection
 $reportService->closeConnection();
+
+// ALWAYS show debug info temporarily to diagnose issue
+// Remove this after fixing
+$_GET['debug_data'] = true;
 
 // Debug: Show data counts
 if (isset($_GET['debug_data'])) {
