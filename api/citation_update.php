@@ -103,6 +103,11 @@ try {
         }
     }
 
+    // Validate barangay (handle "Other" option)
+    if ($_POST['barangay'] === 'Other' && empty($_POST['other_barangay'])) {
+        $errors[] = 'Please specify the other barangay.';
+    }
+
     if (!empty($errors)) {
         http_response_code(400);
         echo json_encode([
@@ -173,6 +178,12 @@ try {
         $vehicle_type_value = $data['other_vehicle_input'];
     }
 
+    // Prepare barangay value (handle "Other" option)
+    $barangay_value = $data['barangay'];
+    if ($barangay_value === 'Other' && !empty($data['other_barangay'])) {
+        $barangay_value = $data['other_barangay'];
+    }
+
     // SECURITY FIX: Update citation (status field removed to prevent bypassing payment workflow)
     // Status changes should ONLY go through api/update_citation_status.php (admin-only)
     db_query(
@@ -208,7 +219,7 @@ try {
             $dob,
             $age,
             $data['zone'] ?? null,
-            $data['barangay'],
+            $barangay_value,
             $data['municipality'] ?? 'Baggao',
             $data['province'] ?? 'Cagayan',
             $data['license_number'] ?? null,
@@ -252,14 +263,14 @@ try {
             continue;
         }
 
-        // Get offense count for this driver and violation (excluding current citation)
+        // Get offense count for this driver and violation (excluding current citation and deleted citations)
         $offense_count = 1;
         if ($driver_id) {
             $stmt = db_query(
                 "SELECT COUNT(*) + 1 as offense_count
                 FROM violations v
                 JOIN citations c ON v.citation_id = c.citation_id
-                WHERE c.driver_id = ? AND v.violation_type_id = ? AND c.citation_id != ?",
+                WHERE c.driver_id = ? AND v.violation_type_id = ? AND c.citation_id != ? AND c.deleted_at IS NULL",
                 [$driver_id, $violation_type_id, $citation_id]
             );
             $result = $stmt->fetch();
@@ -300,7 +311,7 @@ try {
                 "SELECT COUNT(*) + 1 as offense_count
                 FROM violations v
                 JOIN citations c ON v.citation_id = c.citation_id
-                WHERE c.driver_id = ? AND v.violation_type_id = ? AND c.citation_id != ?",
+                WHERE c.driver_id = ? AND v.violation_type_id = ? AND c.citation_id != ? AND c.deleted_at IS NULL",
                 [$driver_id, $other_violation_type_id, $citation_id]
             );
             $result = $stmt->fetch();

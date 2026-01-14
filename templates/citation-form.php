@@ -211,8 +211,8 @@
                 <div class="col-12">
                     <label class="form-label">Apprehension Date & Time *</label>
                     <div class="input-group">
+                        <button class="btn btn-outline-secondary" type="button" id="toggleDateTime"><i class="fas fa-calendar-plus"></i> Now</button>
                         <input type="datetime-local" name="apprehension_datetime" class="form-control" id="apprehensionDateTime" required>
-                        <button class="btn btn-outline-secondary" type="button" id="toggleDateTime" title="Set/Clear"><i class="fas fa-calendar-alt"></i></button>
                     </div>
                 </div>
                 <div class="col-12">

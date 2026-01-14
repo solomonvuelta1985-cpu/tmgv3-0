@@ -73,7 +73,12 @@ try {
             $errors[] = 'Please specify the other vehicle type.';
         }
     }
-    
+
+    // Validate barangay (handle "Other" option)
+    if (!empty($_POST['barangay']) && $_POST['barangay'] === 'Other' && empty($_POST['other_barangay'])) {
+        $errors[] = 'Please specify the other barangay.';
+    }
+
     if (!empty($errors)) {
         http_response_code(400);
         echo json_encode([
@@ -151,21 +156,54 @@ try {
     $dob = !empty($data['date_of_birth']) ? $data['date_of_birth'] : null;
     $age = !empty($data['age']) ? (int)$data['age'] : null;
 
-    // Check if driver exists or create new one (ALWAYS create/link driver_id!)
-    $driver_id = null;
-    $existing_driver = null;
+    // Handle barangay (handle "Other" option)
+    $barangay_value = $data['barangay'];
+    if ($barangay_value === 'Other' && !empty($data['other_barangay'])) {
+        $barangay_value = $data['other_barangay'];
+    }
 
-    // Strategy 1: Try to find by license number (if provided)
-    if (!empty($data['license_number'])) {
+    // Handle vehicle type (single selection)
+    $vehicle_type_value = $data['vehicle_type'];
+    if ($vehicle_type_value === 'Other' && !empty($data['other_vehicle_input'])) {
+        $vehicle_type_value = $data['other_vehicle_input'];
+    }
+
+    // Check if driver exists or create new one (IMMUTABLE DRIVERS - NEVER UPDATE!)
+    $driver_id = null;
+
+    // PRIORITY 1: Use selected_driver_id if provided by duplicate detection system
+    if (!empty($data['selected_driver_id'])) {
+        $driver_id = (int)$data['selected_driver_id'];
+
+        // Verify driver exists
+        $stmt = db_query(
+            "SELECT driver_id FROM drivers WHERE driver_id = ?",
+            [$driver_id]
+        );
+        $existing = $stmt->fetch();
+
+        if (!$existing) {
+            // Invalid driver_id provided, fall back to matching
+            $driver_id = null;
+            error_log("Invalid selected_driver_id provided: {$data['selected_driver_id']}");
+        }
+    }
+
+    // PRIORITY 2: Try to find by license number (only if no selected_driver_id)
+    if ($driver_id === null && !empty($data['license_number'])) {
         $stmt = db_query(
             "SELECT driver_id FROM drivers WHERE license_number = ?",
             [$data['license_number']]
         );
-        $existing_driver = $stmt->fetch();
+        $existing = $stmt->fetch();
+
+        if ($existing) {
+            $driver_id = $existing['driver_id'];
+        }
     }
 
-    // Strategy 2: If no license match, try to find by name + DOB (for unlicensed drivers)
-    if (!$existing_driver && !empty($data['last_name']) && !empty($data['first_name'])) {
+    // PRIORITY 3: Try to find by name + DOB (only if still no match - for unlicensed drivers)
+    if ($driver_id === null && !empty($data['last_name']) && !empty($data['first_name'])) {
         $sql = "SELECT driver_id FROM drivers
                 WHERE last_name = ? AND first_name = ?";
         $params = [$data['last_name'], $data['first_name']];
@@ -178,24 +216,17 @@ try {
 
         $sql .= " LIMIT 1";
         $stmt = db_query($sql, $params);
-        $existing_driver = $stmt->fetch();
+        $existing = $stmt->fetch();
+
+        if ($existing) {
+            $driver_id = $existing['driver_id'];
+        }
     }
 
-    if ($existing_driver) {
-        // Driver exists - update their information
-        $driver_id = $existing_driver['driver_id'];
-        db_query(
-            "UPDATE drivers SET last_name = ?, first_name = ?, middle_initial = ?,
-            suffix = ?, date_of_birth = ?, age = ?, zone = ?, barangay = ?, municipality = ?, province = ?,
-            license_number = ?, license_type = ? WHERE driver_id = ?",
-            [
-                $data['last_name'], $data['first_name'], $data['middle_initial'],
-                $data['suffix'], $dob, $age, $data['zone'], $data['barangay'],
-                $data['municipality'] ?? 'Baggao', $data['province'] ?? 'Cagayan',
-                $data['license_number'] ?? null, $data['license_type'] ?? null, $driver_id
-            ]
-        );
-    } else {
+    // PRIORITY 4: Create new driver only if no existing driver found
+    // IMPORTANT: Drivers are IMMUTABLE - we never update existing driver records
+    // All driver info at time of citation is preserved in the citation snapshot
+    if ($driver_id === null) {
         // Driver doesn't exist - create new driver record (even without license!)
         db_query(
             "INSERT INTO drivers (last_name, first_name, middle_initial, suffix,
@@ -203,19 +234,16 @@ try {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [
                 $data['last_name'], $data['first_name'], $data['middle_initial'],
-                $data['suffix'], $dob, $age, $data['zone'], $data['barangay'],
+                $data['suffix'], $dob, $age, $data['zone'], $barangay_value,
                 $data['municipality'] ?? 'Baggao', $data['province'] ?? 'Cagayan',
                 $data['license_number'] ?? null, $data['license_type'] ?? null
             ]
         );
         $driver_id = $pdo->lastInsertId();
     }
-
-    // Handle vehicle type (single selection)
-    $vehicle_type_value = $data['vehicle_type'];
-    if ($vehicle_type_value === 'Other' && !empty($data['other_vehicle_input'])) {
-        $vehicle_type_value = $data['other_vehicle_input'];
-    }
+    // If driver_id was found (from selected_driver_id, license, or name matching),
+    // we use it as-is WITHOUT updating the driver record.
+    // Driver history is tracked via citation snapshots, not by modifying the master record.
 
     // Insert citation
     db_query(
@@ -226,7 +254,7 @@ try {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())",
         [
             $data['ticket_number'], $driver_id, $data['last_name'], $data['first_name'],
-            $data['middle_initial'], $data['suffix'], $dob, $age, $data['zone'], $data['barangay'],
+            $data['middle_initial'], $data['suffix'], $dob, $age, $data['zone'], $barangay_value,
             $data['municipality'] ?? 'Baggao', $data['province'] ?? 'Cagayan',
             $data['license_number'] ?? null, $data['license_type'] ?? null,
             $data['plate_mv_engine_chassis_no'], $vehicle_type_value, $data['vehicle_description'],
@@ -256,14 +284,14 @@ try {
             continue; // Skip invalid violation IDs
         }
 
-        // Get offense count for this driver and violation
+        // Get offense count for this driver and violation (exclude deleted citations)
         $offense_count = 1;
         if ($driver_id) {
             $stmt = db_query(
                 "SELECT COUNT(*) + 1 as offense_count
                 FROM violations v
                 JOIN citations c ON v.citation_id = c.citation_id
-                WHERE c.driver_id = ? AND v.violation_type_id = ?",
+                WHERE c.driver_id = ? AND v.violation_type_id = ? AND c.deleted_at IS NULL",
                 [$driver_id, $violation_type_id]
             );
             $result = $stmt->fetch();
@@ -301,14 +329,14 @@ try {
             $other_violation_type_id = $existing['violation_type_id'];
         }
 
-        // Get offense count for this driver and violation
+        // Get offense count for this driver and violation (exclude deleted citations)
         $offense_count = 1;
         if ($driver_id) {
             $stmt = db_query(
                 "SELECT COUNT(*) + 1 as offense_count
                 FROM violations v
                 JOIN citations c ON v.citation_id = c.citation_id
-                WHERE c.driver_id = ? AND v.violation_type_id = ?",
+                WHERE c.driver_id = ? AND v.violation_type_id = ? AND c.deleted_at IS NULL",
                 [$driver_id, $other_violation_type_id]
             );
             $result = $stmt->fetch();

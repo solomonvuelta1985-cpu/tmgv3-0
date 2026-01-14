@@ -59,6 +59,7 @@ if ($pdo === null) {
                 AND p.status IN ('pending_print', 'completed')
             WHERE c.status = 'pending'
             AND p.payment_id IS NULL
+            AND c.deleted_at IS NULL
             GROUP BY c.citation_id
             ORDER BY c.apprehension_datetime DESC";
 

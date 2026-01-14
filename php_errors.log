@@ -1,13 +1,24 @@
-[22-Dec-2025 16:30:39 Asia/Manila] No valid pending payments found
-[22-Dec-2025 16:31:36 Asia/Manila] No valid pending payments found
-[22-Dec-2025 16:31:43 Asia/Manila] No valid pending payments found
-[23-Dec-2025 08:23:37 Asia/Manila] Database connection failed: SQLSTATE[HY000] [2006] MySQL server has gone away
-[23-Dec-2025 08:23:37 Asia/Manila] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in C:\xampp\htdocs\tmg\includes\functions.php:26
-Stack trace:
-#0 C:\xampp\htdocs\tmg\includes\auth.php(264): db_query('SELECT user_id,...', Array)
-#1 C:\xampp\htdocs\tmg\public\login.php(32): authenticate('admin', 'admin123')
-#2 {main}
-  thrown in C:\xampp\htdocs\tmg\includes\functions.php on line 26
-[23-Dec-2025 13:12:23 Asia/Manila] No valid pending payments found
-[26-Dec-2025 10:19:05 Asia/Manila] Database connection failed: SQLSTATE[HY000] [2002] No connection could be made because the target machine actively refused it
-[26-Dec-2025 10:19:05 Asia/Manila] Error checking pending print payments: Database connection failed
+[14-Jan-2026 13:12:00 Asia/Manila] Database query error: SQLSTATE[42S22]: Column not found: 1054 Unknown column 'c.officer_id' in 'on clause' - Query: SELECT
+            c.*,
+            GROUP_CONCAT(
+                CONCAT(vt.violation_type, ' (', v.offense_count,
+                CASE v.offense_count
+                    WHEN 1 THEN 'st'
+                    WHEN 2 THEN 'nd'
+                    WHEN 3 THEN 'rd'
+                    ELSE 'th'
+                END, ' offense)')
+                SEPARATOR ', '
+            ) as violations,
+            COUNT(v.violation_id) as violation_count,
+            ao.officer_name,
+            ao.badge_number,
+            ao.position
+        FROM citations c
+        LEFT JOIN violations v ON c.citation_id = v.citation_id
+        LEFT JOIN violation_types vt ON v.violation_type_id = vt.violation_type_id
+        LEFT JOIN apprehending_officers ao ON c.officer_id = ao.officer_id
+        WHERE c.driver_id = ? AND c.deleted_at IS NULL
+        GROUP BY c.citation_id
+        ORDER BY c.apprehension_datetime DESC
+[14-Jan-2026 13:12:00 Asia/Manila] Error fetching driver history: Database operation failed

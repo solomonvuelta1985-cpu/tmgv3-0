@@ -67,7 +67,7 @@ try {
     // ========================================
     // BUILD WHERE CLAUSE
     // ========================================
-    $whereConditions = ["c.status = 'pending'", "p.payment_id IS NULL"];
+    $whereConditions = ["c.status = 'pending'", "p.payment_id IS NULL", "c.deleted_at IS NULL"];
     $params = [];
 
     // Search across multiple fields
@@ -194,7 +194,7 @@ try {
                  FROM citations c
                  LEFT JOIN payments p ON c.citation_id = p.citation_id
                      AND p.status IN ('pending_print', 'completed')
-                 WHERE c.status = 'pending' AND p.payment_id IS NULL";
+                 WHERE c.status = 'pending' AND p.payment_id IS NULL AND c.deleted_at IS NULL";
 
     $statsStmt = $pdo->query($statsSql);
     $stats = $statsStmt->fetch(PDO::FETCH_ASSOC);
@@ -208,7 +208,7 @@ try {
                          INNER JOIN citations c ON v.citation_id = c.citation_id
                          LEFT JOIN payments p ON c.citation_id = p.citation_id
                              AND p.status IN ('pending_print', 'completed')
-                         WHERE c.status = 'pending' AND p.payment_id IS NULL
+                         WHERE c.status = 'pending' AND p.payment_id IS NULL AND c.deleted_at IS NULL
                          ORDER BY vt.violation_type";
 
     $violationTypesStmt = $pdo->query($violationTypesSql);

@@ -192,6 +192,7 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                         <th>Violations</th>
                         <th>Fine</th>
                         <th>Status</th>
+                        <th>Created by</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -207,6 +208,7 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                         <td><div class="skeleton skeleton-text skeleton-lg"></div></td>
                         <td><div class="skeleton skeleton-text skeleton-sm"></div></td>
                         <td><div class="skeleton skeleton-badge"></div></td>
+                        <td><div class="skeleton skeleton-text"></div></td>
                         <td>
                             <div class="d-flex gap-1">
                                 <div class="skeleton skeleton-btn"></div>
@@ -244,6 +246,7 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                         <th>Violations</th>
                         <th>Fine</th>
                         <th>Status</th>
+                        <th>Created By</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -285,11 +288,28 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                                 </span>
                             </td>
                             <td>
+                                <?php
+                                if (!empty($citation['created_by_name'])) {
+                                    echo '<span title="Username: ' . htmlspecialchars($citation['created_by_username'] ?? 'N/A') . '">' .
+                                         htmlspecialchars($citation['created_by_name']) . '</span>';
+                                } else {
+                                    echo '<span class="text-muted">-</span>';
+                                }
+                                ?>
+                            </td>
+                            <td>
                                 <div class="d-flex gap-1" role="group">
                                     <!-- View Details Button -->
                                     <button type="button" class="btn btn-info btn-sm" onclick="viewCitation(<?php echo $citation['citation_id']; ?>)" title="View Details">
                                         <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
                                     </button>
+
+                                    <!-- View Driver History Button -->
+                                    <?php if (!empty($citation['driver_id'])): ?>
+                                    <a href="driver_history.php?driver_id=<?php echo $citation['driver_id']; ?>" class="btn btn-secondary btn-sm" title="View Driver History">
+                                        <i data-lucide="history" style="width: 16px; height: 16px;"></i>
+                                    </a>
+                                    <?php endif; ?>
 
                                     <!-- Process Payment Button -->
                                     <?php if ($can_pay && $citation['status'] !== 'paid'): ?>

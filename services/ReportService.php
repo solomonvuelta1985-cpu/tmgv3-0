@@ -39,7 +39,7 @@ class ReportService {
                     SUM(CASE WHEN c.status = 'pending' THEN c.total_fine ELSE 0 END) as total_fines_pending,
                     AVG(c.total_fine) as average_fine
                     FROM citations c
-                    $where_clause";
+                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL");
 
             $stmt = $this->conn->prepare($sql);
             $this->bindDateParams($stmt, $start_date, $end_date);
@@ -75,7 +75,7 @@ class ReportService {
                     SUM(c.total_fine) as total_fines,
                     SUM(CASE WHEN c.status = 'paid' THEN c.total_fine ELSE 0 END) as collected_fines
                     FROM citations c
-                    $where_clause
+                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . "
                     GROUP BY period
                     ORDER BY period ASC";
 
@@ -111,7 +111,7 @@ class ReportService {
                         ELSE '90+ days'
                     END as aging_category
                     FROM citations c
-                    WHERE c.status = :status
+                    WHERE c.status = :status AND c.deleted_at IS NULL
                     ORDER BY c.created_at ASC";
 
             $stmt = $this->conn->prepare($sql);
@@ -144,7 +144,7 @@ class ReportService {
                     FROM violations v
                     JOIN violation_types vt ON v.violation_type_id = vt.violation_type_id
                     JOIN citations c ON v.citation_id = c.citation_id
-                    $where_clause
+                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . "
                     GROUP BY vt.violation_type_id, vt.violation_type, vt.fine_amount_1
                     ORDER BY violation_count DESC";
 
@@ -183,7 +183,7 @@ class ReportService {
                     FROM violations v
                     JOIN violation_types vt ON v.violation_type_id = vt.violation_type_id
                     JOIN citations c ON v.citation_id = c.citation_id
-                    $where_clause
+                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . "
                     GROUP BY period, vt.violation_type_id
                     ORDER BY period ASC, count DESC";
 
@@ -220,7 +220,7 @@ class ReportService {
                     FROM citations c
                     LEFT JOIN violations v ON c.citation_id = v.citation_id
                     LEFT JOIN violation_types vt ON v.violation_type_id = vt.violation_type_id
-                    $where_clause
+                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . "
                     GROUP BY c.driver_id, c.last_name, c.first_name, c.license_number
                     HAVING citation_count >= :min_citations
                     ORDER BY citation_count DESC, total_fines DESC";
@@ -252,7 +252,7 @@ class ReportService {
                     SUM(v.fine_amount) as total_fines
                     FROM violations v
                     JOIN citations c ON v.citation_id = c.citation_id
-                    $where_clause
+                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . "
                     GROUP BY v.offense_count
                     ORDER BY v.offense_count ASC";
 
@@ -284,7 +284,7 @@ class ReportService {
                     MIN(created_at) as first_citation,
                     MAX(created_at) as latest_citation
                     FROM citations
-                    $where_clause
+                    " . ($where_clause ? $where_clause . " AND deleted_at IS NULL" : "WHERE deleted_at IS NULL") . "
                     AND apprehension_officer IS NOT NULL
                     AND apprehension_officer != ''
                     GROUP BY apprehension_officer
@@ -310,6 +310,7 @@ class ReportService {
     public function getOfficerActivityTimeline($officer_name = null, $start_date = null, $end_date = null) {
         try {
             $where_clauses = [];
+            $where_clauses[] = "deleted_at IS NULL";
             if ($start_date && $end_date) {
                 $where_clauses[] = "created_at BETWEEN :start_date AND :end_date";
             }
@@ -317,7 +318,7 @@ class ReportService {
                 $where_clauses[] = "apprehension_officer = :officer_name";
             }
 
-            $where_clause = !empty($where_clauses) ? "WHERE " . implode(" AND ", $where_clauses) : "";
+            $where_clause = "WHERE " . implode(" AND ", $where_clauses);
 
             $sql = "SELECT
                     DATE_FORMAT(created_at, '%Y-%m-%d') as citation_date,
@@ -359,7 +360,7 @@ class ReportService {
                     COUNT(*) as citation_count,
                     SUM(c.total_fine) as total_fines
                     FROM citations c
-                    $where_clause
+                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . "
                     GROUP BY hour_of_day
                     ORDER BY hour_of_day ASC";
 
@@ -390,7 +391,7 @@ class ReportService {
                     SUM(c.total_fine) as total_fines,
                     AVG(c.total_fine) as average_fine
                     FROM citations c
-                    $where_clause
+                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . "
                     GROUP BY day_name, day_number
                     ORDER BY day_number ASC";
 
@@ -423,7 +424,7 @@ class ReportService {
                     SUM(CASE WHEN c.status = 'paid' THEN 1 ELSE 0 END) as paid_count,
                     SUM(CASE WHEN c.status = 'pending' THEN 1 ELSE 0 END) as pending_count
                     FROM citations c
-                    $where_clause
+                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . "
                     GROUP BY month, month_name
                     ORDER BY month ASC";
 
@@ -452,7 +453,7 @@ class ReportService {
                     COUNT(*) as count,
                     SUM(total_fine) as total_fines
                     FROM citations
-                    $where_clause
+                    " . ($where_clause ? $where_clause . " AND deleted_at IS NULL" : "WHERE deleted_at IS NULL") . "
                     GROUP BY status
                     ORDER BY count DESC";
 
@@ -484,9 +485,9 @@ class ReportService {
         try {
             $where_clause = $this->buildDateWhereClause($start_date, $end_date, 'c.created_at');
             if ($where_clause) {
-                $where_clause .= " AND c.status = 'contested'";
+                $where_clause .= " AND c.status = 'contested' AND c.deleted_at IS NULL";
             } else {
-                $where_clause = "WHERE c.status = 'contested'";
+                $where_clause = "WHERE c.status = 'contested' AND c.deleted_at IS NULL";
             }
 
             $sql = "SELECT
@@ -531,7 +532,7 @@ class ReportService {
                     SUM(c.total_fine) as total_fines,
                     AVG(c.total_fine) as average_fine
                     FROM citations c
-                    $where_clause
+                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . "
                     GROUP BY c.vehicle_type
                     ORDER BY citation_count DESC";
 
@@ -555,9 +556,9 @@ class ReportService {
         try {
             $where_clause = $this->buildDateWhereClause($start_date, $end_date, 'created_at');
             if ($where_clause) {
-                $where_clause .= " AND status IN ('paid', 'dismissed')";
+                $where_clause .= " AND status IN ('paid', 'dismissed') AND deleted_at IS NULL";
             } else {
-                $where_clause = "WHERE status IN ('paid', 'dismissed')";
+                $where_clause = "WHERE status IN ('paid', 'dismissed') AND deleted_at IS NULL";
             }
 
             $sql = "SELECT
@@ -967,6 +968,87 @@ class ReportService {
         } catch (PDOException $e) {
             error_log("Error getting cashier recent payments count: " . $e->getMessage());
             return 0;
+        }
+    }
+
+    /**
+     * Get drivers by barangay with citation statistics
+     * @param string $start_date Start date
+     * @param string $end_date End date
+     * @return array Drivers grouped by barangay
+     */
+    public function getDriversByBarangay($start_date = null, $end_date = null) {
+        try {
+            $where_clause = $this->buildDateWhereClause($start_date, $end_date, 'c.created_at');
+
+            $sql = "SELECT
+                    c.barangay,
+                    COUNT(DISTINCT CONCAT(c.last_name, '|', c.first_name, '|', COALESCE(c.license_number, ''))) as total_drivers,
+                    COUNT(c.citation_id) as total_citations,
+                    SUM(c.total_fine) as total_fines,
+                    SUM(CASE WHEN c.status = 'paid' THEN c.total_fine ELSE 0 END) as collected_fines,
+                    SUM(CASE WHEN c.status = 'pending' THEN c.total_fine ELSE 0 END) as pending_fines
+                    FROM citations c
+                    $where_clause
+                    AND c.deleted_at IS NULL
+                    AND c.barangay IS NOT NULL
+                    AND c.barangay != ''
+                    GROUP BY c.barangay
+                    ORDER BY total_citations DESC, c.barangay ASC";
+
+            $stmt = $this->conn->prepare($sql);
+            $this->bindDateParams($stmt, $start_date, $end_date);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error getting drivers by barangay: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    /**
+     * Get detailed driver list for a specific barangay
+     * @param string $barangay Barangay name
+     * @param string $start_date Start date
+     * @param string $end_date End date
+     * @return array Detailed driver information
+     */
+    public function getDriversBySpecificBarangay($barangay, $start_date = null, $end_date = null) {
+        try {
+            $where_clause = $this->buildDateWhereClause($start_date, $end_date, 'c.created_at');
+            if ($where_clause) {
+                $where_clause .= " AND c.barangay = :barangay";
+            } else {
+                $where_clause = "WHERE c.barangay = :barangay";
+            }
+
+            $sql = "SELECT
+                    c.barangay,
+                    CONCAT(c.last_name, ', ', c.first_name) as driver_name,
+                    c.license_number,
+                    COUNT(c.citation_id) as citation_count,
+                    SUM(c.total_fine) as total_fines,
+                    SUM(CASE WHEN c.status = 'paid' THEN c.total_fine ELSE 0 END) as paid_fines,
+                    SUM(CASE WHEN c.status = 'pending' THEN c.total_fine ELSE 0 END) as pending_fines,
+                    MIN(c.created_at) as first_citation,
+                    MAX(c.created_at) as latest_citation,
+                    GROUP_CONCAT(DISTINCT vt.violation_type SEPARATOR ', ') as violations
+                    FROM citations c
+                    LEFT JOIN violations v ON c.citation_id = v.citation_id
+                    LEFT JOIN violation_types vt ON v.violation_type_id = vt.violation_type_id
+                    $where_clause
+                    AND c.deleted_at IS NULL
+                    GROUP BY c.barangay, c.last_name, c.first_name, c.license_number
+                    ORDER BY citation_count DESC, c.last_name ASC, c.first_name ASC";
+
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindValue(':barangay', $barangay, PDO::PARAM_STR);
+            $this->bindDateParams($stmt, $start_date, $end_date);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            error_log("Error getting drivers for specific barangay: " . $e->getMessage());
+            return [];
         }
     }
 

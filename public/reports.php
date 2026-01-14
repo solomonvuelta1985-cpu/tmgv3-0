@@ -96,6 +96,14 @@ switch ($report_type) {
         $data['payments_total_pages'] = ceil($data['payments_total_count'] / $payments_per_page);
         break;
 
+    case 'barangay':
+        $data['barangay_summary'] = $reportService->getDriversByBarangay($start_date, $end_date);
+        // If a specific barangay is selected, get detailed driver list
+        if (isset($_GET['barangay_filter']) && $_GET['barangay_filter'] !== '') {
+            $data['barangay_drivers'] = $reportService->getDriversBySpecificBarangay($_GET['barangay_filter'], $start_date, $end_date);
+        }
+        break;
+
     default:
         $data['summary'] = $reportService->getFinancialSummary($start_date, $end_date);
         break;
@@ -103,30 +111,6 @@ switch ($report_type) {
 
 // Close connection
 $reportService->closeConnection();
-
-// ALWAYS show debug info temporarily to diagnose issue
-// Remove this after fixing
-$_GET['debug_data'] = true;
-
-// Debug: Show data counts
-if (isset($_GET['debug_data'])) {
-    echo '<div class="alert alert-warning">';
-    echo '<strong>Data Debug:</strong><br>';
-    echo 'Report Type: ' . $report_type . '<br>';
-    echo 'Date Range: ' . $start_date . ' to ' . $end_date . '<br>';
-    echo 'Data keys: ' . implode(', ', array_keys($data)) . '<br>';
-    foreach ($data as $key => $value) {
-        if (is_array($value)) {
-            echo $key . ' count: ' . count($value) . '<br>';
-            if (!empty($value) && isset($value[0])) {
-                echo $key . ' sample: <pre>' . print_r(array_slice($value, 0, 1), true) . '</pre>';
-            }
-        } else {
-            echo $key . ': ' . print_r($value, true) . '<br>';
-        }
-    }
-    echo '</div>';
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -172,6 +156,7 @@ if (isset($_GET['debug_data'])) {
                             <option value="officers" <?php echo $report_type === 'officers' ? 'selected' : ''; ?>>Officer Performance</option>
                             <option value="cashier" <?php echo $report_type === 'cashier' ? 'selected' : ''; ?>>Cashier Performance</option>
                             <option value="drivers" <?php echo $report_type === 'drivers' ? 'selected' : ''; ?>>Driver Reports</option>
+                            <option value="barangay" <?php echo $report_type === 'barangay' ? 'selected' : ''; ?>>Barangay Reports</option>
                             <option value="time" <?php echo $report_type === 'time' ? 'selected' : ''; ?>>Time-Based Analytics</option>
                             <option value="status" <?php echo $report_type === 'status' ? 'selected' : ''; ?>>Status & Operations</option>
                             <option value="vehicles" <?php echo $report_type === 'vehicles' ? 'selected' : ''; ?>>Vehicle Reports</option>
@@ -227,6 +212,8 @@ if (isset($_GET['debug_data'])) {
                     <?php include ROOT_PATH . '/templates/reports/cashier-report.php'; ?>
                 <?php elseif ($report_type === 'drivers'): ?>
                     <?php include ROOT_PATH . '/templates/reports/drivers-report.php'; ?>
+                <?php elseif ($report_type === 'barangay'): ?>
+                    <?php include ROOT_PATH . '/templates/reports/barangay-report.php'; ?>
                 <?php elseif ($report_type === 'time'): ?>
                     <?php include ROOT_PATH . '/templates/reports/time-report.php'; ?>
                 <?php elseif ($report_type === 'status'): ?>

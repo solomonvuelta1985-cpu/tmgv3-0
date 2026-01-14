@@ -706,15 +706,43 @@ if (empty($_SESSION['csrf_token'])) {
                         </div>
                         <div class="col-md-3">
                             <label class="form-label">Barangay *</label>
-                            <input type="text" name="barangay" class="form-control" value="<?php echo htmlspecialchars($citation['barangay']); ?>" required>
+                            <?php
+                            $barangays = [
+                                'Adaoag', 'Agaman (Proper)', 'Agaman Norte', 'Agaman Sur', 'Alba', 'Annayatan',
+                                'Asassi', 'Asinga-Via', 'Awallan', 'Bacagan', 'Bagunot', 'Barsat East',
+                                'Barsat West', 'Bitag Grande', 'Bitag Pequeño', 'Bunugan', 'C. Verzosa (Valley Cove)',
+                                'Canagatan', 'Carupian', 'Catugay', 'Dabbac Grande', 'Dalin', 'Dalla',
+                                'Hacienda Intal', 'Ibulo', 'Immurung', 'J. Pallagao', 'Lasilat', 'Mabini',
+                                'Masical', 'Mocag', 'Nangalinan', 'Poblacion (Centro)', 'Remus', 'San Antonio',
+                                'San Francisco', 'San Isidro', 'San Jose', 'San Miguel', 'San Vicente',
+                                'Santa Margarita', 'Santor', 'Taguing', 'Taguntungan', 'Tallang', 'Taytay',
+                                'Temblique', 'Tungel'
+                            ];
+                            $current_barangay = $citation['barangay'] ?? '';
+                            $is_other_barangay = !in_array($current_barangay, $barangays) && !empty($current_barangay);
+                            ?>
+                            <select name="barangay" class="form-select" id="barangaySelect" required>
+                                <option value="" disabled>Select Barangay</option>
+                                <?php
+                                foreach ($barangays as $barangay) {
+                                    $selected = ($current_barangay === $barangay) ? 'selected' : '';
+                                    echo "<option value=\"" . htmlspecialchars($barangay) . "\" $selected>" . htmlspecialchars($barangay) . "</option>";
+                                }
+                                ?>
+                                <option value="Other" <?php echo $is_other_barangay ? 'selected' : ''; ?>>Other</option>
+                            </select>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-3" id="otherBarangayDiv" style="display: <?php echo $is_other_barangay ? 'block' : 'none'; ?>;">
+                            <label class="form-label">Specify Other Barangay *</label>
+                            <input type="text" name="other_barangay" class="form-control" id="otherBarangayInput" placeholder="Enter other barangay" value="<?php echo $is_other_barangay ? htmlspecialchars($current_barangay) : ''; ?>">
+                        </div>
+                        <div class="col-md-3" id="municipalityDiv" style="display: <?php echo !empty($current_barangay) ? 'block' : 'none'; ?>;">
                             <label class="form-label">Municipality</label>
-                            <input type="text" name="municipality" class="form-control" value="<?php echo htmlspecialchars($citation['municipality'] ?? 'Baggao'); ?>">
+                            <input type="text" name="municipality" class="form-control" id="municipalityInput" value="<?php echo htmlspecialchars($citation['municipality'] ?? 'Baggao'); ?>" <?php echo !$is_other_barangay ? 'readonly' : ''; ?>>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-3" id="provinceDiv" style="display: <?php echo !empty($current_barangay) ? 'block' : 'none'; ?>;">
                             <label class="form-label">Province</label>
-                            <input type="text" name="province" class="form-control" value="<?php echo htmlspecialchars($citation['province'] ?? 'Cagayan'); ?>">
+                            <input type="text" name="province" class="form-control" id="provinceInput" value="<?php echo htmlspecialchars($citation['province'] ?? 'Cagayan'); ?>" <?php echo !$is_other_barangay ? 'readonly' : ''; ?>>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">License Number</label>
@@ -1117,6 +1145,59 @@ if (empty($_SESSION['csrf_token'])) {
                 ageField.value = '';
             }
         });
+
+        // ==========================================
+        // BARANGAY DROPDOWN HANDLING
+        // ==========================================
+        const barangaySelect = document.getElementById('barangaySelect');
+        const otherBarangayDiv = document.getElementById('otherBarangayDiv');
+        const otherBarangayInput = document.getElementById('otherBarangayInput');
+        const municipalityDiv = document.getElementById('municipalityDiv');
+        const provinceDiv = document.getElementById('provinceDiv');
+        const municipalityInput = document.getElementById('municipalityInput');
+        const provinceInput = document.getElementById('provinceInput');
+
+        if (barangaySelect && otherBarangayDiv && otherBarangayInput && municipalityDiv && provinceDiv) {
+            barangaySelect.addEventListener('change', () => {
+                const isOther = barangaySelect.value === 'Other';
+                if (isOther) {
+                    otherBarangayDiv.style.display = 'block';
+                    otherBarangayInput.required = true;
+                    otherBarangayInput.focus();
+                    municipalityDiv.style.display = 'block';
+                    provinceDiv.style.display = 'block';
+                    if (municipalityInput) {
+                        municipalityInput.value = '';
+                        municipalityInput.removeAttribute('readonly');
+                    }
+                    if (provinceInput) {
+                        provinceInput.value = '';
+                        provinceInput.removeAttribute('readonly');
+                    }
+                } else {
+                    otherBarangayDiv.style.display = 'none';
+                    otherBarangayInput.required = false;
+                    otherBarangayInput.value = '';
+                    if (barangaySelect.value) {
+                        municipalityDiv.style.display = 'block';
+                        provinceDiv.style.display = 'block';
+                        if (municipalityInput) {
+                            municipalityInput.value = 'Baggao';
+                            municipalityInput.setAttribute('readonly', true);
+                        }
+                        if (provinceInput) {
+                            provinceInput.value = 'Cagayan';
+                            provinceInput.setAttribute('readonly', true);
+                        }
+                    } else {
+                        municipalityDiv.style.display = 'none';
+                        provinceDiv.style.display = 'none';
+                        if (municipalityInput) municipalityInput.value = '';
+                        if (provinceInput) provinceInput.value = '';
+                    }
+                }
+            });
+        }
 
         // ==========================================
         // VIOLATION TABS AND SEARCH FUNCTIONALITY

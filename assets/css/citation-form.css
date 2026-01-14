@@ -252,8 +252,14 @@ body {
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.12);
 }
 
-#otherViolationInput, #otherVehicleInput, #otherBarangayInput {
+/* Note: #otherBarangayInput visibility is controlled by its parent div #otherBarangayDiv */
+#otherViolationInput, #otherVehicleInput {
     display: none;
+    margin-top: 8px;
+    border-radius: 4px;
+}
+
+#otherBarangayInput {
     margin-top: 8px;
     border-radius: 4px;
 }
@@ -267,9 +273,86 @@ body {
     color: var(--text-dark);
 }
 
+/* ==========================================
+   DATETIME INPUT GROUP - IMPROVED ACCESSIBILITY
+   ========================================== */
+.input-group {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+}
+
+.input-group .form-control {
+    flex: 1;
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-left: none;
+}
+
+/* Move native browser calendar icon to the left */
+.input-group input[type="datetime-local"] {
+    direction: rtl;
+    text-align: left;
+}
+
+.input-group input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    margin-left: 0;
+    margin-right: auto;
+}
+
 .input-group .btn {
-    border-radius: 4px;
-    font-size: clamp(0.8rem, 2vw, 0.85rem);
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    padding: 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-width: auto;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+/* Color indicators based on state */
+.input-group .btn.btn-success {
+    background-color: #28a745 !important;
+    color: white !important;
+    border-color: #28a745 !important;
+}
+
+.input-group .btn.btn-success:hover {
+    background-color: #218838 !important;
+    border-color: #1e7e34 !important;
+    color: white !important;
+}
+
+.input-group .btn.btn-outline-secondary {
+    background-color: #6c757d !important;
+    color: white !important;
+    border-color: #6c757d !important;
+}
+
+.input-group .btn.btn-outline-secondary:hover {
+    background-color: #5a6268 !important;
+    color: white !important;
+    transform: none;
+}
+
+.input-group .btn i {
+    font-size: 1.1rem;
+}
+
+/* Mobile optimization for datetime toggle */
+@media (max-width: 768px) {
+    .input-group .btn {
+        min-width: auto;
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .input-group .btn i {
+        font-size: 1.1rem;
+    }
 }
 
 /* ==========================================

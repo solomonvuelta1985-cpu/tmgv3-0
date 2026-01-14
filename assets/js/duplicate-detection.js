@@ -6,6 +6,8 @@
 (function() {
     let selectedDuplicateDriver = null;
     let currentViolationContext = null; // Store which violation triggered the modal
+    let formFieldsModified = false; // Track if driver fields were modified after selection
+    let originalDriverData = null; // Store original driver data for comparison
 
     document.addEventListener('DOMContentLoaded', function() {
         // Add modal HTML to page if not exists
@@ -15,6 +17,9 @@
 
         // Setup duplicate detection listeners
         setupDuplicateDetection();
+
+        // Setup form submission validation for data changes
+        setupFormSubmissionValidation();
     });
 
     /**
@@ -632,6 +637,122 @@
         if (dobField) {
             dobField.dispatchEvent(new Event('change'));
         }
+
+        // Store original data for comparison
+        originalDriverData = {
+            license_number: driver.license_number || '',
+            first_name: driver.first_name || '',
+            last_name: driver.last_name || '',
+            date_of_birth: driver.date_of_birth || '',
+            barangay: driver.barangay || '',
+            plate_mv_engine_chassis_no: driver.plate_mv_engine_chassis_no || ''
+        };
+        formFieldsModified = false;
+
+        // Add change listeners to track modifications
+        const driverFields = ['license_number', 'first_name', 'last_name',
+                             'date_of_birth', 'barangay', 'plate_mv_engine_chassis_no'];
+
+        driverFields.forEach(fieldName => {
+            const field = document.getElementById(fieldName);
+            if (field) {
+                // Remove any existing listener first to avoid duplicates
+                field.removeEventListener('input', trackFieldChange);
+                field.addEventListener('input', trackFieldChange);
+            }
+        });
+    }
+
+    /**
+     * Track when driver fields are modified after selection
+     */
+    function trackFieldChange() {
+        formFieldsModified = true;
+    }
+
+    /**
+     * Setup form submission validation to detect data changes
+     */
+    function setupFormSubmissionValidation() {
+        const form = document.getElementById('citationForm');
+        if (!form) return;
+
+        // Add event listener with high priority (capture phase)
+        // This will run BEFORE the citation-form.js submit handler
+        form.addEventListener('submit', function(e) {
+            // Check if driver data was modified after selecting existing driver
+            if (selectedDuplicateDriver && formFieldsModified) {
+                // Prevent default submission
+                e.preventDefault();
+                e.stopImmediatePropagation();
+
+                // Show confirmation dialog using SweetAlert2
+                Swal.fire({
+                    title: 'Driver Information Changed',
+                    html: `
+                        <p>You have modified driver information after selecting an existing record.</p>
+                        <p><strong>What would you like to do?</strong></p>
+                        <ul style="text-align: left; margin: 20px 40px;">
+                            <li><strong>Keep Original:</strong> Use the driver's existing information (recommended)</li>
+                            <li><strong>Create New:</strong> Create a new driver record with the modified information</li>
+                            <li><strong>Cancel:</strong> Review and correct the information</li>
+                        </ul>
+                    `,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    showDenyButton: true,
+                    confirmButtonText: '<i class="fas fa-undo"></i> Keep Original',
+                    denyButtonText: '<i class="fas fa-user-plus"></i> Create New Record',
+                    cancelButtonText: '<i class="fas fa-times"></i> Cancel',
+                    confirmButtonColor: '#3b82f6',
+                    denyButtonColor: '#f59e0b',
+                    cancelButtonColor: '#6c757d',
+                    customClass: {
+                        popup: 'swal-wide'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Restore original driver data
+                        if (originalDriverData) {
+                            Object.keys(originalDriverData).forEach(key => {
+                                const field = document.getElementById(key);
+                                if (field) {
+                                    field.value = originalDriverData[key] || '';
+                                }
+                            });
+
+                            // Trigger DOB change to recalculate age
+                            const dobField = document.getElementById('date_of_birth');
+                            if (dobField) {
+                                dobField.dispatchEvent(new Event('change'));
+                            }
+                        }
+
+                        // Reset modification flag
+                        formFieldsModified = false;
+
+                        // Re-submit the form
+                        form.dispatchEvent(new Event('submit'));
+                    } else if (result.isDenied) {
+                        // Remove selected_driver_id to force new record creation
+                        const driverIdField = document.getElementById('selected_driver_id');
+                        if (driverIdField) {
+                            driverIdField.remove();
+                        }
+
+                        // Clear selected driver reference
+                        selectedDuplicateDriver = null;
+                        formFieldsModified = false;
+
+                        // Re-submit the form
+                        form.dispatchEvent(new Event('submit'));
+                    }
+                    // If cancelled, do nothing - form won't submit
+                });
+
+                return false; // Prevent submission
+            }
+        }, true); // Use capture phase to run before citation-form.js handler
     }
 
     /**

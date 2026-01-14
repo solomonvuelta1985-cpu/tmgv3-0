@@ -129,78 +129,90 @@ function viewCitation(id) {
     const modal = new bootstrap.Modal(document.getElementById('viewModal'));
     modal.show();
 
-    fetch(`../api/citation_get.php?id=${id}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                displayCitationDetails(data.citation);
-
-                // Handle Edit button based on citation status
-                const editBtn = document.getElementById('editFromViewBtn');
-                if (editBtn) {
-                    if (data.citation.status === 'paid') {
-                        editBtn.disabled = true;
-                        editBtn.classList.remove('btn-warning');
-                        editBtn.classList.add('btn-outline');
-                        editBtn.title = 'Paid citations cannot be edited';
-                        editBtn.innerHTML = '<i data-lucide="lock" style="width: 16px; height: 16px;"></i><span>Edit (Locked)</span>';
-                        editBtn.onclick = null;
-                        // Re-initialize Lucide icons
-                        if (typeof lucide !== 'undefined') {
-                            lucide.createIcons();
-                        }
-                    } else {
-                        editBtn.disabled = false;
-                        editBtn.classList.remove('btn-outline');
-                        editBtn.classList.add('btn-warning');
-                        editBtn.title = 'Edit Citation';
-                        editBtn.innerHTML = '<i data-lucide="edit" style="width: 16px; height: 16px;"></i><span>Edit</span>';
-                        // Re-initialize Lucide icons
-                        if (typeof lucide !== 'undefined') {
-                            lucide.createIcons();
-                        }
-                        editBtn.onclick = () => editCitation(id);
-                    }
+    // Fetch citation details and driver history in parallel
+    Promise.all([
+        fetch(`../api/citation_get.php?id=${id}`).then(r => r.json()),
+        // Only fetch history if citation has a driver_id
+        fetch(`../api/citation_get.php?id=${id}`)
+            .then(r => r.json())
+            .then(citationData => {
+                if (citationData.status === 'success' && citationData.citation.driver_id) {
+                    return fetch(`../api/get_driver_history.php?driver_id=${citationData.citation.driver_id}`)
+                        .then(r => r.json());
                 }
+                return { success: false };
+            })
+    ])
+    .then(([citationData, historyData]) => {
+        if (citationData.status === 'success') {
+            displayCitationDetails(citationData.citation, historyData);
 
-                // Handle Update Status dropdown based on citation status
-                const statusDropdown = document.getElementById('statusDropdown');
-                if (statusDropdown) {
-                    if (data.citation.status === 'paid') {
-                        statusDropdown.disabled = true;
-                        statusDropdown.classList.remove('btn-primary', 'dropdown-toggle');
-                        statusDropdown.classList.add('btn-outline');
-                        statusDropdown.title = 'Paid citations cannot have status changed';
-                        statusDropdown.innerHTML = '<i data-lucide="lock" style="width: 16px; height: 16px;"></i><span>Status (Locked)</span>';
-                        statusDropdown.removeAttribute('data-bs-toggle');
-                        // Re-initialize Lucide icons for the new lock icon
-                        if (typeof lucide !== 'undefined') {
-                            lucide.createIcons();
-                        }
-                    } else {
-                        statusDropdown.disabled = false;
-                        statusDropdown.classList.remove('btn-outline');
-                        statusDropdown.classList.add('btn-primary', 'dropdown-toggle');
-                        statusDropdown.title = '';
-                        statusDropdown.innerHTML = '<i data-lucide="list-checks" style="width: 16px; height: 16px;"></i><span>Update Status</span>';
-                        statusDropdown.setAttribute('data-bs-toggle', 'dropdown');
-                        // Re-initialize Lucide icons
-                        if (typeof lucide !== 'undefined') {
-                            lucide.createIcons();
-                        }
+            // Handle Edit button based on citation status
+            const editBtn = document.getElementById('editFromViewBtn');
+            if (editBtn) {
+                if (citationData.citation.status === 'paid') {
+                    editBtn.disabled = true;
+                    editBtn.classList.remove('btn-warning');
+                    editBtn.classList.add('btn-outline');
+                    editBtn.title = 'Paid citations cannot be edited';
+                    editBtn.innerHTML = '<i data-lucide="lock" style="width: 16px; height: 16px;"></i><span>Edit (Locked)</span>';
+                    editBtn.onclick = null;
+                    // Re-initialize Lucide icons
+                    if (typeof lucide !== 'undefined') {
+                        lucide.createIcons();
                     }
-                }
-            } else {
-                document.getElementById('viewModalContent').innerHTML = `
-                    <div class="alert alert-danger">
-                        <i data-lucide="alert-circle" style="width: 18px; height: 18px;"></i> ${data.message}
-                    </div>
-                `;
-                if (typeof lucide !== 'undefined') {
-                    lucide.createIcons();
+                } else {
+                    editBtn.disabled = false;
+                    editBtn.classList.remove('btn-outline');
+                    editBtn.classList.add('btn-warning');
+                    editBtn.title = 'Edit Citation';
+                    editBtn.innerHTML = '<i data-lucide="edit" style="width: 16px; height: 16px;"></i><span>Edit</span>';
+                    // Re-initialize Lucide icons
+                    if (typeof lucide !== 'undefined') {
+                        lucide.createIcons();
+                    }
+                    editBtn.onclick = () => editCitation(id);
                 }
             }
-        })
+
+            // Handle Update Status dropdown based on citation status
+            const statusDropdown = document.getElementById('statusDropdown');
+            if (statusDropdown) {
+                if (citationData.citation.status === 'paid') {
+                    statusDropdown.disabled = true;
+                    statusDropdown.classList.remove('btn-primary', 'dropdown-toggle');
+                    statusDropdown.classList.add('btn-outline');
+                    statusDropdown.title = 'Paid citations cannot have status changed';
+                    statusDropdown.innerHTML = '<i data-lucide="lock" style="width: 16px; height: 16px;"></i><span>Status (Locked)</span>';
+                    statusDropdown.removeAttribute('data-bs-toggle');
+                    // Re-initialize Lucide icons for the new lock icon
+                    if (typeof lucide !== 'undefined') {
+                        lucide.createIcons();
+                    }
+                } else {
+                    statusDropdown.disabled = false;
+                    statusDropdown.classList.remove('btn-outline');
+                    statusDropdown.classList.add('btn-primary', 'dropdown-toggle');
+                    statusDropdown.title = '';
+                    statusDropdown.innerHTML = '<i data-lucide="list-checks" style="width: 16px; height: 16px;"></i><span>Update Status</span>';
+                    statusDropdown.setAttribute('data-bs-toggle', 'dropdown');
+                    // Re-initialize Lucide icons
+                    if (typeof lucide !== 'undefined') {
+                        lucide.createIcons();
+                    }
+                }
+            }
+        } else {
+            document.getElementById('viewModalContent').innerHTML = `
+                <div class="alert alert-danger">
+                    <i data-lucide="alert-circle" style="width: 18px; height: 18px;"></i> ${citationData.message}
+                </div>
+            `;
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+    })
         .catch(error => {
             document.getElementById('viewModalContent').innerHTML = `
                 <div class="alert alert-danger">
@@ -213,7 +225,7 @@ function viewCitation(id) {
         });
 }
 
-function displayCitationDetails(citation) {
+function displayCitationDetails(citation, historyData) {
     const violationsList = citation.violations.map(v => `
         <div class="violation-item">
             <div class="violation-item-content">
@@ -223,6 +235,63 @@ function displayCitationDetails(citation) {
             <div class="violation-item-amount">₱${parseFloat(v.fine_amount).toFixed(2)}</div>
         </div>
     `).join('');
+
+    // Generate driver history section (exclude current citation)
+    let driverHistoryHtml = '';
+    if (historyData && historyData.success && historyData.citations && historyData.citations.length > 1) {
+        const otherCitations = historyData.citations.filter(c => c.citation_id != citation.citation_id).slice(0, 5);
+
+        if (otherCitations.length > 0) {
+            const historyCards = otherCitations.map(c => `
+                <div class="history-card">
+                    <div class="history-card-header">
+                        <span class="history-ticket-number">Citation #${c.ticket_number}</span>
+                        <span class="history-date">
+                            <i data-lucide="calendar" style="width: 12px; height: 12px;"></i>
+                            ${new Date(c.apprehension_datetime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        </span>
+                    </div>
+                    <div class="history-card-body">
+                        <div class="history-detail">
+                            <i data-lucide="alert-triangle" style="width: 14px; height: 14px;"></i>
+                            <span>${c.violations || 'No violations'}</span>
+                        </div>
+                        <div class="history-detail">
+                            <i data-lucide="map-pin" style="width: 14px; height: 14px;"></i>
+                            <span>${c.place_of_apprehension}</span>
+                        </div>
+                        <div class="history-detail">
+                            <i data-lucide="user" style="width: 14px; height: 14px;"></i>
+                            <span>${c.apprehension_officer || 'N/A'}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            driverHistoryHtml = `
+                <div class="driver-history-section">
+                    <div class="driver-history-header">
+                        <div class="driver-history-title">
+                            <i data-lucide="history" style="width: 18px; height: 18px;"></i>
+                            <h6>Driver History</h6>
+                        </div>
+                        <span class="driver-history-count">${otherCitations.length} previous citation${otherCitations.length !== 1 ? 's' : ''}</span>
+                    </div>
+                    <div class="driver-history-cards">
+                        ${historyCards}
+                    </div>
+                    ${historyData.total_citations > 6 ? `
+                        <div class="driver-history-footer">
+                            <a href="driver_history.php?driver_id=${citation.driver_id}" class="btn btn-sm btn-outline-primary">
+                                View Complete History (${historyData.total_citations} total)
+                                <i data-lucide="arrow-right" style="width: 14px; height: 14px;"></i>
+                            </a>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+    }
 
     const html = `
         <div class="citation-detail-container">
@@ -363,6 +432,9 @@ function displayCitationDetails(citation) {
                     </div>
                 </div>
             </div>
+
+            <!-- Driver History Section -->
+            ${driverHistoryHtml}
         </div>
     `;
 

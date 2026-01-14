@@ -21,25 +21,38 @@ class CitationService {
 
     /**
      * Generate next available ticket number
+     * Automatically detects and preserves the citation number format (number of digits)
      * @return string Next ticket number
      */
     public function generateNextTicketNumber() {
         try {
+            // Fetch the most recently created citation (by timestamp, not numeric value)
+            // This ensures manual entries with different formats are respected
             $stmt = $this->conn->query(
                 "SELECT ticket_number FROM citations
-                 ORDER BY CAST(ticket_number AS UNSIGNED) DESC LIMIT 1"
+                 ORDER BY created_at DESC, citation_id DESC LIMIT 1"
             );
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
 
+            // Detect format length and extract numeric value
             if ($row && !empty($row['ticket_number'])) {
-                $max_ticket = (int)preg_replace('/[^0-9]/', '', $row['ticket_number']);
+                $last_ticket = $row['ticket_number'];
+
+                // Detect the format length (number of digits in the last citation)
+                $format_length = strlen($last_ticket);
+
+                // Extract numeric value (remove any non-numeric characters)
+                $max_ticket = (int)preg_replace('/[^0-9]/', '', $last_ticket);
             } else {
-                $max_ticket = 6100;
+                // No citations exist yet - use default 6-digit format starting from 000001
+                $format_length = 6;
+                $max_ticket = 0;
             }
 
-            $next_ticket = sprintf("%05d", $max_ticket + 1);
+            // Generate next ticket number with the same format length
+            $next_ticket = sprintf("%0{$format_length}d", $max_ticket + 1);
 
-            // Ensure unique ticket number
+            // Ensure unique ticket number (in case of duplicates)
             $stmt = $this->conn->prepare(
                 "SELECT COUNT(*) FROM citations WHERE ticket_number = :ticket_number"
             );
@@ -47,14 +60,15 @@ class CitationService {
 
             while ($stmt->fetchColumn() > 0) {
                 $max_ticket++;
-                $next_ticket = sprintf("%05d", $max_ticket + 1);
+                $next_ticket = sprintf("%0{$format_length}d", $max_ticket + 1);
                 $stmt->execute([':ticket_number' => $next_ticket]);
             }
 
             return $next_ticket;
         } catch (PDOException $e) {
             error_log("Error generating ticket number: " . $e->getMessage());
-            return "06101";
+            // Return default 6-digit format on error
+            return "000001";
         }
     }
 
@@ -88,7 +102,7 @@ class CitationService {
                 FROM violations v
                 JOIN violation_types vt ON v.violation_type_id = vt.violation_type_id
                 JOIN citations c ON v.citation_id = c.citation_id
-                WHERE c.driver_id = :driver_id
+                WHERE c.driver_id = :driver_id AND c.deleted_at IS NULL
                 GROUP BY vt.violation_type_id
             ");
             $stmt->execute([':driver_id' => $driver_id]);
@@ -273,10 +287,13 @@ class CitationService {
 
         try {
             $sql = "SELECT c.*,
-                    GROUP_CONCAT(DISTINCT vt.violation_type SEPARATOR ', ') as violations
+                    GROUP_CONCAT(DISTINCT vt.violation_type SEPARATOR ', ') as violations,
+                    u.username as created_by_username,
+                    u.full_name as created_by_name
                     FROM citations c
                     LEFT JOIN violations v ON c.citation_id = v.citation_id
                     LEFT JOIN violation_types vt ON v.violation_type_id = vt.violation_type_id
+                    LEFT JOIN users u ON c.created_by = u.user_id
                     $where_sql
                     GROUP BY c.citation_id
                     ORDER BY c.created_at DESC

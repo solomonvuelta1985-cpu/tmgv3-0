@@ -229,42 +229,77 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Auto-populate Municipality and Province
-    barangaySelect.addEventListener('change', () => {
-        const isOther = barangaySelect.value === 'Other';
-        if (isOther) {
-            otherBarangayDiv.style.display = 'block';
-            otherBarangayInput.required = true;
-            otherBarangayInput.focus();
-            municipalityDiv.style.display = 'block';
-            provinceDiv.style.display = 'block';
-            municipalityDiv.querySelector('input').value = '';
-            provinceDiv.querySelector('input').value = '';
-            municipalityDiv.querySelector('input').removeAttribute('readonly');
-            provinceDiv.querySelector('input').removeAttribute('readonly');
-        } else {
-            otherBarangayDiv.style.display = 'none';
-            otherBarangayInput.required = false;
-            otherBarangayInput.value = '';
-            if (barangaySelect.value) {
+    if (barangaySelect && otherBarangayDiv && otherBarangayInput && municipalityDiv && provinceDiv) {
+        barangaySelect.addEventListener('change', () => {
+            const isOther = barangaySelect.value === 'Other';
+            if (isOther) {
+                otherBarangayDiv.style.display = 'block';
+                otherBarangayInput.required = true;
+                otherBarangayInput.focus();
                 municipalityDiv.style.display = 'block';
                 provinceDiv.style.display = 'block';
-                municipalityDiv.querySelector('input').value = 'Baggao';
-                provinceDiv.querySelector('input').value = 'Cagayan';
-                municipalityDiv.querySelector('input').setAttribute('readonly', true);
-                provinceDiv.querySelector('input').setAttribute('readonly', true);
+                const municipalityInput = municipalityDiv.querySelector('input');
+                const provinceInput = provinceDiv.querySelector('input');
+                if (municipalityInput) {
+                    municipalityInput.value = '';
+                    municipalityInput.removeAttribute('readonly');
+                }
+                if (provinceInput) {
+                    provinceInput.value = '';
+                    provinceInput.removeAttribute('readonly');
+                }
             } else {
-                municipalityDiv.style.display = 'none';
-                provinceDiv.style.display = 'none';
-                municipalityDiv.querySelector('input').value = '';
-                provinceDiv.querySelector('input').value = '';
+                otherBarangayDiv.style.display = 'none';
+                otherBarangayInput.required = false;
+                otherBarangayInput.value = '';
+                if (barangaySelect.value) {
+                    municipalityDiv.style.display = 'block';
+                    provinceDiv.style.display = 'block';
+                    const municipalityInput = municipalityDiv.querySelector('input');
+                    const provinceInput = provinceDiv.querySelector('input');
+                    if (municipalityInput) {
+                        municipalityInput.value = 'Baggao';
+                        municipalityInput.setAttribute('readonly', true);
+                    }
+                    if (provinceInput) {
+                        provinceInput.value = 'Cagayan';
+                        provinceInput.setAttribute('readonly', true);
+                    }
+                } else {
+                    municipalityDiv.style.display = 'none';
+                    provinceDiv.style.display = 'none';
+                    const municipalityInput = municipalityDiv.querySelector('input');
+                    const provinceInput = provinceDiv.querySelector('input');
+                    if (municipalityInput) municipalityInput.value = '';
+                    if (provinceInput) provinceInput.value = '';
+                }
             }
-        }
-    });
+        });
+    }
 
-    // Toggle DateTime button
+    // Toggle DateTime button with color indicators and tooltips
     const toggleBtn = document.getElementById('toggleDateTime');
     const dateTimeInput = document.getElementById('apprehensionDateTime');
     let isAutoFilled = false;
+
+    // Update button color, icon, and tooltip based on input state
+    function updateButtonState() {
+        if (dateTimeInput.value) {
+            toggleBtn.classList.remove('btn-outline-secondary');
+            toggleBtn.classList.add('btn-success');
+            toggleBtn.innerHTML = '<i class="fas fa-check-circle"></i> Set';
+            toggleBtn.title = 'Click to clear date & time';
+        } else {
+            toggleBtn.classList.remove('btn-success');
+            toggleBtn.classList.add('btn-outline-secondary');
+            toggleBtn.innerHTML = '<i class="fas fa-calendar-plus"></i> Now';
+            toggleBtn.title = 'Click to set current date & time';
+        }
+    }
+
+    // Initialize button state on page load
+    updateButtonState();
+
     toggleBtn.addEventListener('click', () => {
         if (!isAutoFilled) {
             const now = new Date();
@@ -272,16 +307,18 @@ document.addEventListener('DOMContentLoaded', () => {
             now.setMinutes(now.getMinutes() - offset);
             dateTimeInput.value = now.toISOString().slice(0, 16);
             isAutoFilled = true;
-            toggleBtn.innerHTML = '<i class="fas fa-times"></i>';
-            toggleBtn.classList.remove('btn-outline-secondary');
-            toggleBtn.classList.add('btn-outline-danger');
+            updateButtonState();
         } else {
             dateTimeInput.value = '';
             isAutoFilled = false;
-            toggleBtn.innerHTML = '<i class="fas fa-calendar-alt"></i>';
-            toggleBtn.classList.remove('btn-outline-danger');
-            toggleBtn.classList.add('btn-outline-secondary');
+            updateButtonState();
         }
+    });
+
+    // Update button state when user manually changes datetime
+    dateTimeInput.addEventListener('change', () => {
+        isAutoFilled = dateTimeInput.value !== '';
+        updateButtonState();
     });
 
     // Show/hide Other Violation input
@@ -502,7 +539,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Initialize "Other Barangay" visibility on page load
-    if (barangaySelect && barangaySelect.value === 'Other') {
+    if (barangaySelect && otherBarangayDiv && otherBarangayInput && barangaySelect.value === 'Other') {
         otherBarangayDiv.style.display = 'block';
         otherBarangayInput.required = true;
     }

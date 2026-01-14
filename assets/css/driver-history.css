@@ -1,0 +1,480 @@
+/* ============================================
+   DRIVER HISTORY - CORPORATE & CLEAN DESIGN
+   ============================================ */
+
+/* Loading State */
+.history-loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    background: #fafbfc;
+}
+
+/* History Sections - Clean borders instead of cards */
+.history-section {
+    background: #ffffff;
+    border-left: 4px solid #e2e8f0;
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.driver-info-section {
+    border-left-color: #0d6efd;
+}
+
+.stats-section {
+    border-left-color: #ed8936;
+    background: #fafbfc;
+}
+
+.timeline-section {
+    border-left-color: #718096;
+}
+
+/* Section Headers */
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.section-header i {
+    color: #0d6efd;
+    width: 24px;
+    height: 24px;
+}
+
+.section-header h5 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #2d3748;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* ============================================
+   DRIVER INFO SECTION
+   ============================================ */
+
+.driver-name {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.driver-name i {
+    color: #0d6efd;
+}
+
+.driver-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+}
+
+.info-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.info-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.info-value {
+    font-size: 1.125rem;
+    font-weight: 500;
+    color: #1a202c;
+    line-height: 1.6;
+}
+
+.info-value .badge {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+}
+
+.driver-note {
+    background: #ebf8ff;
+    border: 2px solid #bee3f8;
+    border-radius: 0;
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+}
+
+.driver-note strong {
+    color: #2c5282;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ============================================
+   STATISTICS SECTION
+   ============================================ */
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.stat-item {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #ed8936;
+    padding: 1.5rem;
+    transition: all 0.2s ease;
+}
+
+.stat-item:hover {
+    background: #fffaf0;
+    border-left-width: 6px;
+}
+
+.stat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.stat-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stat-title i {
+    color: #ed8936;
+}
+
+.stat-count {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: #1a202c;
+    line-height: 1;
+}
+
+.stat-count small {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #718096;
+    margin-left: 0.5rem;
+}
+
+.stat-divider {
+    height: 1px;
+    background: #e2e8f0;
+    margin: 1rem 0;
+}
+
+.stat-footer {
+    font-size: 0.875rem;
+    color: #4a5568;
+    font-weight: 500;
+}
+
+/* ============================================
+   TIMELINE SECTION
+   ============================================ */
+
+.timeline-container {
+    position: relative;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 3.5rem;
+    padding-bottom: 2.5rem;
+}
+
+.timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+/* Timeline Line */
+.timeline-item::before {
+    content: '';
+    position: absolute;
+    left: 1rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e2e8f0;
+}
+
+.timeline-item:last-child::before {
+    display: none;
+}
+
+/* Timeline Dot */
+.timeline-item::after {
+    content: '';
+    position: absolute;
+    left: 0.625rem;
+    top: 0.875rem;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #0d6efd;
+    border: 3px solid #ffffff;
+    box-shadow: 0 0 0 2px #0d6efd;
+    z-index: 1;
+}
+
+/* Timeline Content */
+.timeline-content {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #0d6efd;
+    padding: 1.5rem;
+}
+
+.timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.timeline-title {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.timeline-ticket {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a202c;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.timeline-ticket i {
+    color: #0d6efd;
+}
+
+.timeline-date {
+    font-size: 0.875rem;
+    color: #718096;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.timeline-body {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.timeline-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.timeline-field-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.timeline-field-value {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1a202c;
+    line-height: 1.6;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.timeline-field-value i {
+    color: #718096;
+    flex-shrink: 0;
+}
+
+.timeline-fine {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #c05621;
+}
+
+/* Data Changes Alert */
+.data-changes {
+    background: #ebf8ff;
+    border: 2px solid #bee3f8;
+    border-radius: 0;
+    padding: 1.25rem;
+    margin-top: 1.5rem;
+}
+
+.data-changes strong {
+    color: #2c5282;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.data-changes ul {
+    margin: 1rem 0 0.5rem 0;
+    padding-left: 1.5rem;
+}
+
+.data-changes li {
+    margin-bottom: 0.5rem;
+    color: #2d3748;
+    font-weight: 500;
+}
+
+.data-changes-note {
+    font-size: 0.875rem;
+    color: #4a5568;
+    margin-top: 0.75rem;
+    display: block;
+}
+
+/* Remarks Section */
+.timeline-remarks {
+    margin-top: 1.5rem;
+}
+
+.timeline-remarks-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #718096;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.75rem;
+}
+
+.timeline-remarks-content {
+    background: #fffaf0;
+    border-left: 4px solid #ed8936;
+    padding: 1rem 1.25rem;
+    font-size: 0.9375rem;
+    color: #4a5568;
+    line-height: 1.7;
+}
+
+/* Timeline Footer */
+.timeline-footer {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e2e8f0;
+    font-size: 0.8125rem;
+    color: #718096;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+
+.timeline-footer i {
+    width: 14px;
+    height: 14px;
+}
+
+/* Empty State */
+.timeline-empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #fafbfc;
+}
+
+.timeline-empty i {
+    width: 64px;
+    height: 64px;
+    color: #cbd5e0;
+}
+
+.timeline-empty p {
+    color: #718096;
+    font-weight: 500;
+    margin-top: 1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .history-section {
+        padding: 1.5rem;
+        border-left-width: 3px;
+    }
+
+    .driver-name {
+        font-size: 1.5rem;
+    }
+
+    .driver-info-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .timeline-item {
+        padding-left: 2.5rem;
+    }
+
+    .timeline-item::after {
+        left: 0.375rem;
+        width: 12px;
+        height: 12px;
+    }
+
+    .timeline-item::before {
+        left: 0.625rem;
+    }
+
+    .timeline-content {
+        padding: 1.25rem;
+    }
+
+    .timeline-header {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .timeline-body {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+
+    .timeline-ticket {
+        font-size: 1.125rem;
+    }
+}

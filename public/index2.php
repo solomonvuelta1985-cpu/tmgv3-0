@@ -18,11 +18,11 @@ $citationService = new CitationService();
 // Generate next ticket number
 $next_ticket = $citationService->generateNextTicketNumber();
 
-// Get last saved citation number for reference
+// Get last saved citation number for reference (by creation time, not numeric value)
 $last_citation = '';
 try {
     $stmt = db_query(
-        "SELECT ticket_number FROM citations ORDER BY CAST(ticket_number AS UNSIGNED) DESC LIMIT 1"
+        "SELECT ticket_number FROM citations ORDER BY created_at DESC, citation_id DESC LIMIT 1"
     );
     $row = $stmt->fetch();
     if ($row) {
