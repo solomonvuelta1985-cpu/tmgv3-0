@@ -301,7 +301,7 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                                 <div class="d-flex gap-1" role="group">
                                     <!-- View Details Button -->
                                     <button type="button" class="btn btn-info btn-sm" onclick="viewCitation(<?php echo $citation['citation_id']; ?>)" title="View Details">
-                                        <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
+                                        <i data-lucide="user-round-search" style="width: 16px; height: 16px;"></i>
                                     </button>
 
                                     <!-- View Driver History Button -->
@@ -314,7 +314,7 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                                     <!-- Process Payment Button -->
                                     <?php if ($can_pay && $citation['status'] !== 'paid'): ?>
                                     <a href="/tmg/public/process_payment.php?citation_id=<?php echo $citation['citation_id']; ?>" class="btn btn-success btn-sm" title="Process Payment">
-                                        <i data-lucide="dollar-sign" style="width: 16px; height: 16px;"></i>
+                                        <i data-lucide="banknote-arrow-up" style="width: 16px; height: 16px;"></i>
                                     </a>
                                     <?php endif; ?>
 
@@ -322,7 +322,7 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                                     <?php if ($can_edit): ?>
                                         <?php if ($citation['status'] === 'paid'): ?>
                                         <button type="button" class="btn btn-secondary btn-sm" disabled title="Paid citations cannot be edited">
-                                            <i data-lucide="lock" style="width: 16px; height: 16px;"></i>
+                                            <i data-lucide="file-lock" style="width: 16px; height: 16px;"></i>
                                         </button>
                                         <?php else: ?>
                                         <button type="button" class="btn btn-warning btn-sm" onclick="editCitation(<?php echo $citation['citation_id']; ?>); return false;" title="Edit Citation">
@@ -333,7 +333,7 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
 
                                     <!-- Quick Summary Button -->
                                     <button type="button" class="btn btn-primary btn-sm" onclick="quickInfo(<?php echo $citation['citation_id']; ?>); return false;" title="Quick Summary">
-                                        <i data-lucide="info" style="width: 16px; height: 16px;"></i>
+                                        <i data-lucide="badge-info" style="width: 16px; height: 16px;"></i>
                                     </button>
 
                                     <!-- Delete Button -->

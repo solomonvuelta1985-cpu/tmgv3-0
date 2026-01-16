@@ -53,8 +53,12 @@ try {
         throw new Exception('Invalid role');
     }
 
-    if ($user_id) {
+    // Check if this is an UPDATE or CREATE operation
+    // user_id must be a positive integer for UPDATE
+    if ($user_id !== false && $user_id !== null && $user_id > 0) {
         // UPDATE existing user
+        error_log("USER_SAVE: UPDATE mode - user_id=$user_id, username=$username, email=$email");
+
         $result = update_user($user_id, [
             'full_name' => $full_name,
             'email' => $email,
@@ -74,6 +78,7 @@ try {
 
     } else {
         // CREATE new user
+        error_log("USER_SAVE: CREATE mode - username=$username, email=$email, role=$role");
         if (empty($password)) {
             throw new Exception('Password is required for new users');
         }
@@ -86,7 +91,7 @@ try {
             throw new Exception('Password must contain both letters and numbers');
         }
 
-        // Use existing create_user function
+        // Use existing create_user function (it throws exceptions for duplicates)
         $new_user_id = create_user($username, $password, $full_name, $email, $role);
 
         if ($new_user_id) {
@@ -96,7 +101,7 @@ try {
                 'user_id' => $new_user_id
             ]);
         } else {
-            throw new Exception('Failed to create user (username may already exist)');
+            throw new Exception('Failed to create user');
         }
     }
 

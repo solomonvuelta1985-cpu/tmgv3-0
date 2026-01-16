@@ -418,13 +418,28 @@ function create_user($username, $password, $full_name, $email, $role = 'user') {
     try {
         $pdo = getPDO();
 
-        // Check if username already exists
-        $stmt = $pdo->prepare("SELECT user_id FROM users WHERE username = ?");
+        // Trim and validate inputs
+        $username = trim($username);
+        $email = trim($email);
+
+        // Check if username already exists (case-insensitive check)
+        $stmt = $pdo->prepare("SELECT user_id, username FROM users WHERE username = ?");
         $stmt->execute([$username]);
         $existing = $stmt->fetch();
 
         if ($existing) {
-            return false;
+            error_log("Username check failed: Attempting to create '$username', found existing user_id: " . $existing['user_id'] . ", existing username: '" . $existing['username'] . "'");
+            throw new Exception('Username "' . htmlspecialchars($username) . '" already exists');
+        }
+
+        // Check if email already exists
+        $stmt = $pdo->prepare("SELECT user_id, email FROM users WHERE email = ?");
+        $stmt->execute([$email]);
+        $existing = $stmt->fetch();
+
+        if ($existing) {
+            error_log("Email check failed: Attempting to create '$email', found existing user_id: " . $existing['user_id']);
+            throw new Exception('Email already exists');
         }
 
         // SECURITY: Validate password strength
@@ -452,7 +467,8 @@ function create_user($username, $password, $full_name, $email, $role = 'user') {
         return $stmt->rowCount() > 0 ? $pdo->lastInsertId() : false;
     } catch (Exception $e) {
         error_log("User creation error: " . $e->getMessage());
-        return false;
+        // Re-throw to show specific error message
+        throw $e;
     }
 }
 
@@ -553,6 +569,17 @@ function update_user($user_id, $data) {
         throw new Exception('Invalid email format');
     }
 
+    // Check if email already exists for a different user
+    if (isset($data['email'])) {
+        $stmt = $pdo->prepare("SELECT user_id FROM users WHERE email = ? AND user_id != ?");
+        $stmt->execute([trim($data['email']), $user_id]);
+        $existing = $stmt->fetch();
+
+        if ($existing) {
+            throw new Exception('Email already exists');
+        }
+    }
+
     // Build update query dynamically
     $fields = [];
     $params = [];
@@ -567,7 +594,7 @@ function update_user($user_id, $data) {
         $params[] = trim($data['email']);
     }
 
-    if (isset($data['role']) && in_array($data['role'], ['user', 'admin', 'enforcer', 'cashier'])) {
+    if (isset($data['role']) && in_array($data['role'], ['user', 'admin', 'enforcer', 'cashier', 'lto_staff'])) {
         $fields[] = "role = ?";
         $params[] = $data['role'];
     }
