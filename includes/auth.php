@@ -326,12 +326,21 @@ function create_session($user) {
 
     // Generate new CSRF token for this session
     $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+
+    // Generate unique session token for tracking
+    $_SESSION['session_token'] = bin2hex(random_bytes(32));
 }
 
 /**
  * Destroy user session (logout)
  */
 function destroy_session() {
+    // Destroy session record in database if session_token exists
+    if (isset($_SESSION['session_token'])) {
+        require_once __DIR__ . '/session_manager.php';
+        destroy_session_record($_SESSION['session_token']);
+    }
+
     $_SESSION = [];
 
     if (ini_get("session.use_cookies")) {

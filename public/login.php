@@ -3,6 +3,7 @@ session_start();
 require_once '../includes/config.php';
 require_once '../includes/functions.php';
 require_once '../includes/auth.php';
+require_once '../includes/session_manager.php';
 
 // Redirect if already logged in
 if (is_logged_in()) {
@@ -31,16 +32,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $user = authenticate($username, $password);
             if ($user) {
-                create_session($user);
-                set_flash('Welcome back, ' . $user['full_name'] . '!', 'success');
+                // Check session limit for admin users
+                $sessionCheck = check_session_limit($user['user_id'], $user['role']);
 
-                // Redirect based on user role
-                if ($user['role'] === 'lto_staff') {
-                    header('Location: lto_search.php');
+                if (!$sessionCheck['allowed']) {
+                    $error = $sessionCheck['message'];
+                    error_log("Login blocked for user {$user['username']}: {$error}");
                 } else {
-                    header('Location: index.php');
+                    // Create PHP session
+                    create_session($user);
+
+                    // Create session tracking record in database
+                    $sessionToken = $_SESSION['session_token'] ?? session_id();
+                    create_session_record($user['user_id'], $sessionToken);
+
+                    set_flash('Welcome back, ' . $user['full_name'] . '!', 'success');
+
+                    // Redirect based on user role
+                    if ($user['role'] === 'lto_staff') {
+                        header('Location: lto_search.php');
+                    } else {
+                        header('Location: index.php');
+                    }
+                    exit;
                 }
-                exit;
             } else {
                 $error = 'Invalid username or password.';
             }
@@ -577,6 +592,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <i class="fas fa-info-circle"></i>
                 <div>
                     <strong>Security Notice:</strong> For your protection, you will be automatically logged out after <strong>15 minutes</strong> of inactivity.
+                </div>
+            </div>
+
+            <div class="alert alert-info">
+                <i class="fas fa-shield-alt"></i>
+                <div>
+                    <strong>Admin Device Limit:</strong> Admin accounts are limited to <strong>2 concurrent devices</strong> for enhanced security.
                 </div>
             </div>
 
