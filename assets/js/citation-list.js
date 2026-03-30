@@ -150,11 +150,11 @@ function viewCitation(id) {
             // Handle Edit button based on citation status
             const editBtn = document.getElementById('editFromViewBtn');
             if (editBtn) {
-                if (citationData.citation.status === 'paid') {
+                if (citationData.citation.status === 'paid' || citationData.citation.status === 'waived') {
                     editBtn.disabled = true;
                     editBtn.classList.remove('btn-warning');
                     editBtn.classList.add('btn-outline');
-                    editBtn.title = 'Paid citations cannot be edited';
+                    editBtn.title = citationData.citation.status.charAt(0).toUpperCase() + citationData.citation.status.slice(1) + ' citations cannot be edited';
                     editBtn.innerHTML = '<i data-lucide="lock" style="width: 16px; height: 16px;"></i><span>Edit (Locked)</span>';
                     editBtn.onclick = null;
                     // Re-initialize Lucide icons
@@ -178,11 +178,12 @@ function viewCitation(id) {
             // Handle Update Status dropdown based on citation status
             const statusDropdown = document.getElementById('statusDropdown');
             if (statusDropdown) {
-                if (citationData.citation.status === 'paid') {
+                if (citationData.citation.status === 'paid' || citationData.citation.status === 'waived') {
                     statusDropdown.disabled = true;
                     statusDropdown.classList.remove('btn-primary', 'dropdown-toggle');
                     statusDropdown.classList.add('btn-outline');
-                    statusDropdown.title = 'Paid citations cannot have status changed';
+                    const statusLabel = citationData.citation.status.charAt(0).toUpperCase() + citationData.citation.status.slice(1);
+                    statusDropdown.title = statusLabel + ' citations cannot have status changed';
                     statusDropdown.innerHTML = '<i data-lucide="lock" style="width: 16px; height: 16px;"></i><span>Status (Locked)</span>';
                     statusDropdown.removeAttribute('data-bs-toggle');
                     // Re-initialize Lucide icons for the new lock icon
@@ -630,6 +631,13 @@ function displayQuickInfo(citation) {
         lucide.createIcons();
     }
 }
+
+// Re-init Lucide icons when action dropdowns open
+document.addEventListener('shown.bs.dropdown', function(e) {
+    if (e.target.closest('.actions-dropdown') && typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+});
 
 // Confirm status update
 document.addEventListener('DOMContentLoaded', function() {

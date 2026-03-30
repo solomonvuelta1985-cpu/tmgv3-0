@@ -461,6 +461,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Trigger event to clear draft (for enhanced form features)
                     window.dispatchEvent(new Event('citationSubmitted'));
 
+                    // Prevent browser from restoring scroll position after reload
+                    if ('scrollRestoration' in history) {
+                        history.scrollRestoration = 'manual';
+                    }
+
+                    // Set flag to scroll to top after reload
+                    sessionStorage.setItem('scrollToTop', 'true');
+
+                    // Scroll to top before reload
+                    window.scrollTo(0, 0);
+
                     window.location.reload();
                 });
             } else {

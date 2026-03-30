@@ -359,34 +359,34 @@ body {
    VIOLATION SEARCH BOX - MODERN DESIGN
    ========================================== */
 .violation-search-box {
-    margin-bottom: 24px;
+    margin-bottom: 20px;
 }
 
 .search-wrapper {
     position: relative;
     display: flex;
     align-items: center;
-    background: white;
-    border: 2px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 4px;
-    transition: all 0.3s ease;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 2px;
+    transition: all 0.25s ease;
 }
 
 .search-wrapper:focus-within {
+    background: white;
     border-color: #3b82f6;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.08);
 }
 
 .search-icon {
     position: absolute;
-    left: 16px;
-    width: 20px;
-    height: 20px;
-    color: #9ca3af;
+    left: 14px;
+    width: 18px;
+    height: 18px;
+    color: #94a3b8;
     pointer-events: none;
-    transition: color 0.3s ease;
+    transition: color 0.25s ease;
 }
 
 .search-wrapper:focus-within .search-icon {
@@ -397,23 +397,25 @@ body {
     flex: 1;
     border: none;
     outline: none;
-    padding: 12px 16px 12px 48px;
-    font-size: 0.95rem;
+    padding: 10px 14px 10px 42px;
+    font-size: 0.875rem;
     background: transparent;
-    color: #1f2937;
+    color: #1e293b;
+    font-weight: 450;
 }
 
 .search-input::placeholder {
-    color: #9ca3af;
+    color: #94a3b8;
+    font-weight: 400;
 }
 
 .search-clear {
     border: none;
     background: transparent;
-    padding: 8px 12px;
+    padding: 6px 10px;
     cursor: pointer;
-    color: #9ca3af;
-    border-radius: 8px;
+    color: #94a3b8;
+    border-radius: 6px;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
@@ -426,112 +428,122 @@ body {
 }
 
 .search-clear i {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
 }
 
 .search-hint {
     display: flex;
     align-items: center;
-    gap: 6px;
-    color: #6b7280;
-    font-size: 0.85rem;
-    margin-top: 8px;
+    gap: 5px;
+    color: #94a3b8;
+    font-size: 0.78rem;
+    margin-top: 6px;
     padding-left: 4px;
 }
 
 /* ==========================================
-   VIOLATION TABS - MODERN BROWSER-STYLE DESIGN
+   VIOLATION TABS - CORPORATE STYLE
    ========================================== */
 .violation-tabs-wrapper {
     margin-bottom: 0;
     overflow: visible;
-    border-radius: 12px 12px 0 0;
 }
 
 .violation-tabs {
     display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    padding: 12px 12px 0 12px;
-    background: #f8fafc;
-    border-radius: 12px 12px 0 0;
-    border: none;
+    flex-wrap: nowrap;
+    gap: 0;
+    padding: 0;
+    background: #f1f5f9;
+    border-radius: 10px 10px 0 0;
+    border: 1px solid #e2e8f0;
+    border-bottom: none;
     position: relative;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+
+.violation-tabs::-webkit-scrollbar {
+    display: none;
 }
 
 .violation-tabs::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: #e5e7eb;
-    z-index: 0;
+    display: none;
 }
 
 .tab-pill {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 12px 20px;
-    border: 1px solid transparent;
-    border-bottom: none;
-    border-radius: 8px 8px 0 0;
+    gap: 6px;
+    padding: 11px 16px;
+    border: none;
+    border-right: 1px solid #e2e8f0;
+    border-radius: 0;
     background: transparent;
     color: #64748b;
-    font-size: 0.875rem;
-    font-weight: 600;
+    font-size: 0.8rem;
+    font-weight: 500;
     cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s ease;
     position: relative;
     z-index: 1;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.tab-pill:first-child {
+    border-radius: 10px 0 0 0;
+}
+
+.tab-pill:last-child {
+    border-right: none;
+    border-radius: 0 10px 0 0;
 }
 
 .tab-pill::before {
     content: '';
     position: absolute;
-    bottom: -2px;
+    bottom: 0;
     left: 0;
     right: 0;
-    height: 3px;
+    height: 2.5px;
     background: transparent;
-    border-radius: 2px 2px 0 0;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.2s ease;
 }
 
 .tab-pill:hover:not(.active) {
-    background: #f1f5f9;
-    color: #475569;
+    background: #e2e8f0;
+    color: #334155;
 }
 
 .tab-pill:hover:not(.active)::before {
-    background: #cbd5e1;
+    background: #94a3b8;
 }
 
 .tab-pill.active {
     background: white;
-    color: #0f172a;
-    border-color: #e5e7eb;
+    color: #1e293b;
+    font-weight: 600;
     z-index: 2;
+    box-shadow: 0 -1px 0 white;
 }
 
 .tab-pill.active::before {
-    background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
-    box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+    background: #3b82f6;
 }
 
 .tab-icon {
-    width: 18px;
-    height: 18px;
+    width: 15px;
+    height: 15px;
     flex-shrink: 0;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    opacity: 0.7;
+    transition: all 0.2s ease;
+    opacity: 0.55;
 }
 
 .tab-pill:hover .tab-icon {
-    opacity: 1;
+    opacity: 0.85;
 }
 
 .tab-pill.active .tab-icon {
@@ -540,69 +552,66 @@ body {
 }
 
 .tab-label {
-    font-weight: 600;
+    font-weight: inherit;
     letter-spacing: 0.01em;
-    transition: all 0.3s ease;
 }
 
 .tab-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 24px;
-    height: 24px;
-    padding: 0 8px;
-    background: #e2e8f0;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    background: #cbd5e1;
     color: #64748b;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 700;
-    border-radius: 12px;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 10px;
+    transition: all 0.2s ease;
 }
 
 .tab-pill:hover .tab-badge {
-    background: #cbd5e1;
-    color: #475569;
+    background: #94a3b8;
+    color: white;
 }
 
 .tab-pill.active .tab-badge {
     background: #dbeafe;
-    color: #3b82f6;
+    color: #2563eb;
 }
 
 .tab-badge.has-selections {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    background: #059669;
     color: white;
-    animation: badge-pop 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.3);
+    animation: badge-pop 0.3s ease;
+    box-shadow: none;
 }
 
 .tab-pill.active .tab-badge.has-selections {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    background: #059669;
     color: white;
-    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
 }
 
 @keyframes badge-pop {
     0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.2); }
+    50% { transform: scale(1.15); }
 }
 
 /* ==========================================
    TAB CONTENT
    ========================================== */
 .violation-tab-content {
-    border: 1px solid #e5e7eb;
+    border: 1px solid #e2e8f0;
     border-top: none;
-    border-radius: 0 0 12px 12px;
+    border-radius: 0 0 10px 10px;
     background: white;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .tab-pane {
     display: none;
-    animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeIn 0.25s ease;
 }
 
 .tab-pane.active {
@@ -612,7 +621,7 @@ body {
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(15px);
+        transform: translateY(6px);
     }
     to {
         opacity: 1;
@@ -621,24 +630,22 @@ body {
 }
 
 .violations-list {
-    max-height: 350px;
+    max-height: 320px;
     overflow-y: auto;
-    padding: 20px;
+    padding: 8px;
 }
 
 .violations-list::-webkit-scrollbar {
-    width: 10px;
+    width: 6px;
 }
 
 .violations-list::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 10px;
+    background: transparent;
 }
 
 .violations-list::-webkit-scrollbar-thumb {
     background: #cbd5e1;
-    border-radius: 10px;
-    border: 2px solid #f1f5f9;
+    border-radius: 3px;
 }
 
 .violations-list::-webkit-scrollbar-thumb:hover {
@@ -649,8 +656,8 @@ body {
    VIOLATION ITEMS & CUSTOM CHECKBOX
    ========================================== */
 .violation-item {
-    margin-bottom: 8px;
-    transition: all 0.2s ease;
+    margin-bottom: 2px;
+    transition: all 0.15s ease;
 }
 
 .violation-item.hidden {
@@ -670,51 +677,48 @@ body {
 
 .checkbox-label {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     cursor: pointer;
-    padding: 12px 16px;
-    border-radius: 10px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 10px 14px;
+    border-radius: 8px;
+    transition: all 0.15s ease;
     width: 100%;
+    border: 1.5px solid transparent;
 }
 
 .checkbox-label:hover {
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-    transform: translateX(2px);
+    background: #f8fafc;
+    border-color: #e2e8f0;
 }
 
 .checkbox-box {
     flex-shrink: 0;
-    width: 20px;
-    height: 20px;
-    border: 2px solid #cbd5e1;
-    border-radius: 6px;
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 5px;
     margin-right: 12px;
-    margin-top: 2px;
     position: relative;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.15s ease;
     background: white;
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .checkbox-label:hover .checkbox-box {
     border-color: #94a3b8;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .checkbox-input:checked + .checkbox-label .checkbox-box {
-    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-    border-color: #2563eb;
-    box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+    background: #3b82f6;
+    border-color: #3b82f6;
 }
 
 .checkbox-input:checked + .checkbox-label .checkbox-box::after {
     content: '';
     position: absolute;
-    left: 6px;
-    top: 2px;
+    left: 5px;
+    top: 1.5px;
     width: 5px;
-    height: 10px;
+    height: 9px;
     border: solid white;
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
@@ -722,13 +726,15 @@ body {
 
 .checkbox-input:checked + .checkbox-label {
     background: #eff6ff;
+    border-color: #bfdbfe;
 }
 
 .checkbox-text {
     flex: 1;
-    color: #374151;
-    font-size: 0.95rem;
+    color: #334155;
+    font-size: 0.875rem;
     line-height: 1.5;
+    font-weight: 450;
 }
 
 /* ==========================================
@@ -834,26 +840,42 @@ body {
 
     /* Violation Tabs Mobile */
     .violation-tabs {
-        gap: 3px;
-        padding: 10px 10px 0 10px;
-        background: #f8fafc;
+        gap: 0;
+        padding: 0;
     }
 
     .tab-pill {
-        padding: 10px 14px;
-        font-size: 0.8rem;
+        padding: 9px 10px;
+        font-size: 0.72rem;
+        gap: 4px;
     }
 
     .tab-icon {
-        width: 16px;
-        height: 16px;
+        width: 13px;
+        height: 13px;
+    }
+
+    .tab-label {
+        display: none;
     }
 
     .tab-badge {
-        min-width: 22px;
-        height: 22px;
-        font-size: 0.7rem;
-        padding: 0 6px;
+        min-width: 18px;
+        height: 18px;
+        font-size: 0.65rem;
+        padding: 0 5px;
+    }
+
+    .violations-list {
+        padding: 6px;
+    }
+
+    .checkbox-label {
+        padding: 8px 10px;
+    }
+
+    .checkbox-text {
+        font-size: 0.8rem;
     }
 
     .violations-list {

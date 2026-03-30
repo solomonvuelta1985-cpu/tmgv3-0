@@ -29,49 +29,148 @@
         const modalHTML = `
         <!-- Duplicate Warning Modal -->
         <div class="modal fade" id="duplicateWarningModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog modal-xl">
-                <div class="modal-content">
-                    <div class="modal-header bg-warning">
-                        <h5 class="modal-title">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            Possible Duplicate Driver Found
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                <div class="modal-content border-0 shadow-lg" style="border-radius: 12px; overflow: hidden;">
+                    <div class="modal-header border-0 py-3 px-4" id="duplicateModalHeader" style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%);">
+                        <div class="d-flex align-items-center">
+                            <div class="me-3" id="duplicateModalIcon" style="width: 42px; height: 42px; background: rgba(251,191,36,0.15); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i data-lucide="alert-triangle" style="color: #fbbf24; width: 20px; height: 20px;"></i>
+                            </div>
+                            <div>
+                                <h5 class="modal-title mb-0 text-white fw-semibold" style="font-size: 1.1rem;">Possible Duplicate Driver Found</h5>
+                                <small class="text-white-50" id="duplicateModalSubtitle">Review matching records below</small>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                     </div>
-                    <div class="modal-body">
-                        <div class="alert alert-warning">
-                            <strong>Warning!</strong> We found existing records that may match this driver.
-                            Please review and select the appropriate option below.
+                    <div class="modal-body p-4" style="background: #f8fafc;">
+                        <div class="alert border-0 mb-4 d-flex align-items-start" id="duplicateModalAlert" style="background: #fef3c7; border-left: 4px solid #f59e0b !important; border-radius: 8px;">
+                            <i data-lucide="info" class="mt-1 me-3 flex-shrink-0" style="color: #d97706; width: 20px; height: 20px;"></i>
+                            <div>
+                                <strong style="color: #92400e;">Attention Required</strong>
+                                <p class="mb-0 mt-1" style="color: #78350f; font-size: 0.9rem;">We found existing records that may match this driver. Please review and select the appropriate action.</p>
+                            </div>
                         </div>
 
                         <div id="duplicateMatchesList"></div>
 
-                        <div class="mt-3 p-3 bg-light border rounded">
-                            <h6 class="mb-3">What would you like to do?</h6>
-                            <div class="form-check mb-2">
-                                <input class="form-check-input" type="radio" name="duplicateAction" id="useExisting" value="existing">
-                                <label class="form-check-label" for="useExisting">
-                                    <strong>Use existing driver record</strong> (recommended if same person)
+                        <div class="mt-4 p-3 border rounded-3" style="background: white; border-color: #e2e8f0 !important;">
+                            <h6 class="mb-3 fw-semibold" style="color: #334155; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <i data-lucide="pointer" class="me-2" style="color: #64748b; width: 16px; height: 16px;"></i>Select Action
+                            </h6>
+                            <div class="d-flex gap-3">
+                                <label class="flex-fill p-3 border rounded-3 cursor-pointer duplicate-action-option" for="useExisting" style="cursor: pointer; transition: all 0.2s; border-color: #e2e8f0 !important;">
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input" type="radio" name="duplicateAction" id="useExisting" value="existing">
+                                        <span class="form-check-label d-block">
+                                            <strong style="color: #1e293b; font-size: 0.9rem;">Use Existing Record</strong>
+                                            <small class="d-block mt-1" style="color: #64748b;">Link to an existing driver profile</small>
+                                        </span>
+                                    </div>
                                 </label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="duplicateAction" id="createNew" value="new" checked>
-                                <label class="form-check-label" for="createNew">
-                                    <strong>Create new record</strong> (different person with similar information)
+                                <label class="flex-fill p-3 border rounded-3 cursor-pointer duplicate-action-option" for="createNew" style="cursor: pointer; transition: all 0.2s; border-color: #e2e8f0 !important;">
+                                    <div class="form-check mb-0">
+                                        <input class="form-check-input" type="radio" name="duplicateAction" id="createNew" value="new" checked>
+                                        <span class="form-check-label d-block">
+                                            <strong style="color: #1e293b; font-size: 0.9rem;">Create New Record</strong>
+                                            <small class="d-block mt-1" style="color: #64748b;">Different person with similar info</small>
+                                        </span>
+                                    </div>
                                 </label>
                             </div>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" id="confirmDuplicateAction">Continue</button>
+                    <div class="modal-footer border-0 px-4 py-3" style="background: white;">
+                        <button type="button" class="btn px-4 py-2" data-bs-dismiss="modal" style="background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; border-radius: 8px; font-weight: 500;">Cancel</button>
+                        <button type="button" class="btn px-4 py-2 text-white" id="confirmDuplicateAction" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border: none; border-radius: 8px; font-weight: 500;">
+                            <i data-lucide="arrow-right" class="me-1" style="width: 16px; height: 16px;"></i> Continue
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
+        <style>
+            #duplicateWarningModal .duplicate-action-option:hover {
+                border-color: #3b82f6 !important;
+                background: #f0f7ff;
+            }
+            #duplicateWarningModal .duplicate-action-option:has(input:checked) {
+                border-color: #3b82f6 !important;
+                background: #eff6ff;
+                box-shadow: 0 0 0 1px #3b82f6;
+            }
+            #duplicateWarningModal .duplicate-match-card {
+                transition: all 0.2s ease;
+                border: 1px solid #e2e8f0 !important;
+            }
+            #duplicateWarningModal .duplicate-match-card:hover {
+                border-color: #cbd5e1 !important;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            }
+            #duplicateWarningModal .duplicate-match-card.border-primary {
+                border-color: #3b82f6 !important;
+                box-shadow: 0 0 0 1px #3b82f6, 0 4px 12px rgba(59,130,246,0.12);
+            }
+            #duplicateWarningModal .duplicate-match-card.border-primary .card-header {
+                background: #eff6ff !important;
+            }
+            #duplicateWarningModal .match-stat-item {
+                padding: 8px 12px;
+                background: #f8fafc;
+                border-radius: 8px;
+                border: 1px solid #f1f5f9;
+            }
+            #duplicateWarningModal .match-detail-label {
+                font-size: 0.75rem;
+                color: #94a3b8;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                font-weight: 600;
+                margin-bottom: 2px;
+            }
+            #duplicateWarningModal .match-detail-value {
+                font-size: 0.875rem;
+                color: #1e293b;
+                font-weight: 500;
+            }
+            #duplicateWarningModal .violation-history-section {
+                background: #fef2f2;
+                border: 1px solid #fecaca;
+                border-radius: 10px;
+                padding: 16px;
+            }
+            #duplicateWarningModal .violation-history-item {
+                padding: 8px 12px;
+                background: white;
+                border-radius: 6px;
+                border: 1px solid #fecaca;
+                margin-bottom: 6px;
+                font-size: 0.85rem;
+            }
+            #duplicateWarningModal .other-violations-section {
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 10px;
+                padding: 16px;
+            }
+            #duplicateWarningModal .confidence-bar {
+                height: 4px;
+                border-radius: 2px;
+                background: #e2e8f0;
+                overflow: hidden;
+            }
+            #duplicateWarningModal .confidence-bar-fill {
+                height: 100%;
+                border-radius: 2px;
+                transition: width 0.5s ease;
+            }
+        </style>
         `;
 
         document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+        // Initialize Lucide icons in the modal
+        if (typeof lucide !== 'undefined') lucide.createIcons();
 
         // Setup confirm button
         document.getElementById('confirmDuplicateAction').addEventListener('click', handleDuplicateAction);
@@ -161,7 +260,10 @@
             first_name: getValue('first_name'),
             last_name: getValue('last_name'),
             date_of_birth: getValue('date_of_birth'),
-            barangay: getValue('barangay')
+            barangay: getValue('barangay'),
+            middle_initial: getValue('middle_initial'),
+            municipality: getValue('municipality'),
+            vehicle_type: document.querySelector('input[name="vehicle_type"]:checked')?.value || ''
         };
 
         // Store violation context
@@ -197,6 +299,10 @@
                     if (!match.offense_history) {
                         return false;
                     }
+                    // Skip low-confidence fuzzy matches
+                    if (match.confidence < 50) {
+                        return false;
+                    }
 
                     return match.offense_history.some(offense =>
                         offense.violation_type_id == violationTypeId
@@ -226,20 +332,21 @@
         const matchesList = document.getElementById('duplicateMatchesList');
         matchesList.innerHTML = '';
 
-        // Add a special header for repeat offense warning
-        const warningHeader = `
-        <div class="alert alert-danger mb-3">
-            <h6 class="mb-2">
-                <i class="fas fa-exclamation-triangle"></i>
-                <strong>Repeat Offense Detected!</strong>
-            </h6>
-            <p class="mb-0">
-                This driver has previously been cited for <strong>"${violationName}"</strong>.
-                Please verify this is the same person before proceeding.
-            </p>
+        // Summary bar showing match count
+        const summaryBar = `
+        <div class="d-flex align-items-center justify-content-between mb-3 px-1">
+            <div>
+                <span class="fw-semibold" style="color: #475569; font-size: 0.85rem;">
+                    <i data-lucide="users" class="me-1" style="color: #64748b; width: 15px; height: 15px;"></i>
+                    ${matches.length} matching record${matches.length > 1 ? 's' : ''} found
+                </span>
+            </div>
+            <span class="badge px-3 py-2" style="background: #fee2e2; color: #991b1b; font-weight: 600; border-radius: 6px; font-size: 0.75rem;">
+                <i data-lucide="repeat" class="me-1" style="width: 13px; height: 13px;"></i> REPEAT OFFENSE
+            </span>
         </div>
         `;
-        matchesList.insertAdjacentHTML('beforeend', warningHeader);
+        matchesList.insertAdjacentHTML('beforeend', summaryBar);
 
         // Show matching drivers with this specific violation highlighted
         matches.forEach((match, index) => {
@@ -272,21 +379,34 @@
         const modalElement = document.getElementById('duplicateWarningModal');
         const modal = new bootstrap.Modal(modalElement);
 
-        // Update modal title for repeat offense
-        const modalTitle = modalElement.querySelector('.modal-title');
-        modalTitle.innerHTML = `
-            <i class="fas fa-exclamation-triangle"></i>
-            Repeat Offense Detected - Action Required
-        `;
+        // Update modal header for repeat offense
+        const modalHeader = document.getElementById('duplicateModalHeader');
+        modalHeader.style.background = 'linear-gradient(135deg, #7f1d1d 0%, #991b1b 50%, #b91c1c 100%)';
 
-        // Update the warning alert in modal body
-        const modalAlert = modalElement.querySelector('.modal-body .alert');
+        const modalIcon = document.getElementById('duplicateModalIcon');
+        modalIcon.style.background = 'rgba(254,202,202,0.2)';
+        modalIcon.innerHTML = '<i data-lucide="shield-alert" style="color: #fca5a5; width: 20px; height: 20px;"></i>';
+
+        const modalTitle = modalElement.querySelector('.modal-title');
+        modalTitle.textContent = 'Repeat Offense Detected';
+
+        const modalSubtitle = document.getElementById('duplicateModalSubtitle');
+        modalSubtitle.textContent = 'Previous citation record found for this violation';
+
+        // Update alert for repeat offense
+        const modalAlert = document.getElementById('duplicateModalAlert');
         if (modalAlert) {
-            modalAlert.className = 'alert alert-danger';
+            modalAlert.style.background = '#fef2f2';
+            modalAlert.style.borderLeft = '4px solid #ef4444';
             modalAlert.innerHTML = `
-                <strong>Repeat Offense Alert!</strong>
-                A matching driver has been found who was previously cited for <strong>"${violationName}"</strong>.
-                Please verify this is the same person and select the appropriate action below.
+                <i data-lucide="alert-triangle" class="mt-1 me-3 flex-shrink-0" style="color: #dc2626; width: 20px; height: 20px;"></i>
+                <div>
+                    <strong style="color: #991b1b;">Repeat Offense Alert</strong>
+                    <p class="mb-0 mt-1" style="color: #7f1d1d; font-size: 0.9rem;">
+                        A matching driver has been previously cited for <strong>"${violationName}"</strong>.
+                        Please verify this is the same person and select the appropriate action.
+                    </p>
+                </div>
             `;
         }
 
@@ -303,14 +423,24 @@
         });
 
         modal.show();
+
+        // Initialize Lucide icons for dynamically added content
+        if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 
     /**
      * Create match card with violation highlight
      */
     function createMatchCardWithViolationHighlight(match, index, violationTypeId) {
-        const confidenceBadge = getConfidenceBadge(match.confidence);
         const fullName = `${match.last_name}, ${match.first_name}`.trim();
+        const confidence = match.confidence;
+
+        // Confidence bar color
+        let confidenceColor = '#94a3b8';
+        let confidenceLabel = 'Low';
+        if (confidence >= 80) { confidenceColor = '#dc2626'; confidenceLabel = 'Very High'; }
+        else if (confidence >= 60) { confidenceColor = '#f59e0b'; confidenceLabel = 'High'; }
+        else if (confidence >= 50) { confidenceColor = '#3b82f6'; confidenceLabel = 'Moderate'; }
 
         // Find the specific violation in history
         const targetViolationHistory = match.offense_history.filter(
@@ -319,24 +449,30 @@
 
         let violationHistoryHTML = '';
         if (targetViolationHistory.length > 0) {
-            violationHistoryHTML = `
-            <div class="mt-3 p-3 bg-danger bg-opacity-10 border border-danger rounded">
-                <strong class="text-danger">
-                    <i class="fas fa-exclamation-circle"></i>
-                    Previous Citations for This Violation:
-                </strong>
-                <ul class="mt-2 mb-0">
-            `;
+            let itemsHTML = '';
             targetViolationHistory.forEach(record => {
-                violationHistoryHTML += `
-                    <li class="text-danger fw-bold">
-                        ${record.violation_type} (${getOffenseLabel(record.offense_count)}) -
-                        ${formatDate(record.apprehension_datetime)} -
-                        ₱${parseFloat(record.fine_amount).toLocaleString()}
-                    </li>
+                itemsHTML += `
+                    <div class="violation-history-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <i data-lucide="file-text" class="me-2 flex-shrink-0" style="color: #dc2626; width: 14px; height: 14px;"></i>
+                            <strong style="color: #991b1b;">${record.violation_type}</strong>
+                            <span class="ms-1" style="color: #b91c1c;">(${getOffenseLabel(record.offense_count)})</span>
+                        </div>
+                        <div class="text-end">
+                            <span style="color: #6b7280; font-size: 0.8rem;">${formatDate(record.apprehension_datetime)}</span>
+                            <span class="ms-2 fw-bold" style="color: #991b1b;">&#8369;${parseFloat(record.fine_amount).toLocaleString()}</span>
+                        </div>
+                    </div>
                 `;
             });
-            violationHistoryHTML += '</ul></div>';
+            violationHistoryHTML = `
+            <div class="violation-history-section mt-3">
+                <div class="d-flex align-items-center mb-2">
+                    <i data-lucide="clock" class="me-2 flex-shrink-0" style="color: #dc2626; width: 15px; height: 15px;"></i>
+                    <strong style="color: #991b1b; font-size: 0.85rem;">Previous Citations for This Violation</strong>
+                </div>
+                ${itemsHTML}
+            </div>`;
         }
 
         // Other violations (non-targeted)
@@ -346,49 +482,112 @@
 
         let otherViolationsHTML = '';
         if (otherViolations.length > 0) {
-            otherViolationsHTML = `
-            <div class="mt-3">
-                <strong>Other Recent Violations:</strong>
-                <ul class="mt-2 mb-0">
-            `;
+            let otherItemsHTML = '';
             otherViolations.slice(0, 3).forEach(record => {
-                otherViolationsHTML += `
-                    <li>${record.violation_type} (${getOffenseLabel(record.offense_count)}) -
-                    ${formatDate(record.apprehension_datetime)} -
-                    ₱${parseFloat(record.fine_amount).toLocaleString()}</li>
+                otherItemsHTML += `
+                    <div class="d-flex justify-content-between align-items-center py-1" style="font-size: 0.85rem;">
+                        <span style="color: #475569;">
+                            ${record.violation_type} (${getOffenseLabel(record.offense_count)})
+                        </span>
+                        <span style="color: #94a3b8;">${formatDate(record.apprehension_datetime)} &mdash; &#8369;${parseFloat(record.fine_amount).toLocaleString()}</span>
+                    </div>
                 `;
             });
-            otherViolationsHTML += '</ul></div>';
+            otherViolationsHTML = `
+            <div class="other-violations-section mt-3">
+                <div class="d-flex align-items-center mb-2">
+                    <i data-lucide="list" class="me-2 flex-shrink-0" style="color: #64748b; width: 15px; height: 15px;"></i>
+                    <strong style="color: #475569; font-size: 0.85rem;">Other Recent Violations</strong>
+                </div>
+                ${otherItemsHTML}
+            </div>`;
         }
 
         return `
-        <div class="card duplicate-match-card mb-3" id="matchCard${index}">
-            <div class="card-header d-flex justify-content-between align-items-center bg-warning bg-opacity-25">
-                <div>
-                    <strong>${fullName}</strong>
-                    ${confidenceBadge}
-                    <span class="badge bg-danger ms-2">REPEAT OFFENDER</span>
+        <div class="card duplicate-match-card mb-3" id="matchCard${index}" style="border-radius: 10px; overflow: hidden; background: white;">
+            <div class="card-header d-flex justify-content-between align-items-center px-4 py-3" style="background: #fafafa; border-bottom: 1px solid #f1f5f9;">
+                <div class="d-flex align-items-center">
+                    <div class="me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #1e293b, #475569); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i data-lucide="user" style="color: white; width: 18px; height: 18px;"></i>
+                    </div>
+                    <div>
+                        <div class="d-flex align-items-center gap-2">
+                            <strong style="color: #1e293b; font-size: 1rem;">${fullName}</strong>
+                            ${targetViolationHistory.length > 0 ? `<span class="badge px-2 py-1" style="background: #fef2f2; color: #dc2626; font-size: 0.7rem; font-weight: 600; border: 1px solid #fecaca; border-radius: 4px;">REPEAT OFFENDER</span>` : ''}
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mt-1">
+                            <span style="color: #64748b; font-size: 0.8rem;">${match.reason || 'Name match'}</span>
+                            <span style="color: #cbd5e1;">|</span>
+                            <div class="d-flex align-items-center gap-1">
+                                <div class="confidence-bar" style="width: 50px;">
+                                    <div class="confidence-bar-fill" style="width: ${confidence}%; background: ${confidenceColor};"></div>
+                                </div>
+                                <span style="color: ${confidenceColor}; font-size: 0.75rem; font-weight: 600;">${confidence}% ${confidenceLabel}</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <button type="button" class="btn btn-sm btn-primary" id="selectMatch${index}">
-                    <i class="fas fa-check"></i> Select This Driver
+                <button type="button" class="btn btn-sm px-3 py-2" id="selectMatch${index}" style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; border: none; border-radius: 8px; font-weight: 500; font-size: 0.85rem;">
+                    <i data-lucide="check" class="me-1" style="width: 14px; height: 14px;"></i> Select
                 </button>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <p class="mb-1"><strong>Match Reason:</strong> ${match.reason}</p>
-                        <p class="mb-1"><strong>License #:</strong> ${match.license_number || 'N/A'}</p>
-                        <p class="mb-1"><strong>DOB:</strong> ${match.date_of_birth || 'N/A'}</p>
-                        <p class="mb-1"><strong>Barangay:</strong> ${match.barangay || 'N/A'}</p>
-                        <p class="mb-1"><strong>Plate #:</strong> ${match.plate_mv_engine_chassis_no || 'N/A'}</p>
+            <div class="card-body px-4 py-3">
+                <div class="row g-3">
+                    <div class="col-md-7">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="match-stat-item">
+                                    <div class="match-detail-label">License No.</div>
+                                    <div class="match-detail-value">${match.license_number || '<span style="color:#cbd5e1;">N/A</span>'}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="match-stat-item">
+                                    <div class="match-detail-label">Plate / MV No.</div>
+                                    <div class="match-detail-value">${match.plate_mv_engine_chassis_no || '<span style="color:#cbd5e1;">N/A</span>'}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="match-stat-item">
+                                    <div class="match-detail-label">Date of Birth</div>
+                                    <div class="match-detail-value">${match.date_of_birth ? formatDate(match.date_of_birth) : '<span style="color:#cbd5e1;">N/A</span>'}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="match-stat-item">
+                                    <div class="match-detail-label">Barangay</div>
+                                    <div class="match-detail-value">${match.barangay || '<span style="color:#cbd5e1;">N/A</span>'}</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <p class="mb-1"><strong>Total Citations:</strong> ${match.total_citations}</p>
-                        <p class="mb-1"><strong>Total Offenses:</strong> ${match.total_offenses || 0}</p>
-                        <p class="mb-1"><strong>Last Citation:</strong> ${formatDate(match.last_citation_date)}</p>
-                        <p class="mb-1 text-danger fw-bold">
-                            <strong>This Violation Count:</strong> ${targetViolationHistory.length}x
-                        </p>
+                    <div class="col-md-5">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <div class="match-stat-item text-center">
+                                    <div class="match-detail-label">Citations</div>
+                                    <div class="match-detail-value" style="font-size: 1.25rem; font-weight: 700; color: #1e293b;">${match.total_citations}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="match-stat-item text-center">
+                                    <div class="match-detail-label">Offenses</div>
+                                    <div class="match-detail-value" style="font-size: 1.25rem; font-weight: 700; color: #1e293b;">${match.total_offenses || 0}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="match-stat-item text-center">
+                                    <div class="match-detail-label">Last Citation</div>
+                                    <div class="match-detail-value" style="font-size: 0.8rem;">${formatDate(match.last_citation_date)}</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="match-stat-item text-center" style="background: #fef2f2; border-color: #fecaca !important;">
+                                    <div class="match-detail-label" style="color: #dc2626;">This Violation</div>
+                                    <div class="match-detail-value" style="font-size: 1.25rem; font-weight: 700; color: #dc2626;">${targetViolationHistory.length}x</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 ${violationHistoryHTML}
@@ -408,7 +607,10 @@
             first_name: getValue('first_name'),
             last_name: getValue('last_name'),
             date_of_birth: getValue('date_of_birth'),
-            barangay: getValue('barangay')
+            barangay: getValue('barangay'),
+            middle_initial: getValue('middle_initial'),
+            municipality: getValue('municipality'),
+            vehicle_type: document.querySelector('input[name="vehicle_type"]:checked')?.value || ''
         };
 
         // Need at least some information to check
@@ -478,20 +680,32 @@
         const modalElement = document.getElementById('duplicateWarningModal');
         const modal = new bootstrap.Modal(modalElement);
 
-        // Reset modal title to default
+        // Reset modal header to default style
+        const modalHeader = document.getElementById('duplicateModalHeader');
+        modalHeader.style.background = 'linear-gradient(135deg, #1e293b 0%, #334155 100%)';
+
+        const modalIcon = document.getElementById('duplicateModalIcon');
+        modalIcon.style.background = 'rgba(251,191,36,0.15)';
+        modalIcon.innerHTML = '<i data-lucide="alert-triangle" style="color: #fbbf24; width: 20px; height: 20px;"></i>';
+        if (typeof lucide !== 'undefined') lucide.createIcons();
+
         const modalTitle = modalElement.querySelector('.modal-title');
-        modalTitle.innerHTML = `
-            <i class="fas fa-exclamation-triangle"></i>
-            Possible Duplicate Driver Found
-        `;
+        modalTitle.textContent = 'Possible Duplicate Driver Found';
+
+        const modalSubtitle = document.getElementById('duplicateModalSubtitle');
+        modalSubtitle.textContent = 'Review matching records below';
 
         // Reset alert to default
-        const modalAlert = modalElement.querySelector('.modal-body .alert');
+        const modalAlert = document.getElementById('duplicateModalAlert');
         if (modalAlert) {
-            modalAlert.className = 'alert alert-warning';
+            modalAlert.style.background = '#fef3c7';
+            modalAlert.style.borderLeft = '4px solid #f59e0b';
             modalAlert.innerHTML = `
-                <strong>Warning!</strong> We found existing records that may match this driver.
-                Please review and select the appropriate option below.
+                <i data-lucide="info" class="mt-1 me-3 flex-shrink-0" style="color: #d97706; width: 20px; height: 20px;"></i>
+                <div>
+                    <strong style="color: #92400e;">Attention Required</strong>
+                    <p class="mb-0 mt-1" style="color: #78350f; font-size: 0.9rem;">We found existing records that may match this driver. Please review and select the appropriate action.</p>
+                </div>
             `;
         }
 
@@ -513,6 +727,9 @@
         });
 
         modal.show();
+
+        // Initialize Lucide icons for dynamically added content
+        if (typeof lucide !== 'undefined') lucide.createIcons();
     }
 
     /**
@@ -530,7 +747,7 @@
                     ${confidenceBadge}
                 </div>
                 <button type="button" class="btn btn-sm btn-primary" id="selectMatch${index}">
-                    <i class="fas fa-check"></i> Select This Driver
+                    <i data-lucide="check" style="width: 14px; height: 14px;"></i> Select This Driver
                 </button>
             </div>
             <div class="card-body">
@@ -701,9 +918,9 @@
                     icon: 'warning',
                     showCancelButton: true,
                     showDenyButton: true,
-                    confirmButtonText: '<i class="fas fa-undo"></i> Keep Original',
-                    denyButtonText: '<i class="fas fa-user-plus"></i> Create New Record',
-                    cancelButtonText: '<i class="fas fa-times"></i> Cancel',
+                    confirmButtonText: '<i data-lucide="undo" style="width: 14px; height: 14px;"></i> Keep Original',
+                    denyButtonText: '<i data-lucide="user-plus" style="width: 14px; height: 14px;"></i> Create New Record',
+                    cancelButtonText: '<i data-lucide="x" style="width: 14px; height: 14px;"></i> Cancel',
                     confirmButtonColor: '#3b82f6',
                     denyButtonColor: '#f59e0b',
                     cancelButtonColor: '#6c757d',
@@ -931,12 +1148,14 @@
     }
 
     function getConfidenceBadge(confidence) {
-        let badgeClass = 'bg-secondary';
-        if (confidence >= 80) badgeClass = 'bg-danger';
-        else if (confidence >= 60) badgeClass = 'bg-warning';
-        else if (confidence >= 40) badgeClass = 'bg-info';
+        let color = '#94a3b8';
+        let bg = '#f1f5f9';
+        let label = 'Low';
+        if (confidence >= 80) { color = '#dc2626'; bg = '#fef2f2'; label = 'Very High'; }
+        else if (confidence >= 60) { color = '#d97706'; bg = '#fffbeb'; label = 'High'; }
+        else if (confidence >= 50) { color = '#2563eb'; bg = '#eff6ff'; label = 'Moderate'; }
 
-        return `<span class="badge ${badgeClass}">${confidence}% match</span>`;
+        return `<span class="badge px-2 py-1" style="background: ${bg}; color: ${color}; font-weight: 600; font-size: 0.7rem; border: 1px solid ${color}20; border-radius: 4px;">${confidence}% ${label}</span>`;
     }
 
     function getOffenseLabel(count) {

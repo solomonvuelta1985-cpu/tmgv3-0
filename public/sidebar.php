@@ -187,6 +187,11 @@
             </a>
         </li>
         <li>
+            <a href="/tmg/admin/payment_adjustments.php" class="<?php echo (basename($_SERVER['PHP_SELF']) === 'payment_adjustments.php') ? 'active' : ''; ?>" title="Payment Adjustments">
+                <i data-lucide="alert-circle"></i> <span>Payment Adjustments</span>
+            </a>
+        </li>
+        <li>
             <a href="/tmg/admin/driver_duplicates.php" class="<?php echo (basename($_SERVER['PHP_SELF']) === 'driver_duplicates.php') ? 'active' : ''; ?>" title="Duplicate Drivers">
                 <i data-lucide="users"></i> <span>Duplicates</span>
             </a>

@@ -160,6 +160,7 @@ class CitationService {
             'total' => 0,
             'pending' => 0,
             'paid' => 0,
+            'waived' => 0,
             'contested' => 0,
             'total_fines' => 0
         ];
@@ -189,6 +190,11 @@ class CitationService {
             $whereClause = $hasDeletedAt ? "WHERE status = 'paid' AND deleted_at IS NULL" : "WHERE status = 'paid'";
             $stmt = $this->conn->query("SELECT COUNT(*) as count FROM citations $whereClause");
             $stats['paid'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
+
+            // Waived
+            $whereClause = $hasDeletedAt ? "WHERE status = 'waived' AND deleted_at IS NULL" : "WHERE status = 'waived'";
+            $stmt = $this->conn->query("SELECT COUNT(*) as count FROM citations $whereClause");
+            $stats['waived'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
 
             // Contested
             $whereClause = $hasDeletedAt ? "WHERE status = 'contested' AND deleted_at IS NULL" : "WHERE status = 'contested'";

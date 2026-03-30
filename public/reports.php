@@ -49,7 +49,8 @@ switch ($report_type) {
         break;
 
     case 'officers':
-        $data['performance'] = $reportService->getOfficerPerformance($start_date, $end_date);
+        $officer_type = isset($_GET['officer_type']) ? sanitize($_GET['officer_type']) : 'all';
+        $data['performance'] = $reportService->getOfficerPerformance($start_date, $end_date, $officer_type);
         break;
 
     case 'drivers':
@@ -178,6 +179,17 @@ $reportService->closeConnection();
                             <option value="week" <?php echo $interval === 'week' ? 'selected' : ''; ?>>Weekly</option>
                             <option value="month" <?php echo $interval === 'month' ? 'selected' : ''; ?>>Monthly</option>
                             <option value="year" <?php echo $interval === 'year' ? 'selected' : ''; ?>>Yearly</option>
+                        </select>
+                    </div>
+                    <?php endif; ?>
+                    <?php if ($report_type === 'officers'): ?>
+                    <div class="col-md-2">
+                        <label class="form-label">Officer Type</label>
+                        <select name="officer_type" class="form-select">
+                            <?php $officer_type = $officer_type ?? 'all'; ?>
+                            <option value="all" <?php echo $officer_type === 'all' ? 'selected' : ''; ?>>All Officers</option>
+                            <option value="tmg" <?php echo $officer_type === 'tmg' ? 'selected' : ''; ?>>TMG Officers</option>
+                            <option value="pnp" <?php echo $officer_type === 'pnp' ? 'selected' : ''; ?>>PNP Stations</option>
                         </select>
                     </div>
                     <?php endif; ?>

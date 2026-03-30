@@ -347,11 +347,53 @@ $deleted_citations = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 cancelButtonText: 'Cancel'
             }).then((result) => {
                 if (result.isConfirmed) {
+                    // Show loading
                     Swal.fire({
-                        icon: 'info',
-                        title: 'Feature Coming Soon',
-                        text: 'Permanent deletion requires additional safety checks and will be implemented in a future update.',
-                        confirmButtonColor: '#3b82f6'
+                        title: 'Emptying Trash...',
+                        text: 'Permanently deleting old citations. Please wait.',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Send empty trash request
+                    const formData = new FormData();
+                    formData.append('csrf_token', csrfToken);
+
+                    fetch('/tmg/api/empty_trash.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Trash Emptied!',
+                                text: data.message,
+                                confirmButtonColor: '#10b981'
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Failed',
+                                text: data.message,
+                                confirmButtonColor: '#dc2626'
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'An error occurred while emptying the trash.',
+                            confirmButtonColor: '#dc2626'
+                        });
                     });
                 }
             });

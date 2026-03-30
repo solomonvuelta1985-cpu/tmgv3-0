@@ -23,6 +23,13 @@ function html_escape($data) {
 function db_query($sql, $params = []) {
     try {
         $pdo = getPDO();
+
+        // If database connection failed, throw exception
+        if ($pdo === null) {
+            error_log("Database query failed: Connection not available - Query: " . $sql);
+            throw new Exception("Database connection not available");
+        }
+
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
         return $stmt;

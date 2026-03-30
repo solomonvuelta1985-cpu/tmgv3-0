@@ -31,7 +31,10 @@ try {
         'first_name' => $input['first_name'] ?? '',
         'last_name' => $input['last_name'] ?? '',
         'date_of_birth' => $input['date_of_birth'] ?? '',
-        'barangay' => $input['barangay'] ?? ''
+        'barangay' => $input['barangay'] ?? '',
+        'middle_initial' => $input['middle_initial'] ?? '',
+        'municipality' => $input['municipality'] ?? '',
+        'vehicle_type' => $input['vehicle_type'] ?? ''
     ];
 
     // Initialize service

@@ -270,24 +270,36 @@ class ReportService {
      * Get officer performance statistics
      * @param string $start_date Start date
      * @param string $end_date End date
+     * @param string $officer_type Filter: 'all', 'tmg', or 'pnp'
      * @return array Officer performance data
      */
-    public function getOfficerPerformance($start_date = null, $end_date = null) {
+    public function getOfficerPerformance($start_date = null, $end_date = null, $officer_type = 'all') {
         try {
-            $where_clause = $this->buildDateWhereClause($start_date, $end_date, 'created_at');
+            $where_clause = $this->buildDateWhereClause($start_date, $end_date, 'c.created_at');
+
+            $type_filter = "";
+            if ($officer_type === 'tmg') {
+                $type_filter = " AND c.apprehension_officer NOT LIKE 'PNP %' AND c.apprehension_officer != 'Other'";
+            } elseif ($officer_type === 'pnp') {
+                $type_filter = " AND c.apprehension_officer LIKE 'PNP %'";
+            }
 
             $sql = "SELECT
-                    apprehension_officer as officer_name,
-                    COUNT(citation_id) as citation_count,
-                    SUM(total_fine) as total_fines,
-                    AVG(total_fine) as average_fine,
-                    MIN(created_at) as first_citation,
-                    MAX(created_at) as latest_citation
-                    FROM citations
-                    " . ($where_clause ? $where_clause . " AND deleted_at IS NULL" : "WHERE deleted_at IS NULL") . "
-                    AND apprehension_officer IS NOT NULL
-                    AND apprehension_officer != ''
-                    GROUP BY apprehension_officer
+                    c.apprehension_officer as officer_name,
+                    ao.badge_number,
+                    ao.position,
+                    COUNT(c.citation_id) as citation_count,
+                    SUM(c.total_fine) as total_fines,
+                    AVG(c.total_fine) as average_fine,
+                    MIN(c.created_at) as first_citation,
+                    MAX(c.created_at) as latest_citation
+                    FROM citations c
+                    LEFT JOIN apprehending_officers ao ON c.apprehension_officer = ao.officer_name
+                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . "
+                    AND c.apprehension_officer IS NOT NULL
+                    AND c.apprehension_officer != ''
+                    " . $type_filter . "
+                    GROUP BY c.apprehension_officer, ao.badge_number, ao.position
                     ORDER BY citation_count DESC";
 
             $stmt = $this->conn->prepare($sql);

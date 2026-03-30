@@ -846,18 +846,14 @@ if (empty($_SESSION['csrf_token'])) {
         }
 
         /* Highlight repeat offense violations */
-        .violation-item.repeat-offense {
-            background: #fef2f2;
-            border-left: 3px solid #fd7e14;
-            padding-left: 10px;
-            border-radius: 4px;
+        .violation-item.repeat-offense .checkbox-label {
+            background: #fffbeb;
+            border-color: #fde68a;
         }
 
-        .violation-item.repeat-offense-severe {
-            background: #fee2e2;
-            border-left: 3px solid #dc3545;
-            padding-left: 10px;
-            border-radius: 4px;
+        .violation-item.repeat-offense-severe .checkbox-label {
+            background: #fef2f2;
+            border-color: #fecaca;
         }
 
         /* Loading animation for violation updates */
@@ -1312,6 +1308,16 @@ if (empty($_SESSION['csrf_token'])) {
         // IMMEDIATELY remove loading class
         document.body.classList.remove('loading');
 
+        // Check if we need to scroll to top after reload
+        if (sessionStorage.getItem('scrollToTop') === 'true') {
+            sessionStorage.removeItem('scrollToTop');
+            window.scrollTo(0, 0);
+            // Disable scroll restoration to prevent browser from restoring position
+            if ('scrollRestoration' in history) {
+                history.scrollRestoration = 'manual';
+            }
+        }
+
         // Initialize Lucide icons
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
@@ -1319,6 +1325,12 @@ if (empty($_SESSION['csrf_token'])) {
 
         // Also remove on window load as backup
         window.addEventListener('load', function() {
+            // Force scroll to top if flag is still present
+            if (sessionStorage.getItem('scrollToTop') === 'true') {
+                sessionStorage.removeItem('scrollToTop');
+                window.scrollTo(0, 0);
+            }
+
             setTimeout(function() {
                 document.body.classList.remove('loading');
                 if (typeof lucide !== 'undefined') {
@@ -1618,6 +1630,12 @@ if (empty($_SESSION['csrf_token'])) {
             window.addEventListener('citationSubmitted', function() {
                 clearDraft();
                 formModified = false;
+
+                // Scroll to top of page after successful submission
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
             });
 
         })();

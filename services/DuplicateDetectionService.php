@@ -55,13 +55,16 @@ class DuplicateDetectionService {
             }
         }
 
-        // Strategy 3: Fuzzy name matching + DOB
+        // Strategy 3: Fuzzy name matching + DOB + additional fields
         if (!empty($driver_info['first_name']) && !empty($driver_info['last_name'])) {
             $name_matches = $this->findByFuzzyName(
                 $driver_info['first_name'],
                 $driver_info['last_name'],
                 $driver_info['date_of_birth'] ?? null,
-                $driver_info['barangay'] ?? null
+                $driver_info['barangay'] ?? null,
+                $driver_info['middle_initial'] ?? null,
+                $driver_info['municipality'] ?? null,
+                $driver_info['vehicle_type'] ?? null
             );
             foreach ($name_matches as $match) {
                 // Skip if already matched
@@ -155,7 +158,7 @@ class DuplicateDetectionService {
      * @param string $barangay Barangay (optional)
      * @return array Matching drivers with confidence scores
      */
-    private function findByFuzzyName($first_name, $last_name, $dob = null, $barangay = null) {
+    private function findByFuzzyName($first_name, $last_name, $dob = null, $barangay = null, $middle_initial = null, $municipality = null, $vehicle_type = null) {
         try {
             $matches = [];
 
@@ -163,31 +166,41 @@ class DuplicateDetectionService {
             $first_name_clean = $this->normalizeName($first_name);
             $last_name_clean = $this->normalizeName($last_name);
 
-            // Get all drivers with similar names (using broader search)
+            // Get drivers where BOTH first AND last name have some similarity
             $sql = "SELECT DISTINCT
                     c.driver_id,
                     c.last_name,
                     c.first_name,
+                    c.middle_initial,
                     c.license_number,
                     c.date_of_birth,
                     c.barangay,
+                    c.municipality,
+                    c.vehicle_type,
                     c.plate_mv_engine_chassis_no,
                     COUNT(DISTINCT c.citation_id) as total_citations,
                     MAX(c.created_at) as last_citation_date
                     FROM citations c
                     WHERE (
-                        SOUNDEX(c.last_name) = SOUNDEX(:last_name_soundex1)
-                        OR SOUNDEX(c.first_name) = SOUNDEX(:first_name_soundex1)
-                        OR UPPER(c.last_name) LIKE :last_name_like
-                        OR UPPER(c.first_name) LIKE :first_name_like
-                        OR SOUNDEX(c.last_name) = SOUNDEX(:first_name_soundex2)
-                        OR SOUNDEX(c.first_name) = SOUNDEX(:last_name_soundex2)
+                        -- Both first AND last name must have some similarity
+                        (
+                            (SOUNDEX(c.last_name) = SOUNDEX(:last_name_soundex1) OR UPPER(c.last_name) LIKE :last_name_like)
+                            AND
+                            (SOUNDEX(c.first_name) = SOUNDEX(:first_name_soundex1) OR UPPER(c.first_name) LIKE :first_name_like)
+                        )
+                        -- OR swapped names both match
+                        OR (
+                            SOUNDEX(c.last_name) = SOUNDEX(:first_name_soundex2)
+                            AND SOUNDEX(c.first_name) = SOUNDEX(:last_name_soundex2)
+                        )
+                        -- OR full name combo matches
                         OR CONCAT(UPPER(c.first_name), ' ', UPPER(c.last_name)) LIKE :full_name_like
                         OR CONCAT(UPPER(c.last_name), ' ', UPPER(c.first_name)) LIKE :full_name_reversed_like
                     )
-                    GROUP BY c.driver_id, c.last_name, c.first_name,
-                             c.license_number, c.date_of_birth, c.barangay, c.plate_mv_engine_chassis_no
-                    LIMIT 50";
+                    GROUP BY c.driver_id, c.last_name, c.first_name, c.middle_initial,
+                             c.license_number, c.date_of_birth, c.barangay, c.municipality,
+                             c.vehicle_type, c.plate_mv_engine_chassis_no
+                    LIMIT 20";
 
             $stmt = $this->conn->prepare($sql);
             $stmt->execute([
@@ -207,13 +220,22 @@ class DuplicateDetectionService {
                 $confidence = 0;
                 $reasons = [];
 
-                // Name similarity (max 50 points)
-                $name_similarity = $this->calculateNameSimilarity(
-                    $first_name,
-                    $last_name,
-                    $candidate['first_name'],
-                    $candidate['last_name']
-                );
+                // Check individual name similarities first
+                $first_name_clean_input = $this->normalizeName($first_name);
+                $last_name_clean_input = $this->normalizeName($last_name);
+                $first_name_clean_candidate = $this->normalizeName($candidate['first_name']);
+                $last_name_clean_candidate = $this->normalizeName($candidate['last_name']);
+
+                $first_sim = $this->levenshteinSimilarity($first_name_clean_input, $first_name_clean_candidate);
+                $last_sim = $this->levenshteinSimilarity($last_name_clean_input, $last_name_clean_candidate);
+
+                // Skip if either name has very low individual similarity
+                if ($first_sim < 0.3 && $last_sim < 0.3) {
+                    continue;
+                }
+
+                // Name similarity (max 50 points) - equal weight for first and last name
+                $name_similarity = ($last_sim * 0.5) + ($first_sim * 0.5);
                 $confidence += $name_similarity * 50;
                 if ($name_similarity > 0.7) {
                     $reasons[] = 'Similar name';
@@ -232,8 +254,29 @@ class DuplicateDetectionService {
                     $reasons[] = 'Same barangay';
                 }
 
-                // Only include if confidence is above threshold (lowered to catch more)
-                if ($confidence >= 30) {
+                // Middle initial match (10 points)
+                if ($middle_initial && $candidate['middle_initial'] &&
+                    strtoupper(trim($middle_initial)) === strtoupper(trim($candidate['middle_initial']))) {
+                    $confidence += 10;
+                    $reasons[] = 'Same middle initial';
+                }
+
+                // Municipality match (10 points)
+                if ($municipality && $candidate['municipality'] &&
+                    strtolower(trim($municipality)) === strtolower(trim($candidate['municipality']))) {
+                    $confidence += 10;
+                    $reasons[] = 'Same municipality';
+                }
+
+                // Vehicle type match (5 points)
+                if ($vehicle_type && $candidate['vehicle_type'] &&
+                    strtolower(trim($vehicle_type)) === strtolower(trim($candidate['vehicle_type']))) {
+                    $confidence += 5;
+                    $reasons[] = 'Same vehicle type';
+                }
+
+                // Only include if confidence is above threshold
+                if ($confidence >= 50) {
                     $candidate['confidence'] = round($confidence);
                     $candidate['reason'] = implode(', ', $reasons);
                     $matches[] = $candidate;
@@ -370,8 +413,8 @@ class DuplicateDetectionService {
         $first_similarity = $this->levenshteinSimilarity($first1_clean, $first2_clean);
         $last_similarity = $this->levenshteinSimilarity($last1_clean, $last2_clean);
 
-        // Weight last name more heavily (60% last, 40% first)
-        return ($last_similarity * 0.6) + ($first_similarity * 0.4);
+        // Equal weight for first and last name (Filipino surnames are widely shared)
+        return ($last_similarity * 0.5) + ($first_similarity * 0.5);
     }
 
     /**

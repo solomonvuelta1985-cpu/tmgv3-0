@@ -8,7 +8,13 @@ $performance = $data['performance'] ?? [];
     <div class="col-12">
         <div class="report-card">
             <div class="report-card-header">
-                <span><i data-lucide="shield"></i>Officer Performance Summary</span>
+                <span><i data-lucide="shield"></i>Officer Performance Summary
+                    <?php
+                    $officer_type = $_GET['officer_type'] ?? 'all';
+                    if ($officer_type === 'tmg') echo ' <small class="text-muted">— TMG Officers</small>';
+                    elseif ($officer_type === 'pnp') echo ' <small class="text-muted">— PNP Stations</small>';
+                    ?>
+                </span>
                 <span class="badge bg-primary"><?php echo count($performance); ?> officers</span>
             </div>
             <div class="report-card-body no-padding">

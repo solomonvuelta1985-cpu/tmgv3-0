@@ -240,7 +240,12 @@
 
         <!-- Violations (Tabbed Interface) -->
         <div class="section">
-            <h5 class="text-danger"><i data-lucide="alert-triangle" style="width: 20px; height: 20px; margin-right: 8px;"></i>Violation(s) *</h5>
+            <h5 style="display: flex; align-items: center; gap: 10px; color: #1e293b; font-weight: 600; font-size: 1rem; margin-bottom: 4px;">
+                <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: #fef2f2; border-radius: 6px;">
+                    <i data-lucide="alert-triangle" style="width: 16px; height: 16px; color: #dc2626;"></i>
+                </span>
+                Violation(s) <span style="color: #dc2626;">*</span>
+            </h5>
 
             <!-- Search Box -->
             <div class="violation-search-box mb-3">

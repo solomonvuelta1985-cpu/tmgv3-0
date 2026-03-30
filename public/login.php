@@ -30,34 +30,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($username) || empty($password)) {
             $error = 'Please enter both username and password.';
         } else {
-            $user = authenticate($username, $password);
-            if ($user) {
-                // Check session limit for admin users
-                $sessionCheck = check_session_limit($user['user_id'], $user['role']);
+            try {
+                $user = authenticate($username, $password);
+                if ($user) {
+                    // Check session limit for admin users
+                    $sessionCheck = check_session_limit($user['user_id'], $user['role']);
 
-                if (!$sessionCheck['allowed']) {
-                    $error = $sessionCheck['message'];
-                    error_log("Login blocked for user {$user['username']}: {$error}");
-                } else {
-                    // Create PHP session
-                    create_session($user);
-
-                    // Create session tracking record in database
-                    $sessionToken = $_SESSION['session_token'] ?? session_id();
-                    create_session_record($user['user_id'], $sessionToken);
-
-                    set_flash('Welcome back, ' . $user['full_name'] . '!', 'success');
-
-                    // Redirect based on user role
-                    if ($user['role'] === 'lto_staff') {
-                        header('Location: lto_search.php');
+                    if (!$sessionCheck['allowed']) {
+                        $error = $sessionCheck['message'];
+                        error_log("Login blocked for user {$user['username']}: {$error}");
                     } else {
-                        header('Location: index.php');
+                        // Create PHP session
+                        create_session($user);
+
+                        // Create session tracking record in database
+                        $sessionToken = $_SESSION['session_token'] ?? session_id();
+                        create_session_record($user['user_id'], $sessionToken);
+
+                        set_flash('Welcome back, ' . $user['full_name'] . '!', 'success');
+
+                        // Redirect based on user role
+                        if ($user['role'] === 'lto_staff') {
+                            header('Location: lto_search.php');
+                        } else {
+                            header('Location: index.php');
+                        }
+                        exit;
                     }
-                    exit;
+                } else {
+                    $error = 'Invalid username or password.';
                 }
-            } else {
-                $error = 'Invalid username or password.';
+            } catch (Exception $e) {
+                // Handle database errors gracefully
+                error_log("Login error: " . $e->getMessage());
+                $error = 'System temporarily unavailable. Please contact your administrator if this persists.';
             }
         }
     }
@@ -70,41 +76,96 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Traffic Citation System</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* --- 1. Reset & Layout --- */
         :root {
-            --bg-color: #e0e5ec;
-            --primary: #4e54c8;
-            --secondary: #8f94fb;
+            --primary: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-dark: #3730a3;
+            --accent: #06b6d4;
             --white: #ffffff;
-            --shadow: rgba(0, 0, 0, 0.2);
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', 'Segoe UI', sans-serif; }
 
         body {
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: #dfe6e9;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated background orbs */
+        body::before,
+        body::after {
+            content: '';
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            z-index: 0;
+        }
+        body::before {
+            width: 500px; height: 500px;
+            background: var(--primary);
+            top: -150px; right: -100px;
+            animation: orbFloat1 8s ease-in-out infinite;
+        }
+        body::after {
+            width: 400px; height: 400px;
+            background: var(--accent);
+            bottom: -100px; left: -100px;
+            animation: orbFloat2 10s ease-in-out infinite;
+        }
+        @keyframes orbFloat1 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-60px, 40px); }
+        }
+        @keyframes orbFloat2 {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(50px, -30px); }
         }
 
         .login-card {
             display: flex;
-            width: 950px;
+            width: 1000px;
             max-width: 95%;
-            height: 600px;
+            min-height: 620px;
             background: var(--white);
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            border-radius: 24px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.05);
             overflow: hidden;
+            position: relative;
+            z-index: 1;
+            animation: cardEntry 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* --- 2. Left Panel (The 3D Stage) --- */
+        @keyframes cardEntry {
+            from { opacity: 0; transform: translateY(30px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* --- 2. Left Panel --- */
         .left-panel {
             flex: 1.2;
-            background: linear-gradient(135deg, #1e272e, #34495e);
+            background: linear-gradient(160deg, #0f172a 0%, #1e293b 40%, #1a2744 100%);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -114,37 +175,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             perspective: 800px;
         }
 
-        .left-logo {
-            width: 80px;
-            height: 80px;
-            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+        /* Subtle grid overlay */
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 0;
         }
+
+        /* Glow accent */
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            width: 300px; height: 300px;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.15), transparent 70%);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+
+        .left-logo {
+            width: 72px;
+            height: 72px;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
+            transition: transform 0.3s ease;
+        }
+        .left-logo:hover { transform: scale(1.08); }
 
         .stage-header {
             position: absolute;
-            top: 35px;
+            top: 32px;
             left: 0;
             right: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 15px;
+            gap: 16px;
             z-index: 10;
         }
 
         .stage-title {
-            color: rgba(255,255,255,0.8);
-            letter-spacing: 2px;
+            color: rgba(255,255,255,0.9);
+            letter-spacing: 3px;
             text-transform: uppercase;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            font-weight: 600;
         }
 
         .tmg-logo {
-            width: 80px;
-            height: 80px;
+            width: 72px;
+            height: 72px;
             object-fit: contain;
-            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.3));
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
+            transition: transform 0.3s ease;
         }
+        .tmg-logo:hover { transform: scale(1.08); }
 
         .scene-container {
             width: 100%;
@@ -153,6 +242,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             justify-content: center;
             align-items: center;
             position: relative;
+            z-index: 1;
         }
 
         /* Shared Scene Styles */
@@ -164,23 +254,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             width: 100%;
             height: 100%;
             opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.5s ease;
+            transform: translateY(20px) scale(0.95);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         .scene.active {
             display: flex;
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(0) scale(1);
         }
 
         .caption {
             margin-top: 50px;
-            color: white;
-            font-size: 1.2rem;
-            font-weight: 300;
-            letter-spacing: 1px;
-            text-shadow: 0 5px 10px rgba(0,0,0,0.3);
+            color: rgba(255,255,255,0.85);
+            font-size: 1rem;
+            font-weight: 400;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        /* Scene indicator dots */
+        .scene-dots {
+            position: absolute;
+            bottom: 28px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+        }
+        .scene-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            transition: all 0.4s ease;
+        }
+        .scene-dot.active {
+            background: var(--primary-light);
+            box-shadow: 0 0 8px rgba(129, 140, 248, 0.5);
+            width: 24px;
+            border-radius: 4px;
         }
 
         /* --- 3. Animation 1: Isometric Paper Writer --- */
@@ -364,25 +475,88 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         /* --- Right Panel (Form) --- */
         .right-panel {
             flex: 1;
-            padding: 60px;
+            padding: 50px 48px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             position: relative;
+            background: var(--white);
         }
 
-        .header h1 { font-size: 2.2rem; color: #2d3436; margin-bottom: 10px; }
-        .header p { color: #636e72; margin-bottom: 40px; }
+        .header h1 {
+            font-size: 2rem;
+            color: var(--gray-900);
+            font-weight: 700;
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+        .header p {
+            color: var(--gray-400);
+            margin-bottom: 28px;
+            font-size: 0.95rem;
+        }
 
-        .input-group { position: relative; margin-bottom: 25px; }
+        /* Notices container */
+        .notices {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
         .input-group label {
-            position: absolute; left: 15px; top: -10px; background: white; padding: 0 5px;
-            font-size: 0.85rem; color: #4e54c8; font-weight: 600; z-index: 3;
+            display: block;
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            font-weight: 600;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .input-group .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .input-group .input-icon {
+            position: absolute;
+            left: 14px;
+            color: var(--gray-300);
+            font-size: 1rem;
+            transition: color 0.3s;
+            z-index: 2;
+            pointer-events: none;
         }
         .input-group input {
-            width: 100%; padding: 15px; border: 2px solid #e0e5ec; border-radius: 10px; font-size: 1rem; transition: 0.3s;
+            width: 100%;
+            padding: 13px 15px 13px 42px;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            color: var(--gray-800);
+            background: var(--gray-50);
+            transition: all 0.3s ease;
         }
-        .input-group input:focus { outline: none; border-color: #4e54c8; box-shadow: 0 0 0 4px rgba(78, 84, 200, 0.1); }
+        .input-group input::placeholder {
+            color: var(--gray-300);
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--white);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.08);
+        }
+        .input-group input:focus ~ .input-icon,
+        .input-group input:focus + .input-icon {
+            color: var(--primary);
+        }
+        .input-group:focus-within .input-icon {
+            color: var(--primary);
+        }
 
         .password-wrapper {
             position: relative;
@@ -391,71 +565,115 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .password-wrapper input {
-            padding-right: 50px !important;
+            padding-right: 48px !important;
         }
 
         .password-toggle {
             position: absolute;
-            right: 12px;
+            right: 4px;
             background: none;
             border: none;
-            color: #636e72;
+            color: var(--gray-400);
             cursor: pointer;
-            padding: 8px 10px;
+            padding: 10px;
             transition: color 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
             z-index: 2;
+            border-radius: 8px;
         }
 
         .password-toggle:hover {
-            color: #4e54c8;
+            color: var(--primary);
+            background: rgba(79, 70, 229, 0.05);
         }
 
         .password-toggle i {
-            font-size: 1.1rem;
+            font-size: 1rem;
         }
 
         .btn-login {
-            width: 100%; padding: 15px; background: linear-gradient(to right, #4e54c8, #8f94fb);
-            color: white; border: none; border-radius: 10px; font-size: 1.1rem; font-weight: 600;
-            cursor: pointer; transition: transform 0.2s; margin-top: 10px;
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            margin-top: 8px;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.3px;
         }
-        .btn-login:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(78, 84, 200, 0.3); }
-        .btn-login:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, transparent, rgba(255,255,255,0.1));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .btn-login:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.35);
+        }
+        .btn-login:hover::before { opacity: 1; }
+        .btn-login:active { transform: translateY(0); }
+        .btn-login:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
 
         .alert {
-            padding: 12px 15px;
+            padding: 11px 14px;
             border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
+            font-size: 0.82rem;
+            line-height: 1.4;
+            animation: alertSlide 0.3s ease;
+        }
+
+        @keyframes alertSlide {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .alert-danger {
-            background: #fee;
-            color: #c33;
-            border: 1px solid #fcc;
+            background: #fef2f2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+        .alert-danger i { color: var(--danger); }
 
         .alert-success {
-            background: #efe;
-            color: #3c3;
-            border: 1px solid #cfc;
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
         }
 
         .alert-info {
-            background: #e8f4fd;
-            color: #0c5460;
-            border: 1px solid #b8daff;
+            background: var(--gray-50);
+            color: var(--gray-600);
+            border: 1px solid var(--gray-200);
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 10px;
         }
 
         .alert-info i {
-            font-size: 1.2rem;
-            color: #17a2b8;
+            font-size: 0.9rem;
+            color: var(--primary-light);
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .alert-info strong {
+            color: var(--gray-700);
         }
 
         .default-creds {
@@ -469,20 +687,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: #e74c3c;
         }
 
+        /* Footer text */
+        .login-footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.78rem;
+            color: var(--gray-300);
+        }
+
         /* Responsive */
         @media (max-width: 900px) {
             .login-card {
                 flex-direction: column;
                 height: auto;
-                width: 90%;
+                width: 92%;
+                min-height: auto;
             }
 
             .left-panel {
-                min-height: 300px;
+                min-height: 280px;
             }
 
             .right-panel {
-                padding: 40px 30px;
+                padding: 32px 28px;
             }
 
             .left-logo, .tmg-logo {
@@ -491,9 +718,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             .stage-header {
-                flex-direction: column;
                 gap: 10px;
                 top: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.6rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                width: 100%;
+                border-radius: 0;
+                min-height: 100vh;
+            }
+
+            .left-panel {
+                min-height: 220px;
+                border-radius: 0;
+            }
+
+            .right-panel {
+                padding: 24px 20px;
+            }
+
+            .stage-header {
+                flex-direction: row;
             }
         }
     </style>
@@ -571,6 +822,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
             </div>
+
+            <div class="scene-dots">
+                <div class="scene-dot active"></div>
+                <div class="scene-dot"></div>
+                <div class="scene-dot"></div>
+                <div class="scene-dot"></div>
+                <div class="scene-dot"></div>
+            </div>
         </div>
 
         <!-- RIGHT: Login Form -->
@@ -588,17 +847,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <?php echo show_flash(); ?>
 
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i>
-                <div>
-                    <strong>Security Notice:</strong> For your protection, you will be automatically logged out after <strong>15 minutes</strong> of inactivity.
+            <div class="notices">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    <div>
+                        <strong>Security Notice:</strong> Auto logout after <strong>15 min</strong> of inactivity.
+                    </div>
                 </div>
-            </div>
 
-            <div class="alert alert-info">
-                <i class="fas fa-shield-alt"></i>
-                <div>
-                    <strong>Admin Device Limit:</strong> Admin accounts are limited to <strong>2 concurrent devices</strong> for enhanced security.
+                <div class="alert alert-info">
+                    <i class="fas fa-shield-alt"></i>
+                    <div>
+                        <strong>Device Limit:</strong> Admin accounts limited to <strong>2 devices</strong>.
+                    </div>
                 </div>
             </div>
 
@@ -607,14 +868,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <div class="input-group">
                     <label>Username</label>
-                    <input type="text" name="username" id="username"
-                           value="<?php echo htmlspecialchars($_POST['username'] ?? ''); ?>"
-                           placeholder="Enter your username" required autofocus>
+                    <div class="input-wrapper">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" name="username" id="username"
+                               value="<?php echo htmlspecialchars($_POST['username'] ?? ''); ?>"
+                               placeholder="Enter your username" required autofocus>
+                    </div>
                 </div>
 
                 <div class="input-group">
                     <label>Password</label>
-                    <div class="password-wrapper">
+                    <div class="input-wrapper password-wrapper">
+                        <i class="fas fa-lock input-icon"></i>
                         <input type="password" name="password" id="password"
                                placeholder="Enter your password" required>
                         <button type="button" class="password-toggle" id="togglePassword">
@@ -627,27 +892,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="fas fa-sign-in-alt"></i> Sign In
                 </button>
             </form>
-<!-- 
-            <div class="default-creds">
-                Default admin: admin / admin123<br>
-                <strong>Change password after first login!</strong>
-            </div> -->
+
+            <div class="login-footer">
+                B-TRACS &mdash; Baggao Traffic Citation System
+            </div>
         </div>
 
     </div>
 
     <script>
-        // Cycle Animations
+        // Cycle Animations with dot indicators
         const scenes = document.querySelectorAll('.scene');
+        const dots = document.querySelectorAll('.scene-dot');
         let index = 0;
 
         function cycleScenes() {
             scenes[index].classList.remove('active');
+            dots[index].classList.remove('active');
             index = (index + 1) % scenes.length;
             scenes[index].classList.add('active');
+            dots[index].classList.add('active');
         }
 
-        setInterval(cycleScenes, 2500);
+        setInterval(cycleScenes, 3000);
 
         // Toggle password visibility
         document.getElementById('togglePassword').addEventListener('click', function() {

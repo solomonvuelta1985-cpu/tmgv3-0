@@ -35,6 +35,9 @@ $monthly_trend = 0;
 $pdo = getPDO();
 if ($pdo) {
     try {
+        // Set MySQL timezone to match PHP (Asia/Manila = UTC+8)
+        db_query("SET time_zone = '+08:00'");
+
         // Today's citations
         $stmt = db_query("SELECT COUNT(*) as count FROM citations WHERE DATE(created_at) = CURDATE()");
         $result = $stmt->fetch();
@@ -174,14 +177,14 @@ if ($pdo) {
         }
 
         :root {
-            /* Colors - Purple Theme Preserved */
-            --color-primary: #9155fd;
-            --color-primary-light: #b389ff;
-            --color-primary-dark: #7367f0;
-            --color-success: #56ca00;
-            --color-warning: #ffb400;
-            --color-danger: #ff4c51;
-            --color-info: #16b1ff;
+            /* Colors - Corporate Navy Theme */
+            --color-primary: #1e40af;
+            --color-primary-light: #3b82f6;
+            --color-primary-dark: #1e3a8a;
+            --color-success: #059669;
+            --color-warning: #d97706;
+            --color-danger: #dc2626;
+            --color-info: #0284c7;
 
             /* Backgrounds */
             --bg-primary: #f5f5f9;
@@ -202,7 +205,7 @@ if ($pdo) {
             --shadow-2: 0 3px 6px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.12);
             --shadow-3: 0 10px 20px rgba(0, 0, 0, 0.15), 0 3px 6px rgba(0, 0, 0, 0.10);
             --shadow-4: 0 15px 25px rgba(0, 0, 0, 0.15), 0 5px 10px rgba(0, 0, 0, 0.05);
-            --shadow-hover: 0 8px 16px rgba(145, 85, 253, 0.2);
+            --shadow-hover: 0 8px 16px rgba(30, 64, 175, 0.15);
 
             /* Spacing (8px grid) */
             --spacing-1: 8px;
@@ -263,175 +266,198 @@ if ($pdo) {
 
         /* Hero Welcome Card */
         .hero-card {
-            background: #9155fd;
+            background: linear-gradient(135deg, #0a1628 0%, #132042 40%, #1a2d5a 100%);
             border-radius: var(--radius-lg);
-            padding: clamp(1.25rem, 3vw, 1.75rem);
+            padding: clamp(1.5rem, 3vw, 2rem) clamp(1.5rem, 3vw, 2.25rem);
             margin-bottom: var(--spacing-2);
-            box-shadow: 0 4px 12px rgba(145, 85, 253, 0.25);
             color: white;
             position: relative;
             overflow: hidden;
             width: 100%;
-            max-width: 100%;
             box-sizing: border-box;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 24px rgba(10, 22, 40, 0.35), 0 1px 3px rgba(0,0,0,0.12);
         }
 
+        /* Decorative grid pattern */
         .hero-card::before {
             content: '';
             position: absolute;
-            top: -100px;
-            right: -100px;
-            width: 300px;
-            height: 300px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 50%;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 2px 2px, rgba(59, 130, 246, 0.08) 1px, transparent 0);
+            background-size: 24px 24px;
+            pointer-events: none;
+            z-index: 0;
         }
 
-        .hero-content {
+        /* Accent glow orb */
+        .hero-card::after {
+            content: '';
+            position: absolute;
+            top: -40%;
+            right: -10%;
+            width: 280px;
+            height: 280px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .hero-top-row {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: var(--spacing-2);
+            justify-content: space-between;
+            margin-bottom: 20px;
             position: relative;
             z-index: 1;
-            min-width: 0;
-            gap: var(--spacing-2);
+        }
+
+        .hero-date-display {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.06);
+            padding: 6px 14px;
+            border-radius: var(--radius-full);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(4px);
+        }
+
+        .hero-main {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
 
         .hero-text {
             flex: 1;
-            min-width: 0;
-            overflow: hidden;
+            min-width: 200px;
         }
 
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255, 255, 255, 0.15);
-            padding: 8px 16px;
-            border-radius: var(--radius-full);
-            font-size: 0.8125rem;
-            font-weight: 600;
-            margin-bottom: var(--spacing-2);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        .hero-greeting {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #60a5fa;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 6px;
         }
 
         .hero-title {
-            font-size: clamp(1.375rem, 3vw, 1.875rem);
+            font-size: clamp(1.35rem, 2.8vw, 1.75rem);
             font-weight: 700;
-            margin-bottom: var(--spacing-1);
-            letter-spacing: -0.025em;
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+            color: #ffffff;
             line-height: 1.2;
         }
 
         .hero-subtitle {
-            font-size: clamp(0.9375rem, 1.8vw, 1rem);
-            opacity: 0.95;
+            font-size: clamp(0.8rem, 1.5vw, 0.875rem);
+            color: #64748b;
+            font-weight: 400;
             line-height: 1.5;
         }
 
-        .hero-icon-circle {
-            width: clamp(90px, 15vw, 130px);
-            height: clamp(90px, 15vw, 130px);
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 50%;
+        .hero-stats-row {
             display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .hero-stat-badge {
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 6px 14px;
+            border-radius: var(--radius-full);
+            font-size: 0.78rem;
+            color: #cbd5e1;
+            backdrop-filter: blur(4px);
+            transition: background 0.2s ease;
+        }
+
+        .hero-stat-badge:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .hero-stat-badge .stat-num {
+            font-weight: 700;
+            color: #ffffff;
+            font-size: 0.85rem;
+        }
+
+        .hero-stat-badge.accent-blue { border-color: rgba(59, 130, 246, 0.3); }
+        .hero-stat-badge.accent-amber { border-color: rgba(245, 158, 11, 0.3); }
+        .hero-stat-badge.accent-green { border-color: rgba(34, 197, 94, 0.3); }
+
+        .hero-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+            z-index: 1;
         }
 
         .hero-cta-btn {
             display: inline-flex;
             align-items: center;
-            gap: var(--spacing-1);
-            background: white;
-            color: var(--color-primary);
-            padding: 14px 32px;
+            gap: 8px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            padding: 10px 22px;
             border-radius: var(--radius-sm);
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.85rem;
             text-decoration: none;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            z-index: 1;
-            border: 2px solid transparent;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
+            white-space: nowrap;
         }
 
         .hero-cta-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-            color: var(--color-primary);
-            border-color: rgba(145, 85, 253, 0.1);
-        }
-
-        .hero-meta-bar {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-2);
-            margin-bottom: var(--spacing-2);
-            position: relative;
-            z-index: 1;
-            flex-wrap: wrap;
-        }
-
-        .hero-date-display {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-1);
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
             color: white;
-            font-size: clamp(0.8125rem, 1.5vw, 0.9375rem);
-            padding: 10px 16px;
-            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 4px 16px rgba(59, 130, 246, 0.45);
+            transform: translateY(-1px);
+        }
+
+        .hero-secondary-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #94a3b8;
+            padding: 8px 18px;
             border-radius: var(--radius-sm);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             font-weight: 500;
+            font-size: 0.8rem;
+            text-decoration: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s ease;
+            white-space: nowrap;
         }
 
-        .hero-notification-btn {
-            position: relative;
-            width: 44px;
-            height: 44px;
-            background: rgba(255, 255, 255, 0.15);
-            border: 1.5px solid rgba(255, 255, 255, 0.25);
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        .hero-secondary-btn:hover {
+            background: rgba(255, 255, 255, 0.14);
+            color: #e2e8f0;
         }
 
-        .hero-notification-btn:hover {
-            background: rgba(255, 255, 255, 0.25);
-            border-color: rgba(255, 255, 255, 0.4);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        .hero-notification-btn .count {
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            background: var(--color-danger);
-            color: white;
-            font-size: 0.6875rem;
-            font-weight: 700;
-            padding: 4px 8px;
-            border-radius: var(--radius-full);
-            min-width: 22px;
-            text-align: center;
-            box-shadow: 0 2px 6px rgba(255, 76, 81, 0.4);
-            border: 2px solid white;
-        }
 
         /* Top Actions Bar */
         .top-actions-bar {
@@ -1043,35 +1069,10 @@ if ($pdo) {
                 grid-template-columns: 1fr;
             }
 
-            .hero-card {
-                padding: clamp(1rem, 2.5vw, 1.5rem);
-            }
         }
 
         /* Tablet Styles */
         @media (max-width: 1024px) {
-            .hero-card {
-                padding: 1.25rem;
-                margin-top: var(--spacing-1);
-            }
-
-            .hero-title {
-                font-size: clamp(1.25rem, 2.8vw, 1.5rem);
-            }
-
-            .hero-subtitle {
-                font-size: clamp(0.875rem, 1.6vw, 0.9375rem);
-            }
-
-            .hero-icon-circle {
-                width: clamp(80px, 12vw, 100px);
-                height: clamp(80px, 12vw, 100px);
-            }
-
-            .hero-cta-btn {
-                padding: 12px 24px;
-                font-size: 0.9375rem;
-            }
         }
 
         @media (max-width: 768px) {
@@ -1094,71 +1095,56 @@ if ($pdo) {
 
             /* Hero Card Mobile */
             .hero-card {
-                padding: 1.25rem 1rem;
+                padding: 1.25rem;
                 border-radius: 12px;
-                margin-top: var(--spacing-2);
             }
 
-            .hero-content {
+            .hero-card::after {
+                width: 180px;
+                height: 180px;
+                top: -30%;
+                right: -15%;
+            }
+
+            .hero-top-row {
+                margin-bottom: 14px;
+            }
+
+            .hero-main {
                 flex-direction: column;
-                text-align: center;
-                gap: var(--spacing-3);
-                margin-bottom: var(--spacing-3);
-            }
-
-            .hero-text {
-                order: 2;
-            }
-
-            .hero-illustration {
-                order: 1;
-            }
-
-            .hero-meta-bar {
-                justify-content: center;
-                gap: var(--spacing-1);
-            }
-
-            .hero-date-display {
-                padding: 8px 12px;
-                font-size: 0.75rem;
-            }
-
-            .hero-notification-btn {
-                width: 40px;
-                height: 40px;
-            }
-
-            .hero-badge {
-                padding: 6px 12px;
-                font-size: 0.75rem;
+                align-items: flex-start;
             }
 
             .hero-title {
-                font-size: 1.5rem;
-                margin-bottom: 0.5rem;
+                font-size: 1.15rem;
             }
 
             .hero-subtitle {
-                font-size: 0.875rem;
+                font-size: 0.78rem;
             }
 
-            .hero-icon-circle {
-                width: 90px;
-                height: 90px;
+            .hero-stats-row {
+                margin-top: 12px;
             }
 
-            .hero-icon-circle i {
-                width: 40px !important;
-                height: 40px !important;
+            .hero-stat-badge {
+                font-size: 0.72rem;
+                padding: 5px 10px;
             }
 
-            .hero-cta-btn {
+            .hero-actions {
+                flex-direction: row;
+                margin-top: 4px;
                 width: 100%;
-                justify-content: center;
-                padding: 12px 24px;
-                font-size: 0.9375rem;
             }
+
+            .hero-cta-btn, .hero-secondary-btn {
+                flex: 1;
+                justify-content: center;
+                font-size: 0.78rem;
+                padding: 9px 14px;
+            }
+
 
             .compact-metrics-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -1206,106 +1192,25 @@ if ($pdo) {
                 max-width: 100vw !important;
             }
 
-            /* Hero Card Small Mobile */
             .hero-card {
-                padding: 1rem 0.875rem;
-                border-radius: 10px;
-                margin-top: var(--spacing-2);
+                padding: 1rem;
             }
 
-            .hero-card::before {
-                width: 200px;
-                height: 200px;
-                top: -80px;
-                right: -80px;
+            .hero-greeting {
+                font-size: 0.72rem;
             }
 
-            .hero-meta-bar {
-                flex-direction: row;
-                gap: 0.5rem;
-                margin-bottom: 1rem;
+            .hero-stats-row {
+                gap: 8px;
             }
 
-            .hero-date-display {
-                flex: 1;
-                padding: 6px 10px;
-                font-size: 0.6875rem;
-                gap: 6px;
+            .hero-stat-badge {
+                font-size: 0.68rem;
+                padding: 4px 8px;
             }
 
-            .hero-date-display i {
-                width: 14px !important;
-                height: 14px !important;
-            }
-
-            .hero-notification-btn {
-                width: 36px;
-                height: 36px;
-                flex-shrink: 0;
-            }
-
-            .hero-notification-btn i {
-                width: 18px !important;
-                height: 18px !important;
-            }
-
-            .hero-notification-btn .count {
-                font-size: 0.625rem;
-                padding: 3px 6px;
-                min-width: 18px;
-                top: -5px;
-                right: -5px;
-            }
-
-            .hero-badge {
-                padding: 5px 10px;
-                font-size: 0.6875rem;
-                gap: 4px;
-            }
-
-            .hero-badge i {
-                width: 12px !important;
-                height: 12px !important;
-            }
-
-            .hero-title {
-                font-size: 1.25rem;
-                margin-bottom: 0.5rem;
-                letter-spacing: -0.02em;
-            }
-
-            .hero-subtitle {
-                font-size: 0.8125rem;
-                line-height: 1.4;
-            }
-
-            .hero-icon-circle {
-                width: 75px;
-                height: 75px;
-                border-width: 1.5px;
-            }
-
-            .hero-icon-circle i {
-                width: 36px !important;
-                height: 36px !important;
-            }
-
-            .hero-cta-btn {
-                width: 100%;
-                justify-content: center;
-                padding: 11px 20px;
-                font-size: 0.875rem;
-                gap: 6px;
-            }
-
-            .hero-cta-btn i {
-                width: 16px !important;
-                height: 16px !important;
-            }
-
-            .hero-content {
-                gap: 1rem;
-                margin-bottom: 1rem;
+            .hero-actions {
+                flex-direction: column;
             }
 
             .compact-metrics-grid {
@@ -1316,108 +1221,27 @@ if ($pdo) {
         /* Extra Small Devices (iPhone SE, small phones) */
         @media (max-width: 375px) {
             .hero-card {
-                padding: 0.875rem 0.75rem;
-                margin-top: var(--spacing-2);
+                padding: 0.75rem;
             }
 
             .hero-title {
-                font-size: 1.125rem;
-            }
-
-            .hero-subtitle {
-                font-size: 0.75rem;
-            }
-
-            .hero-icon-circle {
-                width: 65px;
-                height: 65px;
-            }
-
-            .hero-icon-circle i {
-                width: 32px !important;
-                height: 32px !important;
+                font-size: 0.95rem;
             }
 
             .hero-cta-btn {
-                padding: 10px 18px;
-                font-size: 0.8125rem;
-            }
-
-            .hero-date-display {
-                font-size: 0.625rem;
-                padding: 5px 8px;
+                padding: 6px 12px;
+                font-size: 0.72rem;
             }
         }
 
         /* Landscape Orientation for Mobile */
         @media (max-height: 500px) and (orientation: landscape) {
             .hero-card {
-                padding: 0.875rem 1rem;
-                margin-top: var(--spacing-1);
-            }
-
-            .hero-content {
-                flex-direction: row;
-                text-align: left;
-                gap: var(--spacing-2);
-                margin-bottom: var(--spacing-2);
-            }
-
-            .hero-text {
-                order: 1;
-            }
-
-            .hero-illustration {
-                order: 2;
-            }
-
-            .hero-icon-circle {
-                width: 70px;
-                height: 70px;
-            }
-
-            .hero-icon-circle i {
-                width: 32px !important;
-                height: 32px !important;
+                padding: 0.75rem 1rem;
             }
 
             .hero-title {
-                font-size: 1.125rem;
-                margin-bottom: 0.25rem;
-            }
-
-            .hero-subtitle {
-                font-size: 0.75rem;
-            }
-
-            .hero-badge {
-                margin-bottom: 0.5rem;
-            }
-
-            .hero-meta-bar {
-                margin-bottom: 0.75rem;
-            }
-
-            .hero-cta-btn {
-                width: auto;
-                padding: 8px 20px;
-                font-size: 0.8125rem;
-            }
-        }
-
-        /* Touch Device Optimization */
-        @media (hover: none) and (pointer: coarse) {
-            .hero-cta-btn {
-                min-height: 44px; /* iOS recommended touch target */
-            }
-
-            .hero-notification-btn {
-                min-width: 44px;
-                min-height: 44px;
-            }
-
-            .hero-date-display {
-                min-height: 36px;
+                font-size: 1rem;
             }
         }
 
@@ -1458,41 +1282,43 @@ if ($pdo) {
 
             <!-- Hero Welcome Card -->
             <div class="hero-card">
-                <div class="hero-meta-bar">
+                <div class="hero-top-row">
                     <div class="hero-date-display">
-                        <i data-lucide="calendar" width="18" height="18"></i>
+                        <i data-lucide="calendar" width="14" height="14"></i>
                         <span id="current-date"></span>
                     </div>
-                    <div class="hero-notification-btn">
-                        <i data-lucide="bell" width="20" height="20"></i>
-                        <?php if ($stats['pending_citations'] > 0): ?>
-                            <span class="count"><?php echo $stats['pending_citations']; ?></span>
-                        <?php endif; ?>
-                    </div>
                 </div>
-                <div class="hero-content">
+                <div class="hero-main">
                     <div class="hero-text">
-                        <div class="hero-badge">
-                            <i data-lucide="sparkles" width="14" height="14"></i>
-                            Well done!
+                        <div class="hero-greeting">Dashboard Overview</div>
+                        <h2 class="hero-title">Welcome back, <?php echo htmlspecialchars($user_first_name); ?></h2>
+                        <p class="hero-subtitle">Here's what's happening with your traffic citation system today.</p>
+                        <div class="hero-stats-row">
+                            <div class="hero-stat-badge accent-blue">
+                                <i data-lucide="file-text" width="13" height="13"></i>
+                                <span class="stat-num"><?php echo $stats['resolved_week']; ?></span> this week
+                            </div>
+                            <div class="hero-stat-badge accent-amber">
+                                <i data-lucide="clock" width="13" height="13"></i>
+                                <span class="stat-num"><?php echo $stats['pending_citations']; ?></span> pending
+                            </div>
+                            <div class="hero-stat-badge accent-green">
+                                <i data-lucide="check-circle" width="13" height="13"></i>
+                                <span class="stat-num"><?php echo $stats['today_citations']; ?></span> today
+                            </div>
                         </div>
-                        <h2 class="hero-title">
-                            Congratulations <?php echo htmlspecialchars($user_first_name); ?>! 🎉
-                        </h2>
-                        <p class="hero-subtitle">
-                            You've processed <strong><?php echo $stats['resolved_week']; ?> citations</strong> this week
-                        </p>
                     </div>
-                    <div class="hero-illustration">
-                        <div class="hero-icon-circle">
-                            <i data-lucide="trophy" width="48" height="48"></i>
-                        </div>
+                    <div class="hero-actions">
+                        <a href="index2.php" class="hero-cta-btn">
+                            <i data-lucide="plus" width="16" height="16"></i>
+                            New Citation
+                        </a>
+                        <a href="reports.php" class="hero-secondary-btn">
+                            <i data-lucide="bar-chart-3" width="14" height="14"></i>
+                            View Reports
+                        </a>
                     </div>
                 </div>
-                <a href="index2.php" class="hero-cta-btn">
-                    <i data-lucide="plus-circle" width="18" height="18"></i>
-                    Create Citation
-                </a>
             </div>
 
             <!-- Top Actions Bar -->

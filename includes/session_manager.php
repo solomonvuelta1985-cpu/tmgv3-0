@@ -55,6 +55,12 @@ function create_session_record($userId, $sessionToken) {
     try {
         $pdo = getPDO();
 
+        // If database connection failed, silently skip session tracking
+        if ($pdo === null) {
+            error_log("Session tracking skipped: Database connection not available");
+            return false;
+        }
+
         $userAgent = $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown';
         $ipAddress = $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 
@@ -77,6 +83,7 @@ function create_session_record($userId, $sessionToken) {
         ]);
     } catch (Exception $e) {
         error_log("Session creation error: " . $e->getMessage());
+        // Don't crash - just skip session tracking
         return false;
     }
 }
@@ -90,6 +97,11 @@ function create_session_record($userId, $sessionToken) {
 function get_active_session_count($userId, $role = null) {
     try {
         $pdo = getPDO();
+
+        // If database not available, return 0
+        if ($pdo === null) {
+            return 0;
+        }
 
         // Clean up expired sessions first
         cleanup_expired_sessions();
@@ -121,6 +133,11 @@ function get_user_active_sessions($userId) {
     try {
         $pdo = getPDO();
 
+        // If database not available, return empty array
+        if ($pdo === null) {
+            return [];
+        }
+
         $stmt = $pdo->prepare(
             "SELECT session_id, session_token, device_info, ip_address, login_time, last_activity
              FROM active_sessions
@@ -145,23 +162,44 @@ function get_user_active_sessions($userId) {
  * @return array ['allowed' => bool, 'message' => string, 'active_count' => int]
  */
 function check_session_limit($userId, $role) {
-    $maxSessions = ($role === 'admin') ? 2 : 999; // Only admins have 2-device limit
+    try {
+        // If database not available, allow login (fail-open for availability)
+        $pdo = getPDO();
+        if ($pdo === null) {
+            error_log("Session limit check skipped: Database connection not available");
+            return [
+                'allowed' => true,
+                'message' => '',
+                'active_count' => 0
+            ];
+        }
 
-    $activeCount = get_active_session_count($userId, $role);
+        $maxSessions = ($role === 'admin') ? 2 : 999; // Only admins have 2-device limit
 
-    if ($activeCount >= $maxSessions) {
+        $activeCount = get_active_session_count($userId, $role);
+
+        if ($activeCount >= $maxSessions) {
+            return [
+                'allowed' => false,
+                'message' => "Maximum device limit reached ($maxSessions devices). Please logout from another device first.",
+                'active_count' => $activeCount
+            ];
+        }
+
         return [
-            'allowed' => false,
-            'message' => "Maximum device limit reached ($maxSessions devices). Please logout from another device first.",
+            'allowed' => true,
+            'message' => '',
             'active_count' => $activeCount
         ];
+    } catch (Exception $e) {
+        error_log("Session limit check error: " . $e->getMessage());
+        // Fail-open: allow login if check fails
+        return [
+            'allowed' => true,
+            'message' => '',
+            'active_count' => 0
+        ];
     }
-
-    return [
-        'allowed' => true,
-        'message' => '',
-        'active_count' => $activeCount
-    ];
 }
 
 /**
@@ -230,6 +268,11 @@ function destroy_session_record($sessionToken) {
     try {
         $pdo = getPDO();
 
+        // If database not available, skip
+        if ($pdo === null) {
+            return false;
+        }
+
         $stmt = $pdo->prepare(
             "UPDATE active_sessions
              SET is_active = 0
@@ -250,6 +293,11 @@ function destroy_session_record($sessionToken) {
 function cleanup_expired_sessions() {
     try {
         $pdo = getPDO();
+
+        // If database not available, skip cleanup
+        if ($pdo === null) {
+            return false;
+        }
 
         $stmt = $pdo->prepare(
             "UPDATE active_sessions
@@ -272,6 +320,11 @@ function cleanup_expired_sessions() {
 function cleanup_user_sessions($userId) {
     try {
         $pdo = getPDO();
+
+        // If database not available, skip
+        if ($pdo === null) {
+            return false;
+        }
 
         $stmt = $pdo->prepare(
             "UPDATE active_sessions

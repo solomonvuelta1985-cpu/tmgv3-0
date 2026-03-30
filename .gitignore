@@ -1,0 +1,15 @@
+# Logs
+php_errors.log
+*.log
+
+# Environment
+.env
+.env.*
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+Thumbs.db
+.DS_Store

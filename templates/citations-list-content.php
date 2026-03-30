@@ -76,6 +76,15 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                 <div class="stat-label">Paid</div>
             </div>
         </div>
+        <div class="stat-card cyan">
+            <div class="stat-icon">
+                <i data-lucide="shield-check" style="width: 24px; height: 24px;"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-number"><?php echo number_format($stats['waived']); ?></div>
+                <div class="stat-label">Waived</div>
+            </div>
+        </div>
         <div class="stat-card red">
             <div class="stat-icon">
                 <i data-lucide="alert-circle" style="width: 24px; height: 24px;"></i>
@@ -125,6 +134,7 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                         <option value="">All Status</option>
                         <option value="pending" <?php echo $status_filter === 'pending' ? 'selected' : ''; ?>>Pending</option>
                         <option value="paid" <?php echo $status_filter === 'paid' ? 'selected' : ''; ?>>Paid</option>
+                        <option value="waived" <?php echo $status_filter === 'waived' ? 'selected' : ''; ?>>Waived</option>
                         <option value="contested" <?php echo $status_filter === 'contested' ? 'selected' : ''; ?>>Contested</option>
                         <option value="dismissed" <?php echo $status_filter === 'dismissed' ? 'selected' : ''; ?>>Dismissed</option>
                     </select>
@@ -298,30 +308,24 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                                 ?>
                             </td>
                             <td>
-                                <div class="d-flex gap-1" role="group">
-                                    <!-- View Details Button -->
+                                <!-- Desktop: inline buttons -->
+                                <div class="actions-desktop d-flex gap-1" role="group">
                                     <button type="button" class="btn btn-info btn-sm" onclick="viewCitation(<?php echo $citation['citation_id']; ?>)" title="View Details">
                                         <i data-lucide="user-round-search" style="width: 16px; height: 16px;"></i>
                                     </button>
-
-                                    <!-- View Driver History Button -->
                                     <?php if (!empty($citation['driver_id'])): ?>
                                     <a href="driver_history.php?driver_id=<?php echo $citation['driver_id']; ?>" class="btn btn-secondary btn-sm" title="View Driver History">
                                         <i data-lucide="history" style="width: 16px; height: 16px;"></i>
                                     </a>
                                     <?php endif; ?>
-
-                                    <!-- Process Payment Button -->
-                                    <?php if ($can_pay && $citation['status'] !== 'paid'): ?>
+                                    <?php if ($can_pay && $citation['status'] !== 'paid' && $citation['status'] !== 'waived'): ?>
                                     <a href="/tmg/public/process_payment.php?citation_id=<?php echo $citation['citation_id']; ?>" class="btn btn-success btn-sm" title="Process Payment">
                                         <i data-lucide="banknote-arrow-up" style="width: 16px; height: 16px;"></i>
                                     </a>
                                     <?php endif; ?>
-
-                                    <!-- Edit Button -->
                                     <?php if ($can_edit): ?>
-                                        <?php if ($citation['status'] === 'paid'): ?>
-                                        <button type="button" class="btn btn-secondary btn-sm" disabled title="Paid citations cannot be edited">
+                                        <?php if ($citation['status'] === 'paid' || $citation['status'] === 'waived'): ?>
+                                        <button type="button" class="btn btn-secondary btn-sm" disabled title="<?php echo ucfirst($citation['status']); ?> citations cannot be edited">
                                             <i data-lucide="file-lock" style="width: 16px; height: 16px;"></i>
                                         </button>
                                         <?php else: ?>
@@ -330,13 +334,9 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                                         </button>
                                         <?php endif; ?>
                                     <?php endif; ?>
-
-                                    <!-- Quick Summary Button -->
                                     <button type="button" class="btn btn-primary btn-sm" onclick="quickInfo(<?php echo $citation['citation_id']; ?>); return false;" title="Quick Summary">
                                         <i data-lucide="badge-info" style="width: 16px; height: 16px;"></i>
                                     </button>
-
-                                    <!-- Delete Button -->
                                     <?php if (is_admin()): ?>
                                     <button type="button" class="btn btn-danger btn-sm" onclick="deleteCitation(<?php echo $citation['citation_id']; ?>); return false;" title="Delete Citation">
                                         <i data-lucide="trash-2" style="width: 16px; height: 16px;"></i>
@@ -346,6 +346,69 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                                         <i data-lucide="lock" style="width: 16px; height: 16px;"></i>
                                     </button>
                                     <?php endif; ?>
+                                </div>
+
+                                <!-- Mobile/Tablet: dropdown menu -->
+                                <div class="actions-dropdown dropdown">
+                                    <button class="btn btn-outline-secondary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="true">
+                                        <i data-lucide="more-vertical" style="width: 16px; height: 16px;"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end actions-dropdown-menu">
+                                        <li>
+                                            <a class="dropdown-item" href="#" onclick="viewCitation(<?php echo $citation['citation_id']; ?>); return false;">
+                                                <i data-lucide="user-round-search" style="width: 15px; height: 15px;" class="text-info"></i>
+                                                View Details
+                                            </a>
+                                        </li>
+                                        <?php if (!empty($citation['driver_id'])): ?>
+                                        <li>
+                                            <a class="dropdown-item" href="driver_history.php?driver_id=<?php echo $citation['driver_id']; ?>">
+                                                <i data-lucide="history" style="width: 15px; height: 15px;" class="text-secondary"></i>
+                                                Driver History
+                                            </a>
+                                        </li>
+                                        <?php endif; ?>
+                                        <?php if ($can_pay && $citation['status'] !== 'paid' && $citation['status'] !== 'waived'): ?>
+                                        <li>
+                                            <a class="dropdown-item" href="/tmg/public/process_payment.php?citation_id=<?php echo $citation['citation_id']; ?>">
+                                                <i data-lucide="banknote-arrow-up" style="width: 15px; height: 15px;" class="text-success"></i>
+                                                Process Payment
+                                            </a>
+                                        </li>
+                                        <?php endif; ?>
+                                        <?php if ($can_edit): ?>
+                                            <?php if ($citation['status'] === 'paid' || $citation['status'] === 'waived'): ?>
+                                            <li>
+                                                <a class="dropdown-item disabled" href="#">
+                                                    <i data-lucide="file-lock" style="width: 15px; height: 15px;" class="text-muted"></i>
+                                                    Edit (Locked)
+                                                </a>
+                                            </li>
+                                            <?php else: ?>
+                                            <li>
+                                                <a class="dropdown-item" href="#" onclick="editCitation(<?php echo $citation['citation_id']; ?>); return false;">
+                                                    <i data-lucide="edit" style="width: 15px; height: 15px;" class="text-warning"></i>
+                                                    Edit Citation
+                                                </a>
+                                            </li>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                        <li>
+                                            <a class="dropdown-item" href="#" onclick="quickInfo(<?php echo $citation['citation_id']; ?>); return false;">
+                                                <i data-lucide="badge-info" style="width: 15px; height: 15px;" class="text-primary"></i>
+                                                Quick Summary
+                                            </a>
+                                        </li>
+                                        <?php if (is_admin()): ?>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <a class="dropdown-item text-danger" href="#" onclick="deleteCitation(<?php echo $citation['citation_id']; ?>); return false;">
+                                                <i data-lucide="trash-2" style="width: 15px; height: 15px;"></i>
+                                                Delete Citation
+                                            </a>
+                                        </li>
+                                        <?php endif; ?>
+                                    </ul>
                                 </div>
                             </td>
                         </tr>
