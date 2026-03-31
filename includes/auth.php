@@ -127,6 +127,28 @@ function require_lto_staff() {
 }
 
 /**
+ * Check if current user is PNP
+ * @return bool
+ */
+function is_pnp() {
+    return is_logged_in() && isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'pnp';
+}
+
+/**
+ * Require PNP or admin privileges
+ * Redirects if user is not PNP or admin
+ */
+function require_pnp() {
+    require_login();
+    if (!is_pnp() && !is_admin()) {
+        $basePath = defined('BASE_PATH') ? BASE_PATH : '/tmg';
+        set_flash('Access denied. PNP privileges required.', 'danger');
+        header('Location: ' . $basePath . '/public/index.php');
+        exit;
+    }
+}
+
+/**
  * Check if user can access LTO features
  * LTO staff and admins have access
  * @return bool
@@ -243,7 +265,7 @@ function can_refund_payment() {
  */
 function can_view_all_citations() {
     // All roles except 'user' can view all citations
-    return is_admin() || is_enforcer() || is_cashier();
+    return is_admin() || is_enforcer() || is_cashier() || is_pnp();
 }
 
 /**
@@ -603,7 +625,7 @@ function update_user($user_id, $data) {
         $params[] = trim($data['email']);
     }
 
-    if (isset($data['role']) && in_array($data['role'], ['user', 'admin', 'enforcer', 'cashier', 'lto_staff'])) {
+    if (isset($data['role']) && in_array($data['role'], ['user', 'admin', 'enforcer', 'cashier', 'lto_staff', 'pnp'])) {
         $fields[] = "role = ?";
         $params[] = $data['role'];
     }

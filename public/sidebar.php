@@ -64,6 +64,7 @@
     </div>
 
     <ul class="sidebar-menu">
+        <?php if (!is_pnp()): ?>
         <!-- Main Section -->
         <li class="sidebar-heading">Overview</li>
         <li>
@@ -75,6 +76,7 @@
         <!-- Citations Section -->
         <li class="sidebar-divider"></li>
         <li class="sidebar-heading">Citation Management</li>
+        <?php endif; ?>
         <?php if (function_exists('can_create_citation') && can_create_citation()): ?>
         <li>
             <a href="/tmg/public/index2.php" class="<?php echo (basename($_SERVER['PHP_SELF']) === 'index2.php') ? 'active' : ''; ?>" title="Create Citation">
@@ -87,11 +89,20 @@
                 <i data-lucide="file-text"></i> <span>All Citations</span>
             </a>
         </li>
+        <?php if (is_pnp()): ?>
+        <li>
+            <a href="/tmg/public/reports.php" class="<?php echo (basename($_SERVER['PHP_SELF']) === 'reports.php') ? 'active' : ''; ?>" title="Reports">
+                <i data-lucide="bar-chart-3"></i> <span>Reports</span>
+            </a>
+        </li>
+        <?php endif; ?>
+        <?php if (!is_pnp()): ?>
         <li>
             <a href="/tmg/public/search.php" class="<?php echo (basename($_SERVER['PHP_SELF']) === 'search.php') ? 'active' : ''; ?>" title="Search Citations">
                 <i data-lucide="search"></i> <span>Search</span>
             </a>
         </li>
+        <?php endif; ?>
 
         <!-- LTO Gattaran Section -->
         <?php if (function_exists('can_access_lto') && can_access_lto()): ?>
@@ -137,9 +148,9 @@
         <?php endif; ?>
 
         <!-- Management Section -->
+        <?php if (function_exists('has_role') && has_role(['admin', 'enforcer'])): ?>
         <li class="sidebar-divider"></li>
         <li class="sidebar-heading">Team</li>
-        <?php if (function_exists('has_role') && has_role(['admin', 'enforcer'])): ?>
         <li>
             <a href="/tmg/public/officers.php" class="<?php echo (basename($_SERVER['PHP_SELF']) === 'officers.php') ? 'active' : ''; ?>" title="Officers">
                 <i data-lucide="shield-check"></i> <span>Officers</span>

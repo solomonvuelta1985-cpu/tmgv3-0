@@ -4,6 +4,12 @@ require_once '../includes/auth.php';
 
 require_login();
 
+// PNP accounts cannot access driver history
+if (is_pnp()) {
+    header('Location: citations.php');
+    exit;
+}
+
 $driver_id = (int)($_GET['driver_id'] ?? 0);
 
 if ($driver_id <= 0) {

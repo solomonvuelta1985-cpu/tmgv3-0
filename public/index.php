@@ -13,6 +13,12 @@ if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'lto_staff') {
     exit;
 }
 
+// Redirect PNP to citations page (read-only access)
+if (is_pnp()) {
+    header('Location: citations.php');
+    exit;
+}
+
 // Get dashboard statistics
 $stats = [
     'today_citations' => 0,

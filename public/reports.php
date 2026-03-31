@@ -50,6 +50,10 @@ switch ($report_type) {
 
     case 'officers':
         $officer_type = isset($_GET['officer_type']) ? sanitize($_GET['officer_type']) : 'all';
+        // PNP users can only see PNP officer data
+        if (function_exists('is_pnp') && is_pnp()) {
+            $officer_type = 'pnp';
+        }
         $data['performance'] = $reportService->getOfficerPerformance($start_date, $end_date, $officer_type);
         break;
 
@@ -182,7 +186,7 @@ $reportService->closeConnection();
                         </select>
                     </div>
                     <?php endif; ?>
-                    <?php if ($report_type === 'officers'): ?>
+                    <?php if ($report_type === 'officers' && (!function_exists('is_pnp') || !is_pnp())): ?>
                     <div class="col-md-2">
                         <label class="form-label">Officer Type</label>
                         <select name="officer_type" class="form-select">

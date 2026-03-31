@@ -9,6 +9,8 @@ require_once '../includes/session_manager.php';
 if (is_logged_in()) {
     if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'lto_staff') {
         header('Location: lto_search.php');
+    } elseif (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'pnp') {
+        header('Location: citations.php');
     } else {
         header('Location: index.php');
     }
@@ -52,6 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         // Redirect based on user role
                         if ($user['role'] === 'lto_staff') {
                             header('Location: lto_search.php');
+                        } elseif ($user['role'] === 'pnp') {
+                            header('Location: citations.php');
                         } else {
                             header('Location: index.php');
                         }

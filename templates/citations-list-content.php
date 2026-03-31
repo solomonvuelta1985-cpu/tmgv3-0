@@ -76,6 +76,7 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                 <div class="stat-label">Paid</div>
             </div>
         </div>
+        <?php if (!function_exists('is_pnp') || !is_pnp()): ?>
         <div class="stat-card cyan">
             <div class="stat-icon">
                 <i data-lucide="shield-check" style="width: 24px; height: 24px;"></i>
@@ -85,6 +86,7 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                 <div class="stat-label">Waived</div>
             </div>
         </div>
+        <?php endif; ?>
         <div class="stat-card red">
             <div class="stat-icon">
                 <i data-lucide="alert-circle" style="width: 24px; height: 24px;"></i>
@@ -134,7 +136,9 @@ $can_pay = function_exists('can_process_payment') && can_process_payment();
                         <option value="">All Status</option>
                         <option value="pending" <?php echo $status_filter === 'pending' ? 'selected' : ''; ?>>Pending</option>
                         <option value="paid" <?php echo $status_filter === 'paid' ? 'selected' : ''; ?>>Paid</option>
+                        <?php if (!function_exists('is_pnp') || !is_pnp()): ?>
                         <option value="waived" <?php echo $status_filter === 'waived' ? 'selected' : ''; ?>>Waived</option>
+                        <?php endif; ?>
                         <option value="contested" <?php echo $status_filter === 'contested' ? 'selected' : ''; ?>>Contested</option>
                         <option value="dismissed" <?php echo $status_filter === 'dismissed' ? 'selected' : ''; ?>>Dismissed</option>
                     </select>

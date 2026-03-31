@@ -97,6 +97,7 @@ $page_title = "User Management";
                                         <option value="enforcer">Enforcer - Creates Citations</option>
                                         <option value="cashier">Cashier - Processes Payments</option>
                                         <option value="lto_staff">LTO Staff - Read-Only LTO Search</option>
+                                        <option value="pnp">PNP - Read-Only PNP Citations</option>
                                         <option value="user">User - View Only</option>
                                     </select>
                                 </div>
@@ -141,6 +142,7 @@ $page_title = "User Management";
                                     <option value="enforcer">Enforcer</option>
                                     <option value="cashier">Cashier</option>
                                     <option value="lto_staff">LTO Staff</option>
+                                    <option value="pnp">PNP</option>
                                     <option value="user">User</option>
                                 </select>
                             </div>

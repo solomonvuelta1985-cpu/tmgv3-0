@@ -12,6 +12,12 @@ require_once ROOT_PATH . '/services/CitationService.php';
 require_login();
 check_session_timeout();
 
+// PNP accounts cannot create citations
+if (is_pnp()) {
+    header('Location: citations.php');
+    exit;
+}
+
 // Initialize CitationService
 $citationService = new CitationService();
 

@@ -39,7 +39,7 @@ class ReportService {
                     SUM(CASE WHEN c.status = 'pending' THEN c.total_fine ELSE 0 END) as total_fines_pending,
                     AVG(c.total_fine) as average_fine
                     FROM citations c
-                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL");
+                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . $this->buildPnpFilter('c');
 
             $stmt = $this->conn->prepare($sql);
             $this->bindDateParams($stmt, $start_date, $end_date);
@@ -75,7 +75,7 @@ class ReportService {
                     SUM(c.total_fine) as total_fines,
                     SUM(CASE WHEN c.status = 'paid' THEN c.total_fine ELSE 0 END) as collected_fines
                     FROM citations c
-                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . "
+                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . $this->buildPnpFilter('c') . "
                     GROUP BY period
                     ORDER BY period ASC";
 
@@ -111,7 +111,7 @@ class ReportService {
                         ELSE '90+ days'
                     END as aging_category
                     FROM citations c
-                    WHERE c.status = :status AND c.deleted_at IS NULL
+                    WHERE c.status = :status AND c.deleted_at IS NULL" . $this->buildPnpFilter('c') . "
                     ORDER BY c.created_at ASC";
 
             $stmt = $this->conn->prepare($sql);
@@ -144,7 +144,7 @@ class ReportService {
                     FROM violations v
                     JOIN violation_types vt ON v.violation_type_id = vt.violation_type_id
                     JOIN citations c ON v.citation_id = c.citation_id
-                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . "
+                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . $this->buildPnpFilter('c') . "
                     GROUP BY vt.violation_type_id, vt.violation_type, vt.fine_amount_1
                     ORDER BY violation_count DESC";
 
@@ -183,7 +183,7 @@ class ReportService {
                     FROM violations v
                     JOIN violation_types vt ON v.violation_type_id = vt.violation_type_id
                     JOIN citations c ON v.citation_id = c.citation_id
-                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . "
+                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . $this->buildPnpFilter('c') . "
                     GROUP BY period, vt.violation_type_id
                     ORDER BY period ASC, count DESC";
 
@@ -220,7 +220,7 @@ class ReportService {
                     FROM citations c
                     LEFT JOIN violations v ON c.citation_id = v.citation_id
                     LEFT JOIN violation_types vt ON v.violation_type_id = vt.violation_type_id
-                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . "
+                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . $this->buildPnpFilter('c') . "
                     GROUP BY c.driver_id, c.last_name, c.first_name, c.license_number
                     HAVING citation_count >= :min_citations
                     ORDER BY citation_count DESC, total_fines DESC";
@@ -252,7 +252,7 @@ class ReportService {
                     SUM(v.fine_amount) as total_fines
                     FROM violations v
                     JOIN citations c ON v.citation_id = c.citation_id
-                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . "
+                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . $this->buildPnpFilter('c') . "
                     GROUP BY v.offense_count
                     ORDER BY v.offense_count ASC";
 
@@ -295,7 +295,7 @@ class ReportService {
                     MAX(c.created_at) as latest_citation
                     FROM citations c
                     LEFT JOIN apprehending_officers ao ON c.apprehension_officer = ao.officer_name
-                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . "
+                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . $this->buildPnpFilter('c') . "
                     AND c.apprehension_officer IS NOT NULL
                     AND c.apprehension_officer != ''
                     " . $type_filter . "
@@ -328,6 +328,11 @@ class ReportService {
             }
             if ($officer_name) {
                 $where_clauses[] = "apprehension_officer = :officer_name";
+            }
+            // PNP filter: only PNP officers, exclude waived
+            if (function_exists('is_pnp') && is_pnp()) {
+                $where_clauses[] = "apprehension_officer LIKE 'PNP %'";
+                $where_clauses[] = "status != 'waived'";
             }
 
             $where_clause = "WHERE " . implode(" AND ", $where_clauses);
@@ -372,7 +377,7 @@ class ReportService {
                     COUNT(*) as citation_count,
                     SUM(c.total_fine) as total_fines
                     FROM citations c
-                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . "
+                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . $this->buildPnpFilter('c') . "
                     GROUP BY hour_of_day
                     ORDER BY hour_of_day ASC";
 
@@ -403,7 +408,7 @@ class ReportService {
                     SUM(c.total_fine) as total_fines,
                     AVG(c.total_fine) as average_fine
                     FROM citations c
-                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . "
+                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . $this->buildPnpFilter('c') . "
                     GROUP BY day_name, day_number
                     ORDER BY day_number ASC";
 
@@ -436,7 +441,7 @@ class ReportService {
                     SUM(CASE WHEN c.status = 'paid' THEN 1 ELSE 0 END) as paid_count,
                     SUM(CASE WHEN c.status = 'pending' THEN 1 ELSE 0 END) as pending_count
                     FROM citations c
-                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . "
+                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . $this->buildPnpFilter('c') . "
                     GROUP BY month, month_name
                     ORDER BY month ASC";
 
@@ -465,7 +470,7 @@ class ReportService {
                     COUNT(*) as count,
                     SUM(total_fine) as total_fines
                     FROM citations
-                    " . ($where_clause ? $where_clause . " AND deleted_at IS NULL" : "WHERE deleted_at IS NULL") . "
+                    " . ($where_clause ? $where_clause . " AND deleted_at IS NULL" : "WHERE deleted_at IS NULL") . $this->buildPnpFilter('') . "
                     GROUP BY status
                     ORDER BY count DESC";
 
@@ -514,7 +519,7 @@ class ReportService {
                     FROM citations c
                     LEFT JOIN violations v ON c.citation_id = v.citation_id
                     LEFT JOIN violation_types vt ON v.violation_type_id = vt.violation_type_id
-                    $where_clause
+                    $where_clause" . $this->buildPnpFilter('c') . "
                     GROUP BY c.citation_id
                     ORDER BY c.created_at DESC";
 
@@ -544,7 +549,7 @@ class ReportService {
                     SUM(c.total_fine) as total_fines,
                     AVG(c.total_fine) as average_fine
                     FROM citations c
-                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . "
+                    " . ($where_clause ? $where_clause . " AND c.deleted_at IS NULL" : "WHERE c.deleted_at IS NULL") . $this->buildPnpFilter('c') . "
                     GROUP BY c.vehicle_type
                     ORDER BY citation_count DESC";
 
@@ -580,7 +585,7 @@ class ReportService {
                     MAX(DATEDIFF(updated_at, created_at)) as max_days,
                     COUNT(*) as case_count
                     FROM citations
-                    $where_clause
+                    $where_clause" . $this->buildPnpFilter('') . "
                     GROUP BY status";
 
             $stmt = $this->conn->prepare($sql);
@@ -750,6 +755,20 @@ class ReportService {
      * @param string $column Column name
      * @return string WHERE clause
      */
+    /**
+     * Build PNP-specific filter conditions
+     * For PNP users: only PNP officers, exclude waived records
+     * @param string $table_alias Table alias (e.g., 'c' or empty)
+     * @return string SQL fragment to append with AND
+     */
+    private function buildPnpFilter($table_alias = 'c') {
+        if (!function_exists('is_pnp') || !is_pnp()) {
+            return "";
+        }
+        $prefix = $table_alias ? $table_alias . '.' : '';
+        return " AND {$prefix}apprehension_officer LIKE 'PNP %' AND {$prefix}status != 'waived'";
+    }
+
     private function buildDateWhereClause($start_date, $end_date, $column) {
         if ($start_date && $end_date) {
             // Use DATE() to ensure we match full days regardless of time

@@ -7,6 +7,12 @@ require_once '../includes/auth.php';
 require_login();
 check_session_timeout();
 
+// PNP accounts cannot access officer management
+if (is_pnp()) {
+    header('Location: citations.php');
+    exit;
+}
+
 // Get statistics
 $stats = [
     'total' => 0,

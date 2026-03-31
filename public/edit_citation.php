@@ -9,6 +9,12 @@ require_once ROOT_PATH . '/includes/auth.php';
 require_login();
 check_session_timeout();
 
+// PNP accounts are read-only
+if (is_pnp()) {
+    header('Location: citations.php');
+    exit;
+}
+
 // Validate citation ID
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header('Location: citations.php');

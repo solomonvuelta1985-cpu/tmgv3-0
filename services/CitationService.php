@@ -177,32 +177,39 @@ class CitationService {
 
             $deletedFilter = $hasDeletedAt ? " WHERE deleted_at IS NULL" : "";
 
+            // PNP role: only count citations from PNP officers, exclude waived
+            $pnpFilter = "";
+            if (function_exists('is_pnp') && is_pnp()) {
+                $pnpFilter = $deletedFilter ? " AND apprehension_officer LIKE 'PNP %' AND status != 'waived'" : " WHERE apprehension_officer LIKE 'PNP %' AND status != 'waived'";
+            }
+
             // Total citations
-            $stmt = $this->conn->query("SELECT COUNT(*) as count FROM citations" . $deletedFilter);
+            $stmt = $this->conn->query("SELECT COUNT(*) as count FROM citations" . $deletedFilter . $pnpFilter);
             $stats['total'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
 
             // Pending
             $whereClause = $hasDeletedAt ? "WHERE status = 'pending' AND deleted_at IS NULL" : "WHERE status = 'pending'";
-            $stmt = $this->conn->query("SELECT COUNT(*) as count FROM citations $whereClause");
+            $pnpExtra = (function_exists('is_pnp') && is_pnp()) ? " AND apprehension_officer LIKE 'PNP %'" : "";
+            $stmt = $this->conn->query("SELECT COUNT(*) as count FROM citations $whereClause" . $pnpExtra);
             $stats['pending'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
 
             // Paid
             $whereClause = $hasDeletedAt ? "WHERE status = 'paid' AND deleted_at IS NULL" : "WHERE status = 'paid'";
-            $stmt = $this->conn->query("SELECT COUNT(*) as count FROM citations $whereClause");
+            $stmt = $this->conn->query("SELECT COUNT(*) as count FROM citations $whereClause" . $pnpExtra);
             $stats['paid'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
 
             // Waived
             $whereClause = $hasDeletedAt ? "WHERE status = 'waived' AND deleted_at IS NULL" : "WHERE status = 'waived'";
-            $stmt = $this->conn->query("SELECT COUNT(*) as count FROM citations $whereClause");
+            $stmt = $this->conn->query("SELECT COUNT(*) as count FROM citations $whereClause" . $pnpExtra);
             $stats['waived'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
 
             // Contested
             $whereClause = $hasDeletedAt ? "WHERE status = 'contested' AND deleted_at IS NULL" : "WHERE status = 'contested'";
-            $stmt = $this->conn->query("SELECT COUNT(*) as count FROM citations $whereClause");
+            $stmt = $this->conn->query("SELECT COUNT(*) as count FROM citations $whereClause" . $pnpExtra);
             $stats['contested'] = $stmt->fetch(PDO::FETCH_ASSOC)['count'] ?? 0;
 
             // Total fines
-            $stmt = $this->conn->query("SELECT SUM(total_fine) as total FROM citations" . $deletedFilter);
+            $stmt = $this->conn->query("SELECT SUM(total_fine) as total FROM citations" . $deletedFilter . $pnpFilter);
             $stats['total_fines'] = $stmt->fetch(PDO::FETCH_ASSOC)['total'] ?? 0;
         } catch (PDOException $e) {
             error_log("Error fetching statistics: " . $e->getMessage());
@@ -229,6 +236,12 @@ class CitationService {
             }
         } catch (PDOException $e) {
             // Column doesn't exist, continue without filter
+        }
+
+        // PNP role: only show citations from PNP officers, exclude waived
+        if (function_exists('is_pnp') && is_pnp()) {
+            $where_clauses[] = "c.apprehension_officer LIKE 'PNP %'";
+            $where_clauses[] = "c.status != 'waived'";
         }
 
         if (!empty($search)) {
@@ -276,6 +289,12 @@ class CitationService {
             }
         } catch (PDOException $e) {
             // Column doesn't exist, continue without filter
+        }
+
+        // PNP role: only show citations from PNP officers, exclude waived
+        if (function_exists('is_pnp') && is_pnp()) {
+            $where_clauses[] = "c.apprehension_officer LIKE 'PNP %'";
+            $where_clauses[] = "c.status != 'waived'";
         }
 
         if (!empty($search)) {

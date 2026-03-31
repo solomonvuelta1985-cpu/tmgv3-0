@@ -15,6 +15,13 @@ if (!is_logged_in()) {
     exit;
 }
 
+// PNP accounts are read-only
+if (is_pnp()) {
+    http_response_code(403);
+    echo json_encode(['status' => 'error', 'message' => 'PNP accounts are read-only']);
+    exit;
+}
+
 // Rate Limiting
 if (!check_rate_limit('citation_update', 20, 300)) {
     http_response_code(429);

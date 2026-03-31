@@ -7,6 +7,12 @@ require_once '../includes/auth.php';
 require_login();
 check_session_timeout();
 
+// PNP accounts use the citations page only
+if (is_pnp()) {
+    header('Location: citations.php');
+    exit;
+}
+
 $pdo = getPDO();
 $citations = [];
 $searched = false;

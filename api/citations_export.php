@@ -29,6 +29,12 @@ try {
         $params[] = $status_filter;
     }
 
+    // PNP role: only export citations from PNP officers, exclude waived
+    if (function_exists('is_pnp') && is_pnp()) {
+        $where_clauses[] = "c.apprehension_officer LIKE 'PNP %'";
+        $where_clauses[] = "c.status != 'waived'";
+    }
+
     $where_sql = !empty($where_clauses) ? "WHERE " . implode(" AND ", $where_clauses) : "";
 
     // Get all citations
